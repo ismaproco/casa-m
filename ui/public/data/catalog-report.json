@@ -1,0 +1,66 @@
+{
+  "generatedAt": "2026-07-25T19:11:10.867Z",
+  "catalogVersion": "abb8a1bc14aaf376",
+  "summary": {
+    "sourceRecords": 2282,
+    "publishedRecords": 2275,
+    "excludedRecords": 7,
+    "approximateCoordinates": 20,
+    "knownStratum": 1045
+  },
+  "exclusions": [
+    {
+      "id": "19578-M6851286",
+      "reasons": [
+        "not_live",
+        "missing_url"
+      ]
+    },
+    {
+      "id": "21209-M6776842",
+      "reasons": [
+        "not_live",
+        "missing_url"
+      ]
+    },
+    {
+      "id": "23082-M6876591",
+      "reasons": [
+        "not_live",
+        "missing_url"
+      ]
+    },
+    {
+      "id": "23082-M6876743",
+      "reasons": [
+        "not_live",
+        "missing_url"
+      ]
+    },
+    {
+      "id": "2671-M6122868",
+      "reasons": [
+        "not_live",
+        "missing_url"
+      ]
+    },
+    {
+      "id": "359-M5315036",
+      "reasons": [
+        "not_live",
+        "missing_url"
+      ]
+    },
+    {
+      "id": "4698-M6569728",
+      "reasons": [
+        "not_live",
+        "missing_url"
+      ]
+    }
+  ],
+  "warningCounts": {
+    "area_outlier": 1,
+    "price_outlier": 6
+  }
+}
