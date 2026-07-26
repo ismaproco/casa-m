@@ -18,41 +18,6 @@ type Props = {
   unavailableLabel: string;
 };
 
-type ListingBucket = {
-  latitude: number;
-  longitude: number;
-  listings: Listing[];
-  approximate: boolean;
-};
-
-function bucketListings(listings: Listing[]) {
-  const buckets = new Map<string, ListingBucket>();
-  for (const listing of listings) {
-    const key = `${listing.latitude.toFixed(3)}:${listing.longitude.toFixed(3)}`;
-    const bucket = buckets.get(key);
-    if (bucket) {
-      bucket.latitude += listing.latitude;
-      bucket.longitude += listing.longitude;
-      bucket.listings.push(listing);
-      bucket.approximate ||=
-        listing.coordinatePrecision === "neighborhood_centroid";
-    } else {
-      buckets.set(key, {
-        latitude: listing.latitude,
-        longitude: listing.longitude,
-        listings: [listing],
-        approximate:
-          listing.coordinatePrecision === "neighborhood_centroid",
-      });
-    }
-  }
-  return [...buckets.values()].map((bucket) => ({
-    ...bucket,
-    latitude: bucket.latitude / bucket.listings.length,
-    longitude: bucket.longitude / bucket.listings.length,
-  }));
-}
-
 export function MapPanel({
   listings,
   selectedId,
@@ -208,49 +173,33 @@ export function MapPanel({
       markersByListingRef.current.clear();
 
       const currentListings = listingsRef.current;
-      for (const bucket of bucketListings(currentListings)) {
-        const count = bucket.listings.length;
+      for (const listing of currentListings) {
         const marker = leaflet.circleMarker(
-          [bucket.latitude, bucket.longitude],
+          [listing.latitude, listing.longitude],
           {
-            radius: count === 1 ? 6 : Math.min(18, 7 + Math.log2(count) * 2.2),
+            radius: 6,
             color: "#ffffff",
             weight: 2,
             opacity: 1,
-            fillColor: bucket.approximate
+            fillColor:
+              listing.coordinatePrecision === "neighborhood_centroid"
               ? "#ffb84d"
-              : count === 1
-                ? "#f25f50"
-                : count > 15
-                  ? "#10212a"
-                  : "#168f87",
+              : "#f25f50",
             fillOpacity: 0.94,
           },
         );
         marker.bindTooltip(
-          count === 1
-            ? `${bucket.listings[0].neighborhood ?? "Bogotá"} · ${bucket.listings[0].id}`
-            : `${count} listings`,
+          `${listing.neighborhood ?? "Bogotá"} · ${listing.id}`,
           {
             direction: "top",
             offset: [0, -7],
           },
         );
         marker.on("click", () => {
-          if (count === 1) {
-            callbacksRef.current.onSelect(bucket.listings[0].id);
-          } else {
-            map.setView(
-              [bucket.latitude, bucket.longitude],
-              Math.min(map.getZoom() + 2, 16),
-              { animate: true },
-            );
-          }
+          callbacksRef.current.onSelect(listing.id);
         });
         marker.addTo(points);
-        for (const listing of bucket.listings) {
-          markersByListingRef.current.set(listing.id, marker);
-        }
+        markersByListingRef.current.set(listing.id, marker);
       }
 
       fitListings(currentListings);

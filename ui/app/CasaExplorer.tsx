@@ -126,6 +126,9 @@ export default function CasaExplorer() {
   const [saveOpen, setSaveOpen] = useState(false);
   const [saveName, setSaveName] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedPresentation, setSelectedPresentation] = useState<
+    "drawer" | "modal"
+  >("drawer");
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [visibleLimit, setVisibleLimit] = useState(80);
   const [favorites, setFavorites] = useState<Favorite[]>([]);
@@ -220,6 +223,14 @@ export default function CasaExplorer() {
     [catalog],
   );
   const selectedListing = selectedId ? listingById.get(selectedId) ?? null : null;
+  useEffect(() => {
+    if (!selectedListing || selectedPresentation !== "modal") return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSelectedId(null);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [selectedListing, selectedPresentation]);
   const activeSaved = savedSearches.find((saved) => saved.id === activeSavedId);
   const activeUpdates = activeSaved
     ? compareSnapshot(activeSaved.snapshot, filteredListings)
@@ -785,7 +796,10 @@ export default function CasaExplorer() {
                       )}
                       selected={selectedId === listing.id}
                       onFavorite={() => void toggleFavorite(listing)}
-                      onSelect={() => setSelectedId(listing.id)}
+                      onSelect={() => {
+                        setSelectedPresentation("drawer");
+                        setSelectedId(listing.id);
+                      }}
                       onHover={setHoveredId}
                     />
                   ))}
@@ -812,7 +826,10 @@ export default function CasaExplorer() {
               listings={filteredListings}
               selectedId={selectedId}
               hoveredId={hoveredId}
-              onSelect={setSelectedId}
+              onSelect={(id) => {
+                setSelectedPresentation("modal");
+                setSelectedId(id);
+              }}
               onBoundsChange={setMapBounds}
               unavailableLabel={c.mapUnavailable}
             />
@@ -912,7 +929,7 @@ export default function CasaExplorer() {
         </section>
       )}
 
-      {selectedListing && (
+      {selectedListing && selectedPresentation === "drawer" && (
         <ListingDrawer
           listing={selectedListing}
           locale={locale}
@@ -922,6 +939,24 @@ export default function CasaExplorer() {
           onFavorite={() => void toggleFavorite(selectedListing)}
           onClose={() => setSelectedId(null)}
         />
+      )}
+
+      {selectedListing && selectedPresentation === "modal" && (
+        <div
+          className="modal-backdrop listing-detail-backdrop"
+          onMouseDown={() => setSelectedId(null)}
+        >
+          <ListingDrawer
+            listing={selectedListing}
+            locale={locale}
+            modal
+            isFavorite={favorites.some(
+              (item) => item.listingId === selectedListing.id,
+            )}
+            onFavorite={() => void toggleFavorite(selectedListing)}
+            onClose={() => setSelectedId(null)}
+          />
+        </div>
       )}
 
       {saveOpen && (
@@ -1123,28 +1158,39 @@ function ListingCard({
 function ListingDrawer({
   listing,
   locale,
+  modal = false,
   isFavorite,
   onFavorite,
   onClose,
 }: {
   listing: ListingType;
   locale: Locale;
+  modal?: boolean;
   isFavorite: boolean;
   onFavorite: () => void;
   onClose: () => void;
 }) {
   const c = t(locale);
   return (
-    <aside className="listing-drawer" aria-label={listing.neighborhood ?? listing.id}>
+    <aside
+      className={`listing-drawer ${modal ? "modal-card" : ""}`}
+      role={modal ? "dialog" : undefined}
+      aria-modal={modal || undefined}
+      aria-labelledby={modal ? "listing-detail-title" : undefined}
+      aria-label={modal ? undefined : listing.neighborhood ?? listing.id}
+      onMouseDown={modal ? (event) => event.stopPropagation() : undefined}
+    >
       <div className="drawer-accent">
         <span>{listing.resultType}</span>
-        <button onClick={onClose} aria-label={c.close}>
+        <button autoFocus={modal} onClick={onClose} aria-label={c.close}>
           <X />
         </button>
       </div>
       <div className="drawer-body">
         <span className="eyebrow">{listing.id}</span>
-        <h2>{listing.projectName ?? listing.neighborhood ?? "Bogotá"}</h2>
+        <h2 id={modal ? "listing-detail-title" : undefined}>
+          {listing.projectName ?? listing.neighborhood ?? "Bogotá"}
+        </h2>
         {listing.projectName && <p>{listing.neighborhood}</p>}
         <strong className="drawer-price">
           {formatCop(listing.priceCop, locale)}

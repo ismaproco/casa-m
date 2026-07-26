@@ -90,3 +90,15 @@ using Computer Use:
 Pass: executed with Computer Use on 2026-07-25. OpenStreetMap rendered the 47
 Cedritos results as visible points; zoom out, zoom in, marker selection, and
 fit-to-results all changed the map as expected.
+
+## CU-08 — Map-dot details modal
+
+> Click any visible location dot on the OpenStreetMap. Confirm a centered modal
+> card opens above a dimmed map and shows the listing ID, project or
+> neighborhood, price, bedrooms, bathrooms, parking, area, stratum, price per
+> square meter, coordinate quality, favorite action, and source link. Confirm
+> the close button and Escape key each dismiss the modal.
+
+Pass: executed with Computer Use on 2026-07-25. A Cedritos dot opened the
+matching listing in a fully layered modal; the expected facts and actions were
+present, focus moved to Close, and both Close and Escape dismissed it.
