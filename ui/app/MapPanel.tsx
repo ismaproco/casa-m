@@ -1,13 +1,12 @@
 "use client";
 
-import { Crosshair, MapPinned } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Crosshair, MapPinned, Minus, Plus } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type {
-  GeoJSONSource,
-  Map as MapLibreMap,
-  Marker,
-  StyleSpecification,
-} from "maplibre-gl";
+  CircleMarker,
+  LayerGroup,
+  Map as LeafletMap,
+} from "leaflet";
 import type { Listing, MapBounds } from "./lib/types";
 
 type Props = {
@@ -19,47 +18,39 @@ type Props = {
   unavailableLabel: string;
 };
 
-const DEFAULT_MAP_STYLE: StyleSpecification = {
-  version: 8,
-  sources: {
-    "openstreetmap-raster": {
-      type: "raster",
-      tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
-      tileSize: 256,
-      attribution: "© OpenStreetMap contributors",
-      maxzoom: 19,
-    },
-  },
-  layers: [
-    {
-      id: "openstreetmap-raster",
-      type: "raster",
-      source: "openstreetmap-raster",
-      paint: {
-        "raster-saturation": -0.45,
-        "raster-opacity": 0.82,
-      },
-    },
-  ],
+type ListingBucket = {
+  latitude: number;
+  longitude: number;
+  listings: Listing[];
+  approximate: boolean;
 };
 
-function toGeoJson(listings: Listing[]) {
-  return {
-    type: "FeatureCollection" as const,
-    features: listings.map((listing) => ({
-      type: "Feature" as const,
-      id: listing.id,
-      geometry: {
-        type: "Point" as const,
-        coordinates: [listing.longitude, listing.latitude],
-      },
-      properties: {
-        id: listing.id,
+function bucketListings(listings: Listing[]) {
+  const buckets = new Map<string, ListingBucket>();
+  for (const listing of listings) {
+    const key = `${listing.latitude.toFixed(3)}:${listing.longitude.toFixed(3)}`;
+    const bucket = buckets.get(key);
+    if (bucket) {
+      bucket.latitude += listing.latitude;
+      bucket.longitude += listing.longitude;
+      bucket.listings.push(listing);
+      bucket.approximate ||=
+        listing.coordinatePrecision === "neighborhood_centroid";
+    } else {
+      buckets.set(key, {
+        latitude: listing.latitude,
+        longitude: listing.longitude,
+        listings: [listing],
         approximate:
-          listing.coordinatePrecision === "neighborhood_centroid" ? 1 : 0,
-      },
-    })),
-  };
+          listing.coordinatePrecision === "neighborhood_centroid",
+      });
+    }
+  }
+  return [...buckets.values()].map((bucket) => ({
+    ...bucket,
+    latitude: bucket.latitude / bucket.listings.length,
+    longitude: bucket.longitude / bucket.listings.length,
+  }));
 }
 
 export function MapPanel({
@@ -71,306 +62,269 @@ export function MapPanel({
   unavailableLabel,
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<MapLibreMap | null>(null);
-  const selectedRef = useRef<string | null>(null);
-  const hoveredRef = useRef<string | null>(null);
+  const mapRef = useRef<LeafletMap | null>(null);
+  const pointsRef = useRef<LayerGroup | null>(null);
+  const markersByListingRef = useRef(new Map<string, CircleMarker>());
   const callbacksRef = useRef({ onSelect, onBoundsChange });
-  const markersRef = useRef<Marker[]>([]);
-  const renderMarkersRef = useRef<((rows: Listing[]) => void) | null>(null);
+  const listingsRef = useRef(listings);
+  const [mapReady, setMapReady] = useState(false);
   const [mapError, setMapError] = useState(false);
-  const data = useMemo(() => toGeoJson(listings), [listings]);
-  const initialDataRef = useRef(data);
-  const initialListingsRef = useRef(listings);
+  const [mapSummary, setMapSummary] = useState("OpenStreetMap");
+  const listingSignature = useMemo(
+    () => listings.map((listing) => listing.id).join("|"),
+    [listings],
+  );
 
   useEffect(() => {
     callbacksRef.current = { onSelect, onBoundsChange };
   }, [onBoundsChange, onSelect]);
 
   useEffect(() => {
+    listingsRef.current = listings;
+  }, [listings]);
+
+  const fitListings = useCallback((rows: Listing[], animate = false) => {
+    const map = mapRef.current;
+    if (!map || rows.length === 0) return;
+    void import("leaflet").then((leaflet) => {
+      const bounds = leaflet.latLngBounds(
+        rows.map((listing) => [listing.latitude, listing.longitude]),
+      );
+      map.invalidateSize();
+      if (rows.length === 1) {
+        map.setView(
+          [rows[0].latitude, rows[0].longitude],
+          15,
+          { animate },
+        );
+      } else {
+        map.fitBounds(bounds, {
+          padding: [48, 48],
+          maxZoom: 14,
+          animate,
+        });
+      }
+    });
+  }, []);
+
+  const changeZoom = useCallback((delta: number) => {
+    const map = mapRef.current;
+    if (!map) return;
+    map.stop();
+    const nextZoom = Math.max(8, Math.min(18, map.getZoom() + delta));
+    map.setView(map.getCenter(), nextZoom, {
+      animate: false,
+      reset: true,
+    });
+    window.setTimeout(() => {
+      const center = map.getCenter();
+      setMapSummary(
+        `OpenStreetMap, zoom ${map.getZoom().toFixed(1)}, center ${center.lat.toFixed(5)}, ${center.lng.toFixed(5)}`,
+      );
+    }, 50);
+  }, []);
+
+  useEffect(() => {
     let cancelled = false;
+    let resizeObserver: ResizeObserver | null = null;
+    const markersByListing = markersByListingRef.current;
     if (!containerRef.current || mapRef.current) return;
 
-    void import("maplibre-gl")
-      .then((maplibregl) => {
+    void import("leaflet")
+      .then((leaflet) => {
         if (cancelled || !containerRef.current) return;
-        const map = new maplibregl.Map({
-          container: containerRef.current,
-          style:
-            process.env.NEXT_PUBLIC_MAP_STYLE_URL ??
-            DEFAULT_MAP_STYLE,
-          center: [-74.0721, 4.682],
-          zoom: 10.6,
-          attributionControl: true,
-          cooperativeGestures: true,
+        const map = leaflet.map(containerRef.current, {
+          center: [4.682, -74.0721],
+          zoom: 11,
+          minZoom: 8,
+          maxZoom: 18,
+          zoomControl: false,
+          attributionControl: false,
+          preferCanvas: false,
         });
-        mapRef.current = map;
-        const loadTimeout = window.setTimeout(() => {
-          if (!map.getSource("listings")) setMapError(true);
-        }, 12_000);
-        map.addControl(
-          new maplibregl.NavigationControl({ showCompass: false }),
-          "bottom-right",
+        const tiles = leaflet.tileLayer(
+          "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+          {
+            minZoom: 8,
+            maxZoom: 19,
+            attribution: "© OpenStreetMap contributors",
+          },
         );
-        const renderDomClusters = (rows: Listing[]) => {
-          for (const marker of markersRef.current) marker.remove();
-          const buckets = new Map<
-            string,
-            {
-              latitude: number;
-              longitude: number;
-              count: number;
-              firstId: string;
-              approximate: boolean;
-            }
-          >();
-          for (const listing of rows) {
-            const key = `${listing.latitude.toFixed(2)}:${listing.longitude.toFixed(2)}`;
-            const bucket = buckets.get(key);
-            if (bucket) {
-              bucket.latitude += listing.latitude;
-              bucket.longitude += listing.longitude;
-              bucket.count += 1;
-              bucket.approximate ||= listing.coordinatePrecision === "neighborhood_centroid";
-            } else {
-              buckets.set(key, {
-                latitude: listing.latitude,
-                longitude: listing.longitude,
-                count: 1,
-                firstId: listing.id,
-                approximate:
-                  listing.coordinatePrecision === "neighborhood_centroid",
-              });
-            }
-          }
-          markersRef.current = [...buckets.values()].map((bucket) => {
-            const element = document.createElement("button");
-            element.className = `dom-map-marker${bucket.approximate ? " approximate" : ""}`;
-            element.type = "button";
-            element.textContent =
-              bucket.count > 1 ? String(bucket.count) : "•";
-            element.setAttribute(
-              "aria-label",
-              bucket.count > 1
-                ? `${bucket.count} listings`
-                : "Open listing",
-            );
-            const center: [number, number] = [
-              bucket.longitude / bucket.count,
-              bucket.latitude / bucket.count,
-            ];
-            element.addEventListener("click", () => {
-              if (bucket.count === 1) {
-                callbacksRef.current.onSelect(bucket.firstId);
-              } else {
-                map.easeTo({
-                  center,
-                  zoom: Math.min(map.getZoom() + 2, 14),
-                  duration: 450,
-                });
-              }
-            });
-            return new maplibregl.Marker({ element })
-              .setLngLat(center)
-              .addTo(map);
-          });
+        tiles.on("tileload", () => setMapError(false));
+        tiles.on("tileerror", () => setMapError(true));
+        tiles.addTo(map);
+
+        const points = leaflet.layerGroup().addTo(map);
+        mapRef.current = map;
+        pointsRef.current = points;
+
+        const updateMapDescription = () => {
+          const center = map.getCenter();
+          setMapSummary(
+            `OpenStreetMap, zoom ${map.getZoom().toFixed(1)}, center ${center.lat.toFixed(5)}, ${center.lng.toFixed(5)}`,
+          );
         };
-        renderMarkersRef.current = renderDomClusters;
-        const setupListingLayers = () => {
-          if (map.getSource("listings")) return;
-          window.clearTimeout(loadTimeout);
-          setMapError(false);
-          map.addSource("listings", {
-            type: "geojson",
-            data: initialDataRef.current,
-            cluster: true,
-            clusterRadius: 42,
-            clusterMaxZoom: 13,
+        map.on("moveend", () => {
+          const bounds = map.getBounds();
+          updateMapDescription();
+          callbacksRef.current.onBoundsChange({
+            west: bounds.getWest(),
+            south: bounds.getSouth(),
+            east: bounds.getEast(),
+            north: bounds.getNorth(),
           });
-          map.addLayer({
-            id: "clusters",
-            type: "circle",
-            source: "listings",
-            filter: ["has", "point_count"],
-            paint: {
-              "circle-color": [
-                "step",
-                ["get", "point_count"],
-                "#2bb7a9",
-                25,
-                "#167d78",
-                100,
-                "#10212a",
-              ],
-              "circle-radius": [
-                "step",
-                ["get", "point_count"],
-                17,
-                25,
-                23,
-                100,
-                30,
-              ],
-              "circle-stroke-width": 2,
-              "circle-stroke-color": "#f4f6f2",
-            },
-          });
-          map.addLayer({
-            id: "listing-points",
-            type: "circle",
-            source: "listings",
-            filter: ["!", ["has", "point_count"]],
-            paint: {
-              "circle-radius": [
-                "case",
-                ["boolean", ["feature-state", "selected"], false],
-                10,
-                ["boolean", ["feature-state", "hovered"], false],
-                8,
-                6,
-              ],
-              "circle-color": [
-                "case",
-                ["==", ["get", "approximate"], 1],
-                "#ffb84d",
-                "#ff6b5c",
-              ],
-              "circle-stroke-color": "#ffffff",
-              "circle-stroke-width": [
-                "case",
-                ["boolean", ["feature-state", "selected"], false],
-                4,
-                2,
-              ],
-            },
-          });
-          map.on("click", "clusters", async (event) => {
-            const feature = event.features?.[0];
-            const clusterId = feature?.properties?.cluster_id;
-            const source = map.getSource("listings") as GeoJSONSource;
-            if (clusterId === undefined || !source) return;
-            const zoom = await source.getClusterExpansionZoom(clusterId);
-            const coordinates =
-              feature?.geometry.type === "Point"
-                ? feature.geometry.coordinates
-                : null;
-            if (coordinates) map.easeTo({ center: coordinates, zoom });
-          });
-          map.on("click", "listing-points", (event) => {
-            const id = String(event.features?.[0]?.properties?.id ?? "");
-            if (id) callbacksRef.current.onSelect(id);
-          });
-          map.on("mouseenter", "clusters", () => {
-            map.getCanvas().style.cursor = "pointer";
-          });
-          map.on("mouseleave", "clusters", () => {
-            map.getCanvas().style.cursor = "";
-          });
-          map.on("mouseenter", "listing-points", () => {
-            map.getCanvas().style.cursor = "pointer";
-          });
-          map.on("mouseleave", "listing-points", () => {
-            map.getCanvas().style.cursor = "";
-          });
-          map.on("moveend", () => {
-            const bounds = map.getBounds();
-            callbacksRef.current.onBoundsChange({
-              west: bounds.getWest(),
-              south: bounds.getSouth(),
-              east: bounds.getEast(),
-              north: bounds.getNorth(),
-            });
-          });
-          window.requestAnimationFrame(() => {
-            map.resize();
-            const listingBounds = new maplibregl.LngLatBounds();
-            for (const feature of initialDataRef.current.features) {
-              listingBounds.extend(
-                feature.geometry.coordinates as [number, number],
-              );
-            }
-            if (!listingBounds.isEmpty()) {
-              map.fitBounds(listingBounds, {
-                padding: 44,
-                maxZoom: 11,
-                duration: 0,
-              });
-            }
-            renderDomClusters(initialListingsRef.current);
-          });
-        };
-        map.on("style.load", setupListingLayers);
-        if (map.isStyleLoaded()) setupListingLayers();
+        });
+
+        resizeObserver = new ResizeObserver(() => map.invalidateSize());
+        resizeObserver.observe(containerRef.current);
+        window.requestAnimationFrame(() => {
+          map.invalidateSize();
+          updateMapDescription();
+          setMapReady(true);
+        });
       })
       .catch((error) => {
-        console.error("Casa Mapa map failed to initialize", error);
+        console.error("Casa Mapa OpenStreetMap failed to initialize", error);
         setMapError(true);
       });
 
     return () => {
       cancelled = true;
-      for (const marker of markersRef.current) marker.remove();
-      markersRef.current = [];
-      renderMarkersRef.current = null;
+      resizeObserver?.disconnect();
       mapRef.current?.remove();
       mapRef.current = null;
+      pointsRef.current = null;
+      markersByListing.clear();
     };
   }, []);
 
   useEffect(() => {
-    const source = mapRef.current?.getSource?.("listings");
-    if (source?.setData) source.setData(data);
-    renderMarkersRef.current?.(listings);
-  }, [data, listings]);
-
-  useEffect(() => {
     const map = mapRef.current;
-    if (!map?.getSource?.("listings")) return;
-    if (selectedRef.current) {
-      map.setFeatureState(
-        { source: "listings", id: selectedRef.current },
-        { selected: false },
-      );
-    }
-    if (selectedId) {
-      map.setFeatureState(
-        { source: "listings", id: selectedId },
-        { selected: true },
-      );
-      const listing = listings.find((item) => item.id === selectedId);
-      if (listing) {
-        map.easeTo({
-          center: [listing.longitude, listing.latitude],
-          duration: 450,
+    const points = pointsRef.current;
+    if (!mapReady || !map || !points) return;
+
+    void import("leaflet").then((leaflet) => {
+      points.clearLayers();
+      markersByListingRef.current.clear();
+
+      const currentListings = listingsRef.current;
+      for (const bucket of bucketListings(currentListings)) {
+        const count = bucket.listings.length;
+        const marker = leaflet.circleMarker(
+          [bucket.latitude, bucket.longitude],
+          {
+            radius: count === 1 ? 6 : Math.min(18, 7 + Math.log2(count) * 2.2),
+            color: "#ffffff",
+            weight: 2,
+            opacity: 1,
+            fillColor: bucket.approximate
+              ? "#ffb84d"
+              : count === 1
+                ? "#f25f50"
+                : count > 15
+                  ? "#10212a"
+                  : "#168f87",
+            fillOpacity: 0.94,
+          },
+        );
+        marker.bindTooltip(
+          count === 1
+            ? `${bucket.listings[0].neighborhood ?? "Bogotá"} · ${bucket.listings[0].id}`
+            : `${count} listings`,
+          {
+            direction: "top",
+            offset: [0, -7],
+          },
+        );
+        marker.on("click", () => {
+          if (count === 1) {
+            callbacksRef.current.onSelect(bucket.listings[0].id);
+          } else {
+            map.setView(
+              [bucket.latitude, bucket.longitude],
+              Math.min(map.getZoom() + 2, 16),
+              { animate: true },
+            );
+          }
         });
+        marker.addTo(points);
+        for (const listing of bucket.listings) {
+          markersByListingRef.current.set(listing.id, marker);
+        }
       }
-    }
-    selectedRef.current = selectedId;
-  }, [listings, selectedId]);
+
+      fitListings(currentListings);
+    });
+  }, [fitListings, listingSignature, mapReady]);
 
   useEffect(() => {
-    const map = mapRef.current;
-    if (!map?.getSource?.("listings")) return;
-    if (hoveredRef.current) {
-      map.setFeatureState(
-        { source: "listings", id: hoveredRef.current },
-        { hovered: false },
-      );
+    for (const marker of new Set(markersByListingRef.current.values())) {
+      marker.setStyle({ weight: 2, color: "#ffffff" });
     }
-    if (hoveredId) {
-      map.setFeatureState(
-        { source: "listings", id: hoveredId },
-        { hovered: true },
-      );
+    const highlightedId = selectedId ?? hoveredId;
+    if (!highlightedId) return;
+    const marker = markersByListingRef.current.get(highlightedId);
+    marker?.setStyle({ weight: 4, color: "#10212a" });
+    if (selectedId && marker) {
+      mapRef.current?.panTo(marker.getLatLng(), { animate: true });
+      marker.openTooltip();
     }
-    hoveredRef.current = hoveredId;
-  }, [hoveredId]);
+  }, [hoveredId, selectedId]);
 
   return (
-    <section className="map-panel" aria-label="Map">
+    <section className="map-panel" aria-label={mapSummary}>
       <div ref={containerRef} className="map-canvas" />
       <div className="map-status">
         <Crosshair size={14} />
         {listings.length.toLocaleString()}
+      </div>
+      <div className="map-controls" aria-label="Map controls">
+        <button
+          type="button"
+          aria-label="Zoom in"
+          disabled={!mapReady}
+          onPointerDown={(event) => event.stopPropagation()}
+          onClick={(event) => {
+            event.stopPropagation();
+            changeZoom(1);
+          }}
+        >
+          <Plus size={18} />
+        </button>
+        <button
+          type="button"
+          aria-label="Zoom out"
+          disabled={!mapReady}
+          onPointerDown={(event) => event.stopPropagation()}
+          onClick={(event) => {
+            event.stopPropagation();
+            changeZoom(-1);
+          }}
+        >
+          <Minus size={18} />
+        </button>
+        <button
+          type="button"
+          aria-label="Fit listings on map"
+          disabled={!mapReady || listings.length === 0}
+          onPointerDown={(event) => event.stopPropagation()}
+          onClick={(event) => {
+            event.stopPropagation();
+            fitListings(listings, true);
+          }}
+        >
+          <Crosshair size={17} />
+        </button>
+      </div>
+      <div className="osm-attribution">
+        ©{" "}
+        <a
+          href="https://www.openstreetmap.org/copyright"
+          target="_blank"
+          rel="noreferrer"
+        >
+          OpenStreetMap contributors
+        </a>
       </div>
       {mapError && (
         <div className="map-error" role="status">

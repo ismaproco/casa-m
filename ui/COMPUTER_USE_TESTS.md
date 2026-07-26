@@ -77,3 +77,16 @@ using Computer Use:
   controls were present and the map toggle displayed the interactive map.
 - **CU-06:** Datos exposed Exportar respaldo, Importar respaldo, and Borrar
   datos locales. No test data was erased.
+
+## CU-07 — OpenStreetMap locations and controls
+
+> Search for `Cedritos`. Confirm the OpenStreetMap tiles and colored listing
+> locations are both visible. Activate Zoom out and verify the map changes from
+> zoom 14 to zoom 13. Activate Zoom in and verify it returns to zoom 14. Click a
+> visible location and confirm its listing drawer opens. Close it, zoom out,
+> activate Fit listings, and confirm the map returns to the Cedritos result
+> bounds.
+
+Pass: executed with Computer Use on 2026-07-25. OpenStreetMap rendered the 47
+Cedritos results as visible points; zoom out, zoom in, marker selection, and
+fit-to-results all changed the map as expected.
