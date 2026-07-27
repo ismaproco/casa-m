@@ -1,66 +1,90 @@
 {
-  "generatedAt": "2026-07-26T01:42:57.377Z",
-  "catalogVersion": "abb8a1bc14aaf376",
+  "generatedAt": "2026-07-27T10:42:41.527Z",
+  "catalogVersion": "e8b2a9656b1a28b5",
   "summary": {
-    "sourceRecords": 2282,
-    "publishedRecords": 2275,
-    "excludedRecords": 7,
-    "approximateCoordinates": 20,
-    "knownStratum": 1045
+    "sourceRecords": 12399,
+    "publishedRecords": 12391,
+    "excludedRecords": 8,
+    "approximateCoordinates": 0,
+    "knownStratum": 12123
   },
+  "inputs": [
+    {
+      "fileName": "fincaraiz-stratified-listings.json",
+      "source": "fincaraiz",
+      "records": 49509,
+      "scrapedAt": "2026-07-26T03:14:42.003Z"
+    },
+    {
+      "fileName": "fincaraiz-bogota-estrato-1-2-listings.json",
+      "source": "fincaraiz",
+      "records": 447,
+      "scrapedAt": "2026-07-26T11:28:14.712Z"
+    },
+    {
+      "fileName": "metrocuadrado-bogota-estrato-1-2-listings.json",
+      "source": "metrocuadrado",
+      "records": 605,
+      "scrapedAt": "2026-07-26T11:35:47.586Z"
+    }
+  ],
   "exclusions": [
     {
-      "id": "19578-M6851286",
+      "id": "FR-193915297",
       "reasons": [
-        "not_live",
-        "missing_url"
+        "invalid_coordinate"
       ]
     },
     {
-      "id": "21209-M6776842",
+      "id": "MC-16305-M6382477",
       "reasons": [
-        "not_live",
-        "missing_url"
+        "invalid_coordinate"
       ]
     },
     {
-      "id": "23082-M6876591",
+      "id": "MC-19797-M6157649",
       "reasons": [
-        "not_live",
-        "missing_url"
+        "invalid_coordinate"
       ]
     },
     {
-      "id": "23082-M6876743",
+      "id": "MC-223-M6191885",
       "reasons": [
-        "not_live",
-        "missing_url"
+        "invalid_coordinate"
       ]
     },
     {
-      "id": "2671-M6122868",
+      "id": "MC-223-M6600573",
       "reasons": [
-        "not_live",
-        "missing_url"
+        "invalid_coordinate"
       ]
     },
     {
-      "id": "359-M5315036",
+      "id": "MC-4058-M4457919",
       "reasons": [
-        "not_live",
-        "missing_url"
+        "invalid_coordinate"
       ]
     },
     {
-      "id": "4698-M6569728",
+      "id": "MC-MC6684568",
       "reasons": [
-        "not_live",
-        "missing_url"
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-MC6735334",
+      "reasons": [
+        "invalid_coordinate"
       ]
     }
   ],
   "warningCounts": {
-    "area_outlier": 1,
-    "price_outlier": 6
+    "price_outlier": 13,
+    "area_outlier": 6
+  },
+  "images": {
+    "available": 12364,
+    "missing": 27,
+    "archived": 0
   }
 }

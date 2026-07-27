@@ -7,6 +7,8 @@ export type Listing = {
   resultType: "Inmueble" | "Proyecto";
   projectName: string | null;
   neighborhood: string | null;
+  locality: string | null;
+  zone: string | null;
   city: string;
   priceCop: number;
   areaM2: number | null;
@@ -18,6 +20,8 @@ export type Listing = {
   latitude: number;
   longitude: number;
   coordinatePrecision: "listing" | "neighborhood_centroid";
+  thumbnailUrl?: string | null;
+  imageUrl?: string | null;
   url: string;
   fingerprint: string;
   dataWarnings: string[];
@@ -66,6 +70,12 @@ export type SearchQuery = {
   sort: SortOption;
   useMapBounds: boolean;
   mapBounds: MapBounds | null;
+};
+
+export type ExploreSearch = Partial<
+  Omit<SearchQuery, "useMapBounds" | "mapBounds">
+> & {
+  saved?: string;
 };
 
 export type ListingSummary = Pick<

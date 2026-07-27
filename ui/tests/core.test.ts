@@ -5,6 +5,9 @@ import {
   filterListings,
   listingMatches,
   normalizeText,
+  queryFromRouterSearch,
+  queryToRouterSearch,
+  validateExploreSearch,
 } from "../app/lib/core";
 import type { Listing, SearchQuery } from "../app/lib/types";
 import { DEFAULT_QUERY } from "../app/lib/core";
@@ -14,6 +17,8 @@ const listing = (overrides: Partial<Listing> = {}): Listing => ({
   resultType: "Inmueble",
   projectName: null,
   neighborhood: "Chicó Reservado",
+  locality: "Chapinero",
+  zone: "Zona Norte",
   city: "Bogotá D.C.",
   priceCop: 900_000_000,
   areaM2: 120,
@@ -105,5 +110,53 @@ describe("saved search changes", () => {
     expect(updates.added.map((value) => value.id)).toEqual(["added"]);
     expect(updates.changed.map((value) => value.id)).toEqual(["kept"]);
     expect(updates.removed.map((value) => value.id)).toEqual(["removed"]);
+  });
+});
+
+describe("explore route search", () => {
+  it("rejects invalid enum and numeric values", () => {
+    expect(
+      validateExploreSearch({
+        sort: "random",
+        stratum: "9",
+        bedrooms: "2",
+        minPrice: "-5",
+        maxArea: "large",
+        resultType: "House",
+      }),
+    ).toEqual({});
+    expect(
+      queryFromRouterSearch({
+        sort: "random",
+        stratum: "9",
+        minPrice: "-5",
+      }),
+    ).toEqual(DEFAULT_QUERY);
+  });
+
+  it("round-trips filters without transient map state", () => {
+    const source = query({
+      text: "Chicó",
+      minPrice: "800000000",
+      bedrooms: "3",
+      stratum: "6",
+      sort: "priceAsc",
+      useMapBounds: true,
+      mapBounds: { west: -75, south: 4, east: -73, north: 5 },
+    });
+    const search = queryToRouterSearch(source, "saved-1");
+    expect(search).toEqual({
+      text: "Chicó",
+      minPrice: "800000000",
+      bedrooms: "3",
+      stratum: "6",
+      sort: "priceAsc",
+      saved: "saved-1",
+    });
+    expect(queryFromRouterSearch(search)).toEqual({
+      ...source,
+      useMapBounds: false,
+      mapBounds: null,
+    });
   });
 });
