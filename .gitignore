@@ -1,0 +1,38 @@
+# Dependencies
+ui/node_modules/
+ui/.pnp
+ui/.pnp.*
+ui/.yarn/*
+!ui/.yarn/patches
+!ui/.yarn/plugins
+!ui/.yarn/releases
+!ui/.yarn/versions
+
+# Build and test outputs
+ui/dist/
+ui/coverage/
+ui/outputs/
+ui/work/
+ui/test-results/
+ui/playwright-report/
+
+# Local property image cache (large, reproducible, intentionally untracked)
+ui/public/property-images/
+
+# Scrape / enrichment data artifacts (large; not application source)
+scrapes/
+
+# Env and secrets
+.env*
+*.pem
+
+# OS / editor
+.DS_Store
+.cursor/
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.log

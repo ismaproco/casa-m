@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8091:80"
+    restart: unless-stopped
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./ui/dist:/usr/share/nginx/html:ro
+    depends_on:
+      - frontend
+    networks:
+      - app-network
+
+  frontend:
+    image: node:22
+    working_dir: /src/ui
+    command: sh -c "npm install && npm run build"
+    volumes:
+      - ./ui:/src/ui
+      - ./scrapes:/src/scrapes
+      - ./ui/dist:/src/ui/dist
+    networks:
+      - app-network
+
+networks:
+  app-network:

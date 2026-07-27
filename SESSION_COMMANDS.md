@@ -1,0 +1,77 @@
+# Continuación de la recolección — Metrocuadrado
+
+## Criterios
+
+- Operación: compra.
+- Ciudad: Bogotá D.C.
+- Tipo: apartamentos, incluyendo resultados etiquetados como `Proyecto`.
+- Habitaciones: 3 o más.
+- Fuente inicial: <https://www.metrocuadrado.com/apartamento/venta/bogota/3-habitaciones/?search=form>.
+
+## Archivos y estado
+
+- `manifest.json`: criterios y la última página completada.
+- `scrapes/chunk-XXXX.json`: un archivo por página de resultados; no sobrescribir lotes existentes.
+- `last_completed_page` en `manifest.json` debe actualizarse solo después de validar y guardar el lote de esa página.
+
+## Rutina de continuación
+
+1. Abrir la URL de fuente en Chrome mediante Computer Use.
+2. Leer `manifest.json` y navegar a `last_completed_page + 1` con la paginación visible.
+3. Extraer únicamente tarjetas que muestren `3 hab.` o más. Incluir las que indiquen `Proyecto`.
+4. Para cada tarjeta, guardar cuando esté disponible: id, tipo de resultado, barrio, zona, ciudad, precio COP, área m², habitaciones, baños, parqueaderos, URL y resumen de la tarjeta.
+5. Guardar el resultado en `chunk-XXXX.json` y luego aumentar `last_completed_page`.
+6. Si aparece CAPTCHA, control anti-bot o una advertencia de seguridad, detenerse: no intentar sortearlo.
+
+## Estado de la interfaz
+
+El filtro quedó aplicado manualmente: en **Características principales**, seleccionar el botón **3** de **Habitaciones**. La URL resultante contiene `/apartamento/venta/bogota/3-habitaciones/`. No utilizar automatización destinada a aparentar comportamiento humano ni a sortear controles del sitio.
+
+## Estado final
+
+- Recolección completada hasta la última página disponible: `200`.
+- Archivos presentes: `chunk-0001.json` a `chunk-0200.json`.
+- Total recopilado: 200 páginas y 1200 registros.
+- El manifiesto quedó marcado con `status: completed`.
+
+## Recorrido adicional: estratos 3 a 6
+
+- Se seleccionaron simultáneamente los estratos `3`, `4`, `5` y `6`.
+- Se recorrieron las 200 páginas visibles del filtro.
+- Se examinaron 1224 tarjetas; las páginas 75, 94 y 200 cargaron 14 y las demás 6.
+- Los lotes de auditoría están en `estrato-3-plus/chunk-XXXX.json`.
+- Cada lote guarda únicamente anuncios cuyo ID no existía antes de procesar esa página.
+- Se encontraron 528 anuncios nuevos.
+- `listings-master.json` es la colección unificada y deduplicada, con 1189 anuncios.
+
+## Recorrido adicional: 2 baños y 2 parqueaderos
+
+- Se mantuvieron seleccionados 3 habitaciones y estratos 3, 4, 5 y 6.
+- Se añadieron los filtros de 2 baños y 2 parqueaderos.
+- La combinación produjo 19 páginas y se examinaron 342 tarjetas.
+- Se encontraron 43 IDs nuevos.
+- Los lotes de auditoría están en `estrato-3-plus-2-banos-2-parqueaderos/`.
+- La colección maestra deduplicada contiene ahora 1232 anuncios.
+
+## Recorridos individuales por estrato
+
+- Se recorrieron por separado los estratos 3, 4, 5 y 6 manteniendo 3 o más habitaciones.
+- Estrato 3: 38 estados validados y 94 IDs nuevos.
+- Estrato 4: 62 estados validados y 173 IDs nuevos.
+- Estrato 5: 54 estados validados y 208 IDs nuevos.
+- Estrato 6: 144 estados validados y 571 IDs nuevos.
+- Cada transición utilizó la flecha de paginación y exigió un conjunto de tarjetas diferente.
+- Los directorios terminados en `-final` y los directorios `-tail` son las auditorías vigentes.
+- Los directorios anteriores marcados `superseded` se conservan únicamente como evidencia.
+- La colección maestra deduplicada contiene ahora 2282 anuncios.
+
+## Comandos de validación
+
+```sh
+casa_dir=/Users/savathos/repos/tryouts/casa
+jq empty "$casa_dir"/manifest.json "$casa_dir"/chunk-*.json
+jq '.last_completed_page' "$casa_dir"/manifest.json
+jq -s '{archivos:length, registros:(map(.record_count // 0)|add), pagina_minima:(map(.source_page)|min), pagina_maxima:(map(.source_page)|max)}' "$casa_dir"/chunk-*.json
+jq '{record_count}' "$casa_dir"/listings-master.json
+jq -s '{paginas:length, nuevos:([.[].records[]]|length), ids_unicos:([.[].records[].listing_id]|unique|length)}' "$casa_dir"/estrato-3-plus/chunk-*.json
+```

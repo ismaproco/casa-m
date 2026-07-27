@@ -1,0 +1,71 @@
+{
+  "source": "https://www.metrocuadrado.com/apartamento/venta/bogota/3-habitaciones/?search=form",
+  "criteria": {
+    "operation": "compra",
+    "city": "Bogotá D.C.",
+    "property_type": "apartamento",
+    "minimum_bedrooms": 3
+  },
+  "status": "completed",
+  "last_completed_page": 200,
+  "include_projects": true,
+  "unique_master_file": "scrapes/listings-master.json",
+  "unique_master_records": 2282,
+  "discovery_runs": [
+    {
+      "filter": "estratos 3, 4, 5 y 6",
+      "pages_completed": 200,
+      "new_unique_records": 528,
+      "audit_directory": "scrapes/estrato-3-plus"
+    },
+    {
+      "filter": "estratos 3 a 6, 3 habitaciones, 2 baños y 2 parqueaderos",
+      "pages_completed": 19,
+      "new_unique_records": 43,
+      "audit_directory": "scrapes/estrato-3-plus-2-banos-2-parqueaderos"
+    },
+    {
+      "filter": "estrato 3 individual, 3 o más habitaciones",
+      "validated_states": 38,
+      "new_unique_records": 94,
+      "audit_directory": "scrapes/estrato-3-final"
+    },
+    {
+      "filter": "estrato 4 individual, 3 o más habitaciones",
+      "validated_states": 62,
+      "new_unique_records": 173,
+      "audit_directories": [
+        "estrato-4-final",
+        "estrato-4-tail"
+      ]
+    },
+    {
+      "filter": "estrato 5 individual, 3 o más habitaciones",
+      "validated_states": 54,
+      "new_unique_records": 208,
+      "audit_directory": "scrapes/estrato-5-final"
+    },
+    {
+      "filter": "estrato 6 individual, 3 o más habitaciones",
+      "validated_states": 144,
+      "new_unique_records": 571,
+      "audit_directories": [
+        "scrapes/estrato-6-final",
+        "scrapes/estrato-6-tail"
+      ]
+    }
+  ],
+  "notes": [
+    "Los registros se guardan por página en archivos chunk-XXXX.json.",
+    "Solo se incluyen anuncios cuya tarjeta pública indique 3 o más habitaciones.",
+    "Se incluyen resultados etiquetados como Proyecto.",
+    "El filtro visual de habitaciones está confirmado con el valor 3.",
+    "La paginación disponible terminó en la página 200 y fue completada.",
+    "La colección histórica contenía 661 IDs únicos antes del recorrido por estratos 3 a 6.",
+    "El recorrido por estratos 3 a 6 agregó 528 IDs nuevos después de deduplicar.",
+    "El recorrido adicional de 2 baños y 2 parqueaderos agregó 43 IDs nuevos.",
+    "Los recorridos individuales de estratos 3, 4, 5 y 6 agregaron 1046 IDs nuevos mediante estados validados.",
+    "Ningún estrato individual alcanzó el límite de 200 páginas, por lo que no fue necesario subdividir por baños.",
+    "listings-master.json contiene la vista unificada y deduplicada de 2282 anuncios."
+  ]
+}

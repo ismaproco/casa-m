@@ -1,4 +1,5 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Prefer the repository-root .gitignore; this file covers ui/-relative paths for local tools.
 
 # dependencies
 /node_modules
