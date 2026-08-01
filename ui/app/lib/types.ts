@@ -2,8 +2,14 @@ export type Locale = "es" | "en";
 
 export type FavoriteStatus = "interested" | "contacted" | "dismissed";
 
+export type ListingSource =
+  | "fincaraiz"
+  | "metrocuadrado"
+  | "facebook-home-bogota";
+
 export type Listing = {
   id: string;
+  source: ListingSource;
   resultType: "Inmueble" | "Proyecto";
   projectName: string | null;
   neighborhood: string | null;
@@ -58,6 +64,7 @@ export type MapBounds = {
 
 export type SearchQuery = {
   text: string;
+  source: string;
   minPrice: string;
   maxPrice: string;
   minArea: string;

@@ -12,6 +12,7 @@ import type { Listing } from "../app/lib/types";
 
 const listing = (overrides: Partial<Listing> = {}): Listing => ({
   id: "FR-1",
+  source: "fincaraiz",
   resultType: "Inmueble",
   projectName: null,
   neighborhood: "Chicó",

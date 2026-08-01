@@ -72,6 +72,7 @@ ID keeps the explorer shell visible and offers a return to results.
 
 ```text
 casa/                              # Git repository root
+├── README.md                      # Product overview + local / Docker usage
 ├── AGENTS.md
 ├── SESSION_COMMANDS.md
 ├── docker-compose.yml             # server.local / LAN Docker stack

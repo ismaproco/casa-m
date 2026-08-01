@@ -9,6 +9,7 @@ import type {
 
 export const DEFAULT_QUERY: SearchQuery = {
   text: "",
+  source: "",
   minPrice: "",
   maxPrice: "",
   minArea: "",
@@ -47,6 +48,7 @@ export function listingMatches(listing: Listing, query: SearchQuery) {
   ) {
     return false;
   }
+  if (query.source && listing.source !== query.source) return false;
 
   const minPrice = optionalNumber(query.minPrice);
   const maxPrice = optionalNumber(query.maxPrice);
@@ -200,6 +202,13 @@ export function validateExploreSearch(
       ? { text: input.text }
       : {}),
   };
+  if (
+    input.source === "fincaraiz" ||
+    input.source === "metrocuadrado" ||
+    input.source === "facebook-home-bogota"
+  ) {
+    result.source = input.source;
+  }
 
   for (const key of NUMERIC_SEARCH_KEYS) {
     const value = validNumericSearch(input[key]);
@@ -243,6 +252,7 @@ export function queryFromRouterSearch(
   const query = { ...DEFAULT_QUERY };
   for (const key of [
     "text",
+    "source",
     "minPrice",
     "maxPrice",
     "minArea",

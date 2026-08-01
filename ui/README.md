@@ -46,5 +46,6 @@ npm run build
 `npm run verify` runs the catalog build followed by the complete suite above.
 The production preview command is `npm start`.
 
-This project is intentionally local-only. It has no authentication, server API,
-cloud database, Cloudflare worker, or deployment configuration.
+This app is intentionally local-only: no authentication, server API, or cloud
+database. For repo layout, scrape data, and the LAN Docker stack on
+`server.local:8091`, see the [root README](../README.md).

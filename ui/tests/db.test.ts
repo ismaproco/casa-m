@@ -11,6 +11,7 @@ import {
 
 const listing = {
   id: "test-listing",
+  source: "fincaraiz" as const,
   resultType: "Inmueble" as const,
   projectName: null,
   neighborhood: "Cedritos",

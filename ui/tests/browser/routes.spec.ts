@@ -20,7 +20,7 @@ test("all application routes and nested reloads render locally", async ({
   expect(fontState.fontFiles).toBeGreaterThanOrEqual(1);
   expect(fontState.fontFiles).toBeLessThanOrEqual(2);
   await page.goto(
-    "/explore?sort=random&stratum=9&minPrice=-5&resultType=House",
+    "/explore?sort=random&stratum=9&minPrice=-5&resultType=House&source=unknown",
   );
   await expect(page).toHaveURL(/\/explore$/);
 
@@ -44,6 +44,17 @@ test("all application routes and nested reloads render locally", async ({
   await expect(page.getByText(/property not found|inmueble no encontrado/i)).toBeVisible();
   await page.getByRole("button", { name: /back to results|volver a resultados/i }).click();
   await expect(page).toHaveURL(/\/explore\?text=Cedritos$/);
+});
+
+test("source filter is URL-backed and includes HOME Bogotá listings", async ({
+  page,
+}) => {
+  await page.goto("/explore?source=facebook-home-bogota");
+  await expect(page.locator("article")).toHaveCount(5);
+  await expect(page.getByText("HOME-32662", { exact: true }).first()).toBeVisible();
+  await expect(
+    page.getByRole("combobox", { name: /source|fuente/i }),
+  ).toHaveValue("facebook-home-bogota");
 });
 
 test("filters, property selection, close, and history stay synchronized", async ({

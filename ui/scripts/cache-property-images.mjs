@@ -21,6 +21,7 @@ const sourcePaths = [
   "fincaraiz-stratified-listings.json",
   "fincaraiz-bogota-estrato-1-2-listings.json",
   "metrocuadrado-bogota-estrato-1-2-listings.json",
+  "facebook-home-bogota-listings.json",
 ].map((fileName) => path.join(repositoryRoot, "scrapes", fileName));
 const concurrency = 40;
 const maximumSourceBytes = 30 * 1024 * 1024;

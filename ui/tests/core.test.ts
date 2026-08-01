@@ -14,6 +14,7 @@ import { DEFAULT_QUERY } from "../app/lib/core";
 
 const listing = (overrides: Partial<Listing> = {}): Listing => ({
   id: "M-1",
+  source: "metrocuadrado",
   resultType: "Inmueble",
   projectName: null,
   neighborhood: "Chicó Reservado",
@@ -61,10 +62,20 @@ describe("catalog filtering", () => {
           minBathrooms: "2",
           minParking: "2",
           resultType: "Inmueble",
+          source: "metrocuadrado",
           stratum: "6",
         }),
       ),
     ).toBe(true);
+  });
+
+  it("filters by catalog source", () => {
+    expect(
+      listingMatches(listing(), query({ source: "metrocuadrado" })),
+    ).toBe(true);
+    expect(
+      listingMatches(listing(), query({ source: "fincaraiz" })),
+    ).toBe(false);
   });
 
   it("filters to active map bounds", () => {
@@ -123,6 +134,7 @@ describe("explore route search", () => {
         minPrice: "-5",
         maxArea: "large",
         resultType: "House",
+        source: "unknown-source",
       }),
     ).toEqual({});
     expect(
@@ -139,6 +151,7 @@ describe("explore route search", () => {
       text: "Chicó",
       minPrice: "800000000",
       bedrooms: "3",
+      source: "facebook-home-bogota",
       stratum: "6",
       sort: "priceAsc",
       useMapBounds: true,
@@ -149,6 +162,7 @@ describe("explore route search", () => {
       text: "Chicó",
       minPrice: "800000000",
       bedrooms: "3",
+      source: "facebook-home-bogota",
       stratum: "6",
       sort: "priceAsc",
       saved: "saved-1",

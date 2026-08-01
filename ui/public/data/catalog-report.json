@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-07-27T10:42:41.527Z",
-  "catalogVersion": "e8b2a9656b1a28b5",
+  "generatedAt": "2026-08-01T13:25:10.953Z",
+  "catalogVersion": "f397f5a48425da8b",
   "summary": {
-    "sourceRecords": 12399,
-    "publishedRecords": 12391,
+    "sourceRecords": 12404,
+    "publishedRecords": 12396,
     "excludedRecords": 8,
-    "approximateCoordinates": 0,
+    "approximateCoordinates": 5,
     "knownStratum": 12123
   },
   "inputs": [
@@ -26,6 +26,12 @@
       "source": "metrocuadrado",
       "records": 605,
       "scrapedAt": "2026-07-26T11:35:47.586Z"
+    },
+    {
+      "fileName": "facebook-home-bogota-listings.json",
+      "source": "facebook-home-bogota",
+      "records": 5,
+      "scrapedAt": "2026-08-01T00:00:00.000Z"
     }
   ],
   "exclusions": [
@@ -84,7 +90,7 @@
   },
   "images": {
     "available": 12364,
-    "missing": 27,
+    "missing": 32,
     "archived": 0
   }
 }

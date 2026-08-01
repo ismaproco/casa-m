@@ -121,7 +121,9 @@ function sourceActionLabel(url: string, locale: Locale, fallback: string) {
       ? "Metrocuadrado"
       : hostname.includes("fincaraiz")
         ? "FincaRaíz"
-        : null;
+        : hostname.includes("facebook")
+          ? "Facebook"
+          : null;
     if (!source) return fallback;
     return locale === "es" ? `Ver en ${source}` : `View on ${source}`;
   } catch {
@@ -554,12 +556,13 @@ export default function ExplorerApplication() {
   }
 
   function applySavedSearch(saved: SavedSearch) {
-    setQuery(saved.query);
+    const storedQuery = { ...DEFAULT_QUERY, ...saved.query };
+    setQuery(storedQuery);
     setActiveSavedId(saved.id);
     setVisibleLimit(80);
     void router.navigate({
       to: "/explore",
-      search: queryToRouterSearch(saved.query, saved.id),
+      search: queryToRouterSearch(storedQuery, saved.id),
     });
   }
 
@@ -944,6 +947,22 @@ export default function ExplorerApplication() {
                   </NativeSelect>
                 </Field>
               </div>
+              <Field label={c.source}>
+                <NativeSelect
+                  className="w-full"
+                  value={query.source}
+                  onChange={(event) =>
+                    updateQuery("source", event.target.value)
+                  }
+                >
+                  <option value="">{c.all}</option>
+                  <option value="fincaraiz">{c.sourceFincaraiz}</option>
+                  <option value="metrocuadrado">{c.sourceMetrocuadrado}</option>
+                  <option value="facebook-home-bogota">
+                    {c.sourceHomeBogota}
+                  </option>
+                </NativeSelect>
+              </Field>
               <Field label={c.stratum} helper={c.stratumHelp}>
                 <NativeSelect className="w-full"
                   value={query.stratum}
@@ -1216,7 +1235,8 @@ export default function ExplorerApplication() {
           ) : (
             <div className="grid gap-2">
               {savedSearches.map((saved) => {
-                const matches = filterListings(catalog.listings, saved.query);
+                const storedQuery = { ...DEFAULT_QUERY, ...saved.query };
+                const matches = filterListings(catalog.listings, storedQuery);
                 const updates = compareSnapshot(saved.snapshot, matches);
                 const count =
                   updates.added.length +
@@ -1235,7 +1255,7 @@ export default function ExplorerApplication() {
                       <span className="text-[10px] text-muted-foreground">
                         {matches.length.toLocaleString()} {c.results}
                       </span>
-                      <SearchSummary query={saved.query} locale={locale} />
+                      <SearchSummary query={storedQuery} locale={locale} />
                     </div>
                     {count > 0 && (
                     <Badge className="grid h-auto justify-items-center gap-0.5 px-3 py-1.5 max-[860px]:hidden">
@@ -1702,6 +1722,15 @@ function SearchSummary({
   if (query.minParking)
     parts.push(`${query.minParking}+ ${c.parking.toLowerCase()}`);
   if (query.resultType) parts.push(query.resultType);
+  if (query.source) {
+    parts.push(
+      query.source === "facebook-home-bogota"
+        ? c.sourceHomeBogota
+        : query.source === "metrocuadrado"
+          ? c.sourceMetrocuadrado
+          : c.sourceFincaraiz,
+    );
+  }
   if (query.stratum) parts.push(`${c.stratum} ${query.stratum}`);
   if (query.useMapBounds) parts.push(c.mapArea);
   return (
