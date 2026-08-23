@@ -5,6 +5,7 @@ import type {
   CircleMarker,
   LayerGroup,
   Map as LeafletMap,
+  Marker,
 } from "leaflet";
 import { formatCop } from "@/app/lib/i18n";
 import { mapPriceBucket, mapPriceBucketLabel } from "@/app/lib/mapPricing";
@@ -20,6 +21,8 @@ type Props = {
   locale: Locale;
 };
 
+type MapMarker = CircleMarker | Marker;
+
 export function MapPanel({
   listings,
   selectedId,
@@ -32,8 +35,8 @@ export function MapPanel({
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const pointsRef = useRef<LayerGroup | null>(null);
-  const markersByListingRef = useRef(new Map<string, CircleMarker>());
-  const highlightedMarkerRef = useRef<CircleMarker | null>(null);
+  const markersByListingRef = useRef(new Map<string, MapMarker>());
+  const highlightedMarkerRef = useRef<MapMarker | null>(null);
   const callbacksRef = useRef({ onSelect, onBoundsChange });
   const listingsRef = useRef(listings);
   const [mapReady, setMapReady] = useState(false);
@@ -44,7 +47,7 @@ export function MapPanel({
       listings
         .map(
           (listing) =>
-            `${listing.id}:${listing.priceCop}:${listing.coordinatePrecision}`,
+            `${listing.id}:${listing.priceCop}:${listing.coordinatePrecision}:${listing.projectStatus ?? ""}`,
         )
         .join("|"),
     [listings],
@@ -186,18 +189,28 @@ export function MapPanel({
         const priceBucket = mapPriceBucket(listing.priceCop);
         const hasApproximateCoordinates =
           listing.coordinatePrecision === "neighborhood_centroid";
-        const marker = leaflet.circleMarker(
-          [listing.latitude, listing.longitude],
-          {
-            radius: 4,
-            color: "#f7faf9",
-            weight: 1,
-            opacity: 1,
-            dashArray: hasApproximateCoordinates ? "2 2" : undefined,
-            fillColor: priceBucket.color,
-            fillOpacity: 0.94,
-          },
-        );
+        const isNewProject =
+          listing.resultType === "Proyecto" && Boolean(listing.projectStatus);
+        const marker: MapMarker = isNewProject
+          ? leaflet.marker([listing.latitude, listing.longitude], {
+              icon: leaflet.divIcon({
+                className: "project-star-marker",
+                html: `<span aria-hidden="true" style="--marker-color:${priceBucket.color}">★</span>`,
+                iconSize: [22, 22],
+                iconAnchor: [11, 11],
+              }),
+              keyboard: true,
+              title: `${listing.projectName ?? listing.neighborhood ?? listing.id} · ${formatCop(listing.priceCop, locale)}`,
+            })
+          : leaflet.circleMarker([listing.latitude, listing.longitude], {
+              radius: 4,
+              color: "#f7faf9",
+              weight: 1,
+              opacity: 1,
+              dashArray: hasApproximateCoordinates ? "2 2" : undefined,
+              fillColor: priceBucket.color,
+              fillOpacity: 0.94,
+            });
         marker.bindTooltip(
           [
             listing.neighborhood ?? listing.city,
@@ -208,7 +221,7 @@ export function MapPanel({
           ].join(" · "),
           {
             direction: "top",
-            offset: [0, -7],
+            offset: isNewProject ? [0, -12] : [0, -7],
           },
         );
         marker.on("click", () => {
@@ -223,10 +236,12 @@ export function MapPanel({
   }, [fitListings, listingSignature, locale, mapReady]);
 
   useEffect(() => {
-    highlightedMarkerRef.current?.setStyle({
-      weight: 1,
-      color: "#f7faf9",
-    });
+    const previousMarker = highlightedMarkerRef.current;
+    if (previousMarker && "setStyle" in previousMarker) {
+      previousMarker.setStyle({ weight: 1, color: "#f7faf9" });
+    } else {
+      previousMarker?.getElement()?.classList.remove("map-point-highlighted");
+    }
     const highlightedId = selectedId ?? hoveredId;
     if (!highlightedId) {
       highlightedMarkerRef.current = null;
@@ -234,7 +249,11 @@ export function MapPanel({
     }
     const marker = markersByListingRef.current.get(highlightedId);
     highlightedMarkerRef.current = marker ?? null;
-    marker?.setStyle({ weight: 4, color: "#10212a" });
+    if (marker && "setStyle" in marker) {
+      marker.setStyle({ weight: 4, color: "#10212a" });
+    } else {
+      marker?.getElement()?.classList.add("map-point-highlighted");
+    }
     if (selectedId && marker) {
       const map = mapRef.current;
       if (map) {

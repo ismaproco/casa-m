@@ -18,6 +18,7 @@ export const DEFAULT_QUERY: SearchQuery = {
   minBathrooms: "",
   minParking: "",
   resultType: "",
+  projectStatus: "",
   stratum: "",
   sort: "neighborhood",
   useMapBounds: false,
@@ -78,6 +79,22 @@ export function listingMatches(listing: Listing, query: SearchQuery) {
   )
     return false;
   if (query.resultType && listing.resultType !== query.resultType) return false;
+  if (query.projectStatus === "new" && !listing.projectStatus) return false;
+  if (
+    query.projectStatus === "construction" &&
+    listing.projectStatus !== "En construcción"
+  )
+    return false;
+  if (
+    query.projectStatus === "preconstruction" &&
+    listing.projectStatus !== "Sobre planos"
+  )
+    return false;
+  if (
+    query.projectStatus === "immediate" &&
+    listing.projectStatus !== "Entrega inmediata"
+  )
+    return false;
   if (
     query.stratum === "unknown" &&
     listing.stratum !== null
@@ -205,7 +222,9 @@ export function validateExploreSearch(
   if (
     input.source === "fincaraiz" ||
     input.source === "metrocuadrado" ||
-    input.source === "facebook-home-bogota"
+    input.source === "facebook-home-bogota" ||
+    input.source === "myhome" ||
+    input.source === "amarilo"
   ) {
     result.source = input.source;
   }
@@ -215,7 +234,7 @@ export function validateExploreSearch(
     if (value) result[key] = value;
   }
   const bedrooms = String(input.bedrooms ?? "");
-  if (["3", "4", "5", "6", "7plus"].includes(bedrooms)) {
+  if (["1", "2", "3", "4", "5", "6", "7plus"].includes(bedrooms)) {
     result.bedrooms = bedrooms;
   }
   const bathrooms = String(input.minBathrooms ?? "");
@@ -228,6 +247,14 @@ export function validateExploreSearch(
   }
   if (input.resultType === "Inmueble" || input.resultType === "Proyecto") {
     result.resultType = input.resultType;
+  }
+  if (
+    input.projectStatus === "new" ||
+    input.projectStatus === "construction" ||
+    input.projectStatus === "preconstruction" ||
+    input.projectStatus === "immediate"
+  ) {
+    result.projectStatus = input.projectStatus;
   }
   const stratum = String(input.stratum ?? "");
   if (["1", "2", "3", "4", "5", "6", "unknown"].includes(stratum)) {
@@ -261,6 +288,7 @@ export function queryFromRouterSearch(
     "minBathrooms",
     "minParking",
     "resultType",
+    "projectStatus",
     "stratum",
   ] as const) {
     query[key] = validated[key] ?? "";

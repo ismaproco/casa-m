@@ -123,12 +123,24 @@ function sourceActionLabel(url: string, locale: Locale, fallback: string) {
         ? "FincaRaíz"
         : hostname.includes("facebook")
           ? "Facebook"
-          : null;
+          : hostname.includes("myhome")
+            ? "MyHome"
+            : hostname.includes("amarilo")
+              ? "Amarilo"
+            : null;
     if (!source) return fallback;
     return locale === "es" ? `Ver en ${source}` : `View on ${source}`;
   } catch {
     return fallback;
   }
+}
+
+function projectStatusLabel(status: string, locale: Locale) {
+  const c = t(locale);
+  if (status === "En construcción") return c.underConstruction;
+  if (status === "Sobre planos") return c.onPlan;
+  if (status === "Entrega inmediata") return c.immediateDelivery;
+  return status;
 }
 
 function PropertyImage({
@@ -894,7 +906,7 @@ export default function ExplorerApplication() {
                     }
                   >
                     <option value="">{c.all}</option>
-                    {[3, 4, 5, 6].map((value) => (
+                    {[1, 2, 3, 4, 5, 6].map((value) => (
                       <option value={value} key={value}>
                         {value}
                       </option>
@@ -947,22 +959,41 @@ export default function ExplorerApplication() {
                   </NativeSelect>
                 </Field>
               </div>
-              <Field label={c.source}>
-                <NativeSelect
-                  className="w-full"
-                  value={query.source}
-                  onChange={(event) =>
-                    updateQuery("source", event.target.value)
-                  }
-                >
-                  <option value="">{c.all}</option>
-                  <option value="fincaraiz">{c.sourceFincaraiz}</option>
-                  <option value="metrocuadrado">{c.sourceMetrocuadrado}</option>
-                  <option value="facebook-home-bogota">
-                    {c.sourceHomeBogota}
-                  </option>
-                </NativeSelect>
-              </Field>
+              <div className="grid min-w-0 grid-cols-[repeat(2,minmax(0,1fr))] gap-1.5">
+                <Field label={c.source}>
+                  <NativeSelect
+                    className="w-full"
+                    value={query.source}
+                    onChange={(event) =>
+                      updateQuery("source", event.target.value)
+                    }
+                  >
+                    <option value="">{c.all}</option>
+                    <option value="fincaraiz">{c.sourceFincaraiz}</option>
+                    <option value="metrocuadrado">{c.sourceMetrocuadrado}</option>
+                    <option value="facebook-home-bogota">
+                      {c.sourceHomeBogota}
+                    </option>
+                    <option value="myhome">{c.sourceMyHome}</option>
+                    <option value="amarilo">{c.sourceAmarilo}</option>
+                  </NativeSelect>
+                </Field>
+                <Field label={c.projectStatus}>
+                  <NativeSelect
+                    className="w-full"
+                    value={query.projectStatus}
+                    onChange={(event) =>
+                      updateQuery("projectStatus", event.target.value)
+                    }
+                  >
+                    <option value="">{c.all}</option>
+                    <option value="new">{c.newProjects}</option>
+                    <option value="construction">{c.underConstruction}</option>
+                    <option value="preconstruction">{c.onPlan}</option>
+                    <option value="immediate">{c.immediateDelivery}</option>
+                  </NativeSelect>
+                </Field>
+              </div>
               <Field label={c.stratum} helper={c.stratumHelp}>
                 <NativeSelect className="w-full"
                   value={query.stratum}
@@ -1414,7 +1445,14 @@ function ListingCard({
           alt=""
           variant="card"
         />
-        <span className="col-start-2 self-center font-mono text-[9px] font-extrabold tracking-[0.08em] text-primary uppercase">{listing.resultType}</span>
+        <span className="col-start-2 flex min-w-0 items-center gap-2 self-center font-mono text-[9px] font-extrabold tracking-[0.08em] text-primary uppercase">
+          {listing.resultType}
+          {listing.projectStatus && (
+            <span className="truncate rounded-full bg-primary/10 px-1.5 py-0.5 text-[8px] tracking-normal normal-case">
+              {projectStatusLabel(listing.projectStatus, locale)}
+            </span>
+          )}
+        </span>
         <strong className="col-start-2 self-start text-[17px] tracking-[-0.035em] max-[520px]:text-[15px]">
           {formatCompactCop(listing.priceCop, locale)}
         </strong>
@@ -1523,6 +1561,16 @@ function ListingDrawer({
           <p className="mt-1.5 text-xs text-[#68777d]">
             {listing.neighborhood}
           </p>
+        )}
+        {listing.projectStatus && (
+          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-semibold text-[#168f87] dark:text-[#38c7b7]">
+            <span>{projectStatusLabel(listing.projectStatus, locale)}</span>
+            {listing.deliveryDate && (
+              <span className="text-[#68777d] dark:text-[#91a4ad]">
+                {c.deliveryDate}: {listing.deliveryDate}
+              </span>
+            )}
+          </div>
         )}
         <strong className="mt-5 block text-[22px] tracking-[-0.04em]">
           {formatCop(listing.priceCop, locale)}
@@ -1722,10 +1770,25 @@ function SearchSummary({
   if (query.minParking)
     parts.push(`${query.minParking}+ ${c.parking.toLowerCase()}`);
   if (query.resultType) parts.push(query.resultType);
+  if (query.projectStatus) {
+    parts.push(
+      query.projectStatus === "new"
+        ? c.newProjects
+        : query.projectStatus === "construction"
+          ? c.underConstruction
+          : query.projectStatus === "preconstruction"
+            ? c.onPlan
+            : c.immediateDelivery,
+    );
+  }
   if (query.source) {
     parts.push(
       query.source === "facebook-home-bogota"
         ? c.sourceHomeBogota
+        : query.source === "amarilo"
+          ? c.sourceAmarilo
+        : query.source === "myhome"
+          ? c.sourceMyHome
         : query.source === "metrocuadrado"
           ? c.sourceMetrocuadrado
           : c.sourceFincaraiz,

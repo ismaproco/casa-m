@@ -5,13 +5,17 @@ export type FavoriteStatus = "interested" | "contacted" | "dismissed";
 export type ListingSource =
   | "fincaraiz"
   | "metrocuadrado"
-  | "facebook-home-bogota";
+  | "facebook-home-bogota"
+  | "myhome"
+  | "amarilo";
 
 export type Listing = {
   id: string;
   source: ListingSource;
   resultType: "Inmueble" | "Proyecto";
   projectName: string | null;
+  projectStatus?: string | null;
+  deliveryDate?: string | null;
   neighborhood: string | null;
   locality: string | null;
   zone: string | null;
@@ -73,6 +77,7 @@ export type SearchQuery = {
   minBathrooms: string;
   minParking: string;
   resultType: string;
+  projectStatus: string;
   stratum: string;
   sort: SortOption;
   useMapBounds: boolean;

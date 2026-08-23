@@ -165,6 +165,32 @@ html[data-theme="dark"] .leaflet-tooltip-top::before {
   border-top-color: var(--card);
 }
 
+.project-star-marker {
+  display: grid;
+  place-items: center;
+  background: transparent;
+}
+
+.project-star-marker > span {
+  color: var(--marker-color);
+  font-size: 22px;
+  line-height: 1;
+  -webkit-text-stroke: 1.5px #f7faf9;
+  filter: drop-shadow(0 1px 2px rgb(16 33 42 / 45%));
+  transform-origin: center;
+  transition: transform 120ms ease, filter 120ms ease;
+}
+
+.project-star-marker.map-point-highlighted > span {
+  filter: drop-shadow(0 0 3px #10212a) drop-shadow(0 2px 3px rgb(16 33 42 / 55%));
+  transform: scale(1.35);
+}
+
+.leaflet-interactive.map-point-highlighted {
+  stroke: #10212a;
+  stroke-width: 4;
+}
+
 @media (max-width: 860px) {
   :root {
     --topbar: 62px;

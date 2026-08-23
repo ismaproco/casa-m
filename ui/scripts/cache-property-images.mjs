@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { createHash } from "node:crypto";
+import { execFile } from "node:child_process";
 import {
   mkdir,
   readFile,
@@ -10,6 +11,7 @@ import {
   writeFile,
 } from "node:fs/promises";
 import path from "node:path";
+import { promisify } from "node:util";
 import sharp from "sharp";
 
 const uiRoot = path.resolve(import.meta.dirname, "..");
@@ -21,10 +23,14 @@ const sourcePaths = [
   "fincaraiz-stratified-listings.json",
   "fincaraiz-bogota-estrato-1-2-listings.json",
   "metrocuadrado-bogota-estrato-1-2-listings.json",
+  "metrocuadrado-bogota-construction-projects.json",
+  "amarilo-bogota-new-projects.json",
   "facebook-home-bogota-listings.json",
+  "myhome-bogota-listings.json",
 ].map((fileName) => path.join(repositoryRoot, "scrapes", fileName));
 const concurrency = 40;
 const maximumSourceBytes = 30 * 1024 * 1024;
+const execFileAsync = promisify(execFile);
 const limitArgument = process.argv
   .find((argument) => argument.startsWith("--limit="))
   ?.split("=")[1];
@@ -93,7 +99,34 @@ async function fetchImage(url) {
       }
     }
   }
-  throw lastError;
+  // Some Colombian media CDNs have certificate chains that the system client
+  // accepts but Node's bundled CA set does not. Keep certificate validation on
+  // and fall back to the system curl client instead of disabling TLS checks.
+  try {
+    const { stdout } = await execFileAsync(
+      "curl",
+      [
+        "--fail",
+        "--location",
+        "--compressed",
+        "--silent",
+        "--show-error",
+        "--max-time",
+        "30",
+        "--max-filesize",
+        String(maximumSourceBytes),
+        "--header",
+        "accept: image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+        "--user-agent",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/138 Safari/537.36",
+        url,
+      ],
+      { encoding: "buffer", maxBuffer: maximumSourceBytes },
+    );
+    return Buffer.from(stdout);
+  } catch {
+    throw lastError;
+  }
 }
 
 async function writeVariant(buffer, destination, width, height) {

@@ -12,7 +12,10 @@ const sourcePaths = [
   "fincaraiz-stratified-listings.json",
   "fincaraiz-bogota-estrato-1-2-listings.json",
   "metrocuadrado-bogota-estrato-1-2-listings.json",
+  "metrocuadrado-bogota-construction-projects.json",
+  "amarilo-bogota-new-projects.json",
   "facebook-home-bogota-listings.json",
+  "myhome-bogota-listings.json",
 ].map((fileName) => path.join(repositoryRoot, "scrapes", fileName));
 const outputDirectory = path.join(uiRoot, "public", "data");
 const catalogPath = path.join(outputDirectory, "catalog.json");
@@ -96,11 +99,17 @@ for (const record of bogotaRecords) {
     source:
       record.source === "facebook-home-bogota"
         ? "facebook-home-bogota"
+        : record.source === "amarilo"
+          ? "amarilo"
+        : record.source === "myhome"
+          ? "myhome"
         : record.source === "metrocuadrado"
           ? "metrocuadrado"
           : "fincaraiz",
     resultType: record.result_type ?? "Inmueble",
     projectName: record.title || null,
+    projectStatus: record.project_status ?? null,
+    deliveryDate: record.delivery_date ?? null,
     neighborhood: record.neighborhood ?? null,
     locality: record.locality ?? null,
     zone: record.zone ?? null,

@@ -114,6 +114,8 @@ export function stratumDistribution(listings: Listing[]) {
 
 export function bedroomDistribution(listings: Listing[]) {
   const buckets = [
+    { value: "1", label: "1 habitación" },
+    { value: "2", label: "2 habitaciones" },
     { value: "3", label: "3 habitaciones" },
     { value: "4", label: "4 habitaciones" },
     { value: "5", label: "5 habitaciones" },

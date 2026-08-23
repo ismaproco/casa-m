@@ -76,6 +76,49 @@ describe("catalog filtering", () => {
     expect(
       listingMatches(listing(), query({ source: "fincaraiz" })),
     ).toBe(false);
+    expect(
+      listingMatches(
+        listing({ source: "myhome" }),
+        query({ source: "myhome" }),
+      ),
+    ).toBe(true);
+    expect(
+      listingMatches(
+        listing({ source: "amarilo", resultType: "Proyecto" }),
+        query({ source: "amarilo", resultType: "Proyecto" }),
+      ),
+    ).toBe(true);
+  });
+
+  it("filters new projects by their verified sale status", () => {
+    const construction = listing({
+      resultType: "Proyecto",
+      projectStatus: "En construcción",
+    });
+    const onPlan = listing({
+      id: "M-2",
+      resultType: "Proyecto",
+      projectStatus: "Sobre planos",
+    });
+    const immediate = listing({
+      id: "M-3",
+      resultType: "Proyecto",
+      projectStatus: "Entrega inmediata",
+    });
+
+    expect(filterListings([construction, onPlan, immediate], query({ projectStatus: "new" }))).toHaveLength(3);
+    expect(
+      filterListings(
+        [construction, onPlan, immediate],
+        query({ projectStatus: "construction" }),
+      ).map((value) => value.id),
+    ).toEqual(["M-1"]);
+    expect(
+      listingMatches(onPlan, query({ projectStatus: "preconstruction" })),
+    ).toBe(true);
+    expect(
+      listingMatches(immediate, query({ projectStatus: "immediate" })),
+    ).toBe(true);
   });
 
   it("filters to active map bounds", () => {
@@ -130,10 +173,11 @@ describe("explore route search", () => {
       validateExploreSearch({
         sort: "random",
         stratum: "9",
-        bedrooms: "2",
+        bedrooms: "0",
         minPrice: "-5",
         maxArea: "large",
         resultType: "House",
+        projectStatus: "finished",
         source: "unknown-source",
       }),
     ).toEqual({});
@@ -171,6 +215,24 @@ describe("explore route search", () => {
       ...source,
       useMapBounds: false,
       mapBounds: null,
+    });
+  });
+
+  it("accepts one- and two-bedroom filters", () => {
+    expect(validateExploreSearch({ bedrooms: "1" })).toEqual({
+      bedrooms: "1",
+    });
+    expect(validateExploreSearch({ bedrooms: "2" })).toEqual({
+      bedrooms: "2",
+    });
+  });
+
+  it("validates project-status filters", () => {
+    expect(validateExploreSearch({ projectStatus: "new" })).toEqual({
+      projectStatus: "new",
+    });
+    expect(validateExploreSearch({ projectStatus: "construction" })).toEqual({
+      projectStatus: "construction",
     });
   });
 });

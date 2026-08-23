@@ -66,6 +66,8 @@ describe("statistics", () => {
 
   it("creates clickable filter distributions without gaps", () => {
     const rows = [
+      listing({ id: "one", bedrooms: 1 }),
+      listing({ id: "two", bedrooms: 2 }),
       listing({ priceCop: 300_000_000, stratum: 3, bedrooms: 3 }),
       listing({
         id: "2",
@@ -76,14 +78,17 @@ describe("statistics", () => {
       listing({ id: "3", priceCop: 2_000_000_001, stratum: 6, bedrooms: 9 }),
     ];
     expect(priceDistribution(rows).reduce((sum, bucket) => sum + bucket.count, 0))
-      .toBe(3);
+      .toBe(5);
     expect(
       stratumDistribution(rows).reduce((sum, bucket) => sum + bucket.count, 0),
-    ).toBe(3);
+    ).toBe(5);
     expect(
       bedroomDistribution(rows).find((bucket) => bucket.value === "7plus")
         ?.count,
     ).toBe(2);
+    expect(
+      bedroomDistribution(rows).reduce((sum, bucket) => sum + bucket.count, 0),
+    ).toBe(5);
   });
 
   it("downsamples scatter data and excludes top outliers", () => {
