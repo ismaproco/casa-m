@@ -58,7 +58,11 @@ export function summarizeListings(listings: Listing[]): ListingMetrics {
   const areas = finiteValues(listings.map((listing) => listing.areaM2));
   return {
     count: listings.length,
-    medianPrice: median(finiteValues(listings.map((listing) => listing.priceCop))),
+    medianPrice: median(
+      finiteValues(listings.map((listing) => listing.priceCop)).filter(
+        (price) => price > 0,
+      ),
+    ),
     medianPricePerM2: median(
       finiteValues(listings.map((listing) => listing.pricePerM2)),
     ),
@@ -185,6 +189,7 @@ export function priceDistribution(
     },
   ];
   for (const listing of listings) {
+    if (listing.priceCop <= 0) continue;
     const bucket = buckets.find(
       ({ min, max }) =>
         (min === undefined || listing.priceCop >= min) &&

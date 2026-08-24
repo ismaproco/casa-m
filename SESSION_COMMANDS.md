@@ -84,11 +84,15 @@ jq -s '{paginas:length, nuevos:([.[].records[]]|length), ids_unicos:([.[].record
   separados.
 - Se incluyen lanzamiento, preventa/sobre planos, ventas y construcción; se
   excluyen agotados y proyectos completamente entregados.
-- No se inventan precios ni tipologías. Las fichas oficiales incompletas quedan
-  documentadas en `exclusions` dentro del artefacto de recolección.
+- No se inventan precios ni tipologías. Las fichas activas incompletas se
+  publican con `data_gaps` y “Consultar precio”; `exclusions` queda reservado
+  para proyectos fuera de cobertura, ocultos, inactivos o con ubicación no
+  recuperable.
 - Arquitectura y Concreto tiene un colector estructurado en
   `scripts/scrape-arquitectura-concreto-projects.mjs` que consume únicamente
-  datos públicos de Gatsby/Contentful.
+  datos públicos de Gatsby/Contentful. El corte actual contiene los 15
+  proyectos de apartamentos activos de su página de Cundinamarca: 12 en
+  Bogotá y 3 en la Sabana.
 - Construcciones Planificadas tiene un colector estructurado en
   `scripts/scrape-construcciones-planificadas-projects.mjs`. Audita el sitemap
   completo y la categoría oficial `En ejecución`; excluye tipologías vendidas,

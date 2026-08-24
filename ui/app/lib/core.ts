@@ -97,10 +97,15 @@ export function listingMatches(listing: Listing, query: SearchQuery) {
           parkingSpaces: listing.parkingSpaces,
         },
       ];
-  const hasVariantPrices = variants.some((variant) => variant.priceCop !== null);
+  const hasVariantPrices = variants.some(
+    (variant) => variant.priceCop !== null && variant.priceCop > 0,
+  );
   const hasMatchingVariant = variants.some((variant) => {
     const variantPrice =
-      variant.priceCop ?? (!hasVariantPrices ? listing.priceCop : null);
+      (variant.priceCop !== null && variant.priceCop > 0
+        ? variant.priceCop
+        : null) ??
+      (!hasVariantPrices && listing.priceCop > 0 ? listing.priceCop : null);
     if (minPrice !== null && (variantPrice === null || variantPrice < minPrice)) return false;
     if (maxPrice !== null && (variantPrice === null || variantPrice > maxPrice)) return false;
     if (minArea !== null && (variant.areaM2 === null || variant.areaM2 < minArea)) return false;
@@ -172,8 +177,14 @@ export function sortListings(listings: Listing[], query: SearchQuery) {
   const neighborhood = (listing: Listing) =>
     listing.neighborhood ?? listing.projectName ?? "";
   sorted.sort((a, b) => {
-    if (query.sort === "priceAsc") return a.priceCop - b.priceCop;
-    if (query.sort === "priceDesc") return b.priceCop - a.priceCop;
+    if (query.sort === "priceAsc")
+      return (a.priceCop > 0 ? a.priceCop : Infinity) -
+        (b.priceCop > 0 ? b.priceCop : Infinity);
+    if (query.sort === "priceDesc") {
+      if (a.priceCop <= 0) return 1;
+      if (b.priceCop <= 0) return -1;
+      return b.priceCop - a.priceCop;
+    }
     if (query.sort === "areaDesc") return (b.areaM2 ?? -1) - (a.areaM2 ?? -1);
     if (query.sort === "pricePerM2Asc")
       return (a.pricePerM2 ?? Infinity) - (b.pricePerM2 ?? Infinity);

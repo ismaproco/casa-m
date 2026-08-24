@@ -224,6 +224,40 @@ test("official developer projects expose Bogotá/Sabana coverage and apartment t
 }) => {
   const response = await page.request.get("/data/catalog.json");
   const catalog = await response.json();
+  const architectureProjects = catalog.listings.filter(
+    (listing: { source?: string }) => listing.source === "arquitectura-y-concreto",
+  ) as Array<{
+    id: string;
+    projectName: string;
+    priceCop: number;
+    dataWarnings: string[];
+  }>;
+  expect(architectureProjects.map((listing) => listing.projectName).sort())
+    .toEqual([
+      "Artié 84: Apartamentos y oficinas",
+      "Cerros de Los Alpes",
+      "Click Living",
+      "Colina Living",
+      "Frontier",
+      "Laurel Bosques de La Calera",
+      "Luna Apartamentos",
+      "Nuva park",
+      "Rossé Apartamentos",
+      "Séptima Avenida Living",
+      "Terralto",
+      "Terrazas de San Fasón",
+      "Ventto Central",
+      "Viena",
+      "Vissani Apartamentos",
+    ].sort());
+  expect(
+    architectureProjects.find(
+      (listing) => listing.projectName === "Laurel Bosques de La Calera",
+    ),
+  ).toMatchObject({
+    priceCop: 0,
+    dataWarnings: ["missing_apartment_typologies", "missing_price"],
+  });
   const viena = catalog.listings.find(
     (listing: { projectName?: string | null }) => listing.projectName === "Viena",
   ) as {
@@ -264,11 +298,17 @@ test("official developer projects expose Bogotá/Sabana coverage and apartment t
   );
 
   await page.goto("/explore?source=arquitectura-y-concreto&market=bogota");
-  await expect(page.getByText(/4 resultados|4 results/i)).toBeVisible();
+  await expect(page.getByText(/12 resultados|12 results/i)).toBeVisible();
   await expect(page.getByText(/^Viena\s*·/).first()).toBeVisible();
   await page.goto(`/explore/property/${encodeURIComponent(viena.id)}`);
   await expect(page.getByRole("heading", { name: /tipos de apartamento|apartment types/i })).toBeVisible();
   await expect(page.getByText(/445.*100.*000/).first()).toBeVisible();
+
+  const laurel = architectureProjects.find(
+    (listing) => listing.projectName === "Laurel Bosques de La Calera",
+  );
+  await page.goto(`/explore/property/${encodeURIComponent(laurel!.id)}`);
+  await expect(page.getByText(/Consultar precio|Ask for price/i).first()).toBeVisible();
 
   await page.goto("/explore?market=sabana&resultType=Proyecto");
   await expect(page.getByText(/^Luna Apartamentos\s*·/).first()).toBeVisible();

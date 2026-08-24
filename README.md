@@ -171,10 +171,11 @@ npm run images:cache
 npm run build
 ```
 
-The collector only reads the public Gatsby/Contentful project data. It records
-projects without disclosed prices, missing apartment types, inactive states,
-or invalid coordinates as audited exclusions instead of inventing values or
-bypassing access controls.
+The collector only reads the public Gatsby/Contentful project data. Active
+projects without disclosed prices or apartment types remain visible with
+explicit data-gap flags; inactive, hidden, out-of-region, or unlocatable
+projects are audited exclusions. It never invents values or bypasses access
+controls.
 
 Refresh the official Construcciones Planificadas inventory before rebuilding:
 

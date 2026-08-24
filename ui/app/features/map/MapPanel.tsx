@@ -7,7 +7,7 @@ import type {
   Map as LeafletMap,
   Marker,
 } from "leaflet";
-import { formatCop } from "@/app/lib/i18n";
+import { formatCop, t } from "@/app/lib/i18n";
 import { mapPriceBucket, mapPriceBucketLabel } from "@/app/lib/mapPricing";
 import type { Listing, Locale, MapBounds } from "@/app/lib/types";
 
@@ -188,6 +188,9 @@ export function MapPanel({
       for (const listing of currentListings) {
         const priceScale = listing.operationType === "Arriendo" ? "rental" : "sale";
         const priceBucket = mapPriceBucket(listing.priceCop, priceScale);
+        const priceLabel =
+          listing.priceCop > 0 ? formatCop(listing.priceCop, locale) : t(locale).consultPrice;
+        const markerColor = listing.priceCop > 0 ? priceBucket.color : "#64748b";
         const hasApproximateCoordinates =
           listing.coordinatePrecision === "neighborhood_centroid";
         const isNewProject = listing.resultType === "Proyecto";
@@ -195,12 +198,12 @@ export function MapPanel({
           ? leaflet.marker([listing.latitude, listing.longitude], {
               icon: leaflet.divIcon({
                 className: "project-star-marker",
-                html: `<span aria-hidden="true" style="--marker-color:${priceBucket.color}">★</span>`,
+                html: `<span aria-hidden="true" style="--marker-color:${markerColor}">★</span>`,
                 iconSize: [22, 22],
                 iconAnchor: [11, 11],
               }),
               keyboard: true,
-              title: `${listing.projectName ?? listing.neighborhood ?? listing.id} · ${formatCop(listing.priceCop, locale)}`,
+              title: `${listing.projectName ?? listing.neighborhood ?? listing.id} · ${priceLabel}`,
             })
           : leaflet.circleMarker([listing.latitude, listing.longitude], {
               radius: 4,
@@ -208,15 +211,17 @@ export function MapPanel({
               weight: 1,
               opacity: 1,
               dashArray: hasApproximateCoordinates ? "2 2" : undefined,
-              fillColor: priceBucket.color,
+              fillColor: markerColor,
               fillOpacity: 0.94,
             });
         marker.bindTooltip(
           [
             listing.neighborhood ?? listing.city,
             listing.city,
-            formatCop(listing.priceCop, locale),
-            mapPriceBucketLabel(listing.priceCop, locale, priceScale),
+            priceLabel,
+            ...(listing.priceCop > 0
+              ? [mapPriceBucketLabel(listing.priceCop, locale, priceScale)]
+              : []),
             listing.id,
           ].join(" · "),
           {

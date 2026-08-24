@@ -1570,7 +1570,7 @@ function ListingCard({
       <button
         className="grid grid-cols-[88px_minmax(0,1fr)] gap-x-2.5 gap-y-1 bg-transparent py-2.5 pr-[45px] pl-3 text-left max-[520px]:grid-cols-[72px_minmax(0,1fr)] max-[520px]:gap-x-2 max-[520px]:py-2.5 max-[520px]:pr-[42px] max-[520px]:pl-2.5"
         onClick={onSelect}
-        aria-label={`${listing.neighborhood ?? listing.projectName}: ${formatCop(listing.priceCop, locale)}`}
+        aria-label={`${listing.neighborhood ?? listing.projectName}: ${listing.priceCop > 0 ? formatCop(listing.priceCop, locale) : c.consultPrice}`}
       >
         <PropertyImage
           src={listing.thumbnailUrl}
@@ -1586,7 +1586,9 @@ function ListingCard({
           )}
         </span>
         <strong className="col-start-2 self-start text-[17px] tracking-[-0.035em] max-[520px]:text-[15px]">
-          {formatCompactCop(listing.priceCop, locale)}
+          {listing.priceCop > 0
+            ? formatCompactCop(listing.priceCop, locale)
+            : c.consultPrice}
           {listing.operationType === "Arriendo" && (
             <small className="ml-1 text-[9px] font-semibold text-muted-foreground">{c.perMonth}</small>
           )}
@@ -1708,7 +1710,9 @@ function ListingDrawer({
           </div>
         )}
         <strong className="mt-5 block text-[22px] tracking-[-0.04em]">
-          {formatCop(listing.priceCop, locale)}
+          {listing.priceCop > 0
+            ? formatCop(listing.priceCop, locale)
+            : c.consultPrice}
           {listing.operationType === "Arriendo" && (
             <small className="ml-1.5 text-[10px] font-semibold tracking-normal text-muted-foreground">{c.perMonth}</small>
           )}
@@ -1928,7 +1932,9 @@ function FavoriteCard({
           <span className="font-mono text-[9px] font-extrabold tracking-[0.08em] text-primary uppercase">{listing.resultType}</span>
           <h2 className="my-1.5 overflow-hidden text-[17px] tracking-[-0.03em] text-ellipsis whitespace-nowrap">{listing.projectName ?? listing.neighborhood ?? listing.id}</h2>
           <strong className="text-sm">
-            {formatCop(listing.priceCop, locale)}
+            {listing.priceCop > 0
+              ? formatCop(listing.priceCop, locale)
+              : c.consultPrice}
             {listing.operationType === "Arriendo" && (
               <small className="ml-1 text-[9px] text-muted-foreground">{c.perMonth}</small>
             )}

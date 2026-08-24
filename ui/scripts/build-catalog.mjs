@@ -62,8 +62,14 @@ function nullableNumber(value) {
 }
 
 function warningFlags(record) {
-  const warnings = [];
-  if (record.price_cop < 50_000_000 || record.price_cop > 20_000_000_000) {
+  const warnings = [
+    ...(Array.isArray(record.data_gaps) ? record.data_gaps : []),
+  ];
+  if (
+    record.price_cop !== null &&
+    record.price_cop !== undefined &&
+    (record.price_cop < 50_000_000 || record.price_cop > 20_000_000_000)
+  ) {
     warnings.push("price_outlier");
   }
   if (
@@ -141,7 +147,7 @@ for (const record of eligibleRecords) {
     neighborhood: record.neighborhood ?? null,
     locality: record.locality ?? null,
     zone: record.zone ?? null,
-    priceCop: Number(record.price_cop),
+    priceCop: nullableNumber(record.price_cop) ?? 0,
     areaM2: nullableNumber(record.area_m2),
     bedrooms: Number(record.bedrooms),
     bathrooms: Number(record.bathrooms),
@@ -202,7 +208,9 @@ function normalizedProjectName(value) {
     .normalize("NFD")
     .replace(/\p{Diacritic}/gu, "")
     .toLocaleLowerCase("es")
-    .replace(/\b(proyecto|apartamentos?|torres?|etapa\s+\d+)\b/g, " ")
+    .replace(/\b(proyecto|apartamentos?|oficinas?|etapa\s+\d+)\b/g, " ")
+    .replace(/\btorres?\s*[a-z0-9-]*\b/g, " ")
+    .replace(/\by\b/g, " ")
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
 }
@@ -233,7 +241,7 @@ function evidenceFor(listing) {
     sourceKind: listing.sourceKind,
     url: listing.url,
     collectedAt: null,
-    priceCop: listing.priceCop,
+    priceCop: listing.priceCop > 0 ? listing.priceCop : null,
     areaM2: listing.areaM2,
     bedrooms: listing.bedrooms,
     bathrooms: listing.bathrooms,
@@ -293,7 +301,11 @@ const mergedProjects = [...projectGroups.values()].map((group) => {
   const preferred =
     group.find((listing) => listing.sourceKind === "official") ?? group[0];
   const typologies = group.flatMap((listing) =>
-    listing.typologies.length ? listing.typologies : [projectTypology(listing)],
+    listing.typologies.length
+      ? listing.typologies
+      : listing.areaM2 || listing.priceCop > 0
+        ? [projectTypology(listing)]
+        : [],
   );
   const uniqueTypologies = [...new Map(
     typologies.map((typology) => [
@@ -328,6 +340,13 @@ const mergedProjects = [...projectGroups.values()].map((group) => {
     typologies: uniqueTypologies,
     evidence,
     sourceDifferences: sourceDifferences(officialEvidence, evidence),
+    dataWarnings: [...new Set(group.flatMap((listing) => listing.dataWarnings))]
+      .filter(
+        (warning) =>
+          !(representative &&
+            (warning === "missing_apartment_typologies" ||
+              warning === "missing_price")),
+      ),
   };
   return {
     ...mergedMaterial,

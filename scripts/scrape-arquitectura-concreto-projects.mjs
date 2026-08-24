@@ -38,6 +38,10 @@ const sabanaMunicipalities = new Set([
   "zipaquirá",
 ]);
 
+const marketCentroids = {
+  bogota: { latitude: 4.711, longitude: -74.0721 },
+};
+
 function normalize(value) {
   return String(value ?? "")
     .normalize("NFD")
@@ -75,6 +79,7 @@ function mapStatus(status) {
   if (value.includes("preventa") || value.includes("sobre plano"))
     return "Sobre planos";
   if (value.includes("construccion")) return "En construcción";
+  if (value.includes("entrega inmediata")) return "Entrega inmediata";
   if (value.includes("venta")) return "En ventas";
   return null;
 }
@@ -158,7 +163,6 @@ const candidates = new Map();
 visit(index.result?.pageContext?.projects, (candidate) => {
   if (
     typeof candidate.slug === "string" &&
-    candidate.slug.includes("/proyectos/cundinamarca/") &&
     candidate.stateLocation?.contentfulparent?.name === "Cundinamarca" &&
     normalize(candidate.type?.name).includes("apartamento")
   ) {
@@ -178,8 +182,16 @@ for (const [slug, summary] of [...candidates].sort(([a], [b]) =>
     const municipality = context.stateLocation?.name ?? null;
     const market = marketFor(municipality);
     const projectStatus = mapStatus(context.status);
-    const latitude = Number(context.latLon?.lat);
-    const longitude = Number(context.latLon?.lon);
+    let latitude = Number(context.latLon?.lat);
+    let longitude = Number(context.latLon?.lon);
+    let coordinatePrecision = "listing";
+    if (
+      market === "bogota" &&
+      !isBogotaRegionCoordinate(latitude, longitude)
+    ) {
+      ({ latitude, longitude } = marketCentroids.bogota);
+      coordinatePrecision = "neighborhood_centroid";
+    }
     const typologies = collectTypologies(context, listingUrl);
     const pricedTypologies = typologies.filter((entry) => entry.price_cop);
     const representative =
@@ -190,8 +202,6 @@ for (const [slug, summary] of [...candidates].sort(([a], [b]) =>
     if (!projectStatus) reasons.push("inactive_or_unknown_status");
     if (!isBogotaRegionCoordinate(latitude, longitude))
       reasons.push("invalid_region_coordinate");
-    if (!representative) reasons.push("missing_apartment_typologies");
-    if (!representative?.price_cop) reasons.push("missing_price");
     if (context.hidden) reasons.push("hidden_project");
     if (reasons.length) {
       exclusions.push({ name: context.name ?? summary.name, url: listingUrl, reasons });
@@ -211,15 +221,15 @@ for (const [slug, summary] of [...candidates].sort(([a], [b]) =>
       project_status: projectStatus,
       project_status_raw: context.status,
       delivery_date: null,
-      price_cop: representative.price_cop,
-      area_m2: representative.area_m2,
-      bedrooms: representative.bedrooms ?? 0,
-      bathrooms: representative.bathrooms ?? 0,
-      parking_spaces: representative.parking_spaces,
+      price_cop: representative?.price_cop ?? null,
+      area_m2: representative?.area_m2 ?? null,
+      bedrooms: representative?.bedrooms ?? 0,
+      bathrooms: representative?.bathrooms ?? 0,
+      parking_spaces: representative?.parking_spaces ?? null,
       stratum: null,
       latitude,
       longitude,
-      coordinate_precision: "listing",
+      coordinate_precision: coordinatePrecision,
       country: "Colombia",
       state: municipality === "Bogotá" ? "Bogotá D.C." : "Cundinamarca",
       city: municipality === "Bogotá" ? "Bogotá D.C." : municipality,
@@ -231,6 +241,10 @@ for (const [slug, summary] of [...candidates].sort(([a], [b]) =>
       address: context.businessRoomAddress ?? null,
       image_url: firstImageUrl(context),
       typologies,
+      data_gaps: [
+        ...(!representative ? ["missing_apartment_typologies"] : []),
+        ...(!representative?.price_cop ? ["missing_price"] : []),
+      ],
     });
   } catch (error) {
     exclusions.push({ name: summary.name, url: listingUrl, reasons: [String(error)] });

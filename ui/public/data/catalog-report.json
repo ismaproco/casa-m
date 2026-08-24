@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-08-24T17:50:43.612Z",
-  "catalogVersion": "6ff9223a22e55f3f",
+  "generatedAt": "2026-08-24T18:25:03.491Z",
+  "catalogVersion": "6f0f6141c1c71ae2",
   "summary": {
-    "sourceRecords": 13217,
+    "sourceRecords": 13227,
     "publishedRecords": 13074,
     "excludedRecords": 8,
-    "approximateCoordinates": 392,
+    "approximateCoordinates": 385,
     "knownStratum": 12340,
-    "officialProjects": 34,
-    "sabanaProjects": 64,
-    "apartmentTypes": 1887,
-    "sourceDifferences": 41,
+    "officialProjects": 44,
+    "sabanaProjects": 65,
+    "apartmentTypes": 1894,
+    "sourceDifferences": 61,
     "topDevelopersAudited": 100,
     "topDevelopersWithRegionalProjects": 52
   },
@@ -66,8 +66,8 @@
     {
       "fileName": "arquitectura-concreto-bogota-sabana-projects.json",
       "source": "arquitectura-y-concreto",
-      "records": 5,
-      "scrapedAt": "2026-08-23T23:04:46.629Z"
+      "records": 15,
+      "scrapedAt": "2026-08-24T18:20:31.251Z"
     },
     {
       "fileName": "construcciones-planificadas-bogota-sabana-projects.json",
@@ -133,13 +133,15 @@
     }
   ],
   "warningCounts": {
+    "missing_apartment_typologies": 1,
+    "missing_price": 1,
     "price_outlier": 16,
     "area_outlier": 6
   },
   "images": {
-    "available": 12756,
-    "missing": 318,
-    "archived": 45
+    "available": 12765,
+    "missing": 309,
+    "archived": 46
   },
   "developerAudit": {
     "fileName": "colombia-top-100-developers.json",

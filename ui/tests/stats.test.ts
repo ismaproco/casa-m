@@ -52,6 +52,19 @@ describe("statistics", () => {
     });
   });
 
+  it("counts projects with an unpublished price without treating it as zero", () => {
+    const rows = [
+      listing({ id: "known", priceCop: 600_000_000 }),
+      listing({ id: "consult", priceCop: 0, pricePerM2: null }),
+    ];
+    expect(summarizeListings(rows)).toMatchObject({
+      count: 2,
+      medianPrice: 600_000_000,
+    });
+    expect(priceDistribution(rows).reduce((sum, bucket) => sum + bucket.count, 0))
+      .toBe(1);
+  });
+
   it("groups by geography and enforces a minimum sample", () => {
     const rows = [
       listing(),

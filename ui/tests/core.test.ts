@@ -83,6 +83,21 @@ describe("catalog filtering", () => {
     ).toBe(true);
   });
 
+  it("keeps projects with an unpublished price unless a price filter is active", () => {
+    const consultPriceProject = listing({
+      resultType: "Proyecto",
+      projectName: "Laurel Bosques de La Calera",
+      priceCop: 0,
+      pricePerM2: null,
+      areaM2: null,
+      typologies: [],
+    });
+    expect(listingMatches(consultPriceProject, query())).toBe(true);
+    expect(
+      listingMatches(consultPriceProject, query({ maxPrice: "500000000" })),
+    ).toBe(false);
+  });
+
   it("filters by catalog source", () => {
     expect(
       listingMatches(listing(), query({ source: "metrocuadrado" })),
