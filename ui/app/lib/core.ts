@@ -10,6 +10,7 @@ import type {
 export const DEFAULT_QUERY: SearchQuery = {
   text: "",
   source: "",
+  market: "",
   minPrice: "",
   maxPrice: "",
   minArea: "",
@@ -49,35 +50,54 @@ export function listingMatches(listing: Listing, query: SearchQuery) {
   ) {
     return false;
   }
-  if (query.source && listing.source !== query.source) return false;
+  if (
+    query.source &&
+    listing.source !== query.source &&
+    !listing.evidence?.some((entry) => entry.source === query.source)
+  ) return false;
+  if (query.market && listing.market !== query.market) return false;
 
   const minPrice = optionalNumber(query.minPrice);
   const maxPrice = optionalNumber(query.maxPrice);
   const minArea = optionalNumber(query.minArea);
   const maxArea = optionalNumber(query.maxArea);
-  if (minPrice !== null && listing.priceCop < minPrice) return false;
-  if (maxPrice !== null && listing.priceCop > maxPrice) return false;
-  if (minArea !== null && (listing.areaM2 === null || listing.areaM2 < minArea))
-    return false;
-  if (maxArea !== null && (listing.areaM2 === null || listing.areaM2 > maxArea))
-    return false;
-  if (
-    query.bedrooms &&
-    (query.bedrooms === "7plus"
-      ? listing.bedrooms < 7
-      : listing.bedrooms !== Number(query.bedrooms))
-  )
-    return false;
-  if (
-    query.minBathrooms &&
-    listing.bathrooms < Number(query.minBathrooms)
-  )
-    return false;
-  if (
-    query.minParking &&
-    (listing.parkingSpaces ?? 0) < Number(query.minParking)
-  )
-    return false;
+  const variants = listing.typologies?.length
+    ? listing.typologies
+    : [
+        {
+          priceCop: listing.priceCop,
+          areaM2: listing.areaM2,
+          bedrooms: listing.bedrooms,
+          bathrooms: listing.bathrooms,
+          parkingSpaces: listing.parkingSpaces,
+        },
+      ];
+  const hasVariantPrices = variants.some((variant) => variant.priceCop !== null);
+  const hasMatchingVariant = variants.some((variant) => {
+    const variantPrice =
+      variant.priceCop ?? (!hasVariantPrices ? listing.priceCop : null);
+    if (minPrice !== null && (variantPrice === null || variantPrice < minPrice)) return false;
+    if (maxPrice !== null && (variantPrice === null || variantPrice > maxPrice)) return false;
+    if (minArea !== null && (variant.areaM2 === null || variant.areaM2 < minArea)) return false;
+    if (maxArea !== null && (variant.areaM2 === null || variant.areaM2 > maxArea)) return false;
+    if (
+      query.bedrooms &&
+      (variant.bedrooms === null ||
+        (query.bedrooms === "7plus"
+          ? variant.bedrooms < 7
+          : variant.bedrooms !== Number(query.bedrooms)))
+    ) return false;
+    if (
+      query.minBathrooms &&
+      (variant.bathrooms === null || variant.bathrooms < Number(query.minBathrooms))
+    ) return false;
+    if (
+      query.minParking &&
+      (variant.parkingSpaces ?? 0) < Number(query.minParking)
+    ) return false;
+    return true;
+  });
+  if (!hasMatchingVariant) return false;
   if (query.resultType && listing.resultType !== query.resultType) return false;
   if (query.projectStatus === "new" && !listing.projectStatus) return false;
   if (
@@ -203,6 +223,15 @@ const NUMERIC_SEARCH_KEYS = [
   "maxArea",
 ] as const;
 
+const CATALOG_SOURCES = new Set([
+  "fincaraiz",
+  "metrocuadrado",
+  "facebook-home-bogota",
+  "myhome",
+  "amarilo",
+  "arquitectura-y-concreto",
+]);
+
 function validNumericSearch(value: unknown) {
   if (typeof value !== "string" && typeof value !== "number") return "";
   const text = String(value).trim();
@@ -220,13 +249,13 @@ export function validateExploreSearch(
       : {}),
   };
   if (
-    input.source === "fincaraiz" ||
-    input.source === "metrocuadrado" ||
-    input.source === "facebook-home-bogota" ||
-    input.source === "myhome" ||
-    input.source === "amarilo"
+    typeof input.source === "string" &&
+    CATALOG_SOURCES.has(input.source)
   ) {
     result.source = input.source;
+  }
+  if (input.market === "bogota" || input.market === "sabana") {
+    result.market = input.market;
   }
 
   for (const key of NUMERIC_SEARCH_KEYS) {
@@ -280,6 +309,7 @@ export function queryFromRouterSearch(
   for (const key of [
     "text",
     "source",
+    "market",
     "minPrice",
     "maxPrice",
     "minArea",

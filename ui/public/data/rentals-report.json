@@ -1,0 +1,928 @@
+{
+  "generatedAt": "2026-08-24T14:18:05.658Z",
+  "catalogVersion": "dd248f2ab7377b39",
+  "summary": {
+    "sourceRecords": 9392,
+    "publishedRecords": 9243,
+    "excludedRecords": 149,
+    "approximateCoordinates": 0,
+    "knownStratum": 9243,
+    "officialProjects": 0,
+    "sabanaProjects": 0,
+    "apartmentTypes": 0,
+    "sourceDifferences": 0
+  },
+  "inputs": [
+    {
+      "fileName": "metrocuadrado-bogota-rental-listings.json",
+      "source": "metrocuadrado",
+      "records": 9309,
+      "scrapedAt": "2026-08-24T14:05:56.327Z"
+    },
+    {
+      "fileName": "myhome-bogota-rental-listings.json",
+      "source": "myhome",
+      "records": 83,
+      "scrapedAt": "2026-08-24T14:04:55.090Z"
+    }
+  ],
+  "exclusions": [
+    {
+      "id": "MC-RENT-10139-M5663003",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-10858-M6153441",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-10858-M6975384",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-11079-M4427128",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-11079-M6654551",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-11079-M6783668",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-12037-M2729707",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-12037-M4264872",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-12095-M6397811",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-13036-M6565638",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-13436-M5785358",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-171-M4994832",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-19797-M6361181",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-19797-M6399950",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-19797-M6931223",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-20033-M6905996",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-20264-M6926019",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-21003-M6927514",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-21003-M6930334",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-2120-M3801816",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-2147-M5694152",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-2147-M5753638",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-21472-M6492242",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-21472-M6492363",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-21472-M6552894",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-21472-M6556885",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-21788-M6925068",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-21884-M6924206",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-2214-M6444334",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-2214-M6897136",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-2214-M6897137",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-2214-M6921846",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-2214-M6949201",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-2214-M6972057",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-22245-M6903164",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-223-M5581600",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-223-M6598116",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-223-M6656617",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-223-M6674803",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-223-M6968860",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-2361-M5511557",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-2361-M5511600",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-2361-M5511603",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-2361-M5511606",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-2361-M5511613",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-2361-M5511672",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-252-I1843306",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-2919-M3085416",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-3057-M6846600",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-312-M6721889",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-3220-M4439959",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-3220-M4896974",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-3241-M1922195",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-3241-M3806542",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-356-M6064014",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-368-M5863487",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-368-M6063493",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5428536",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5438482",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5629993",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5648301",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5659371",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5663931",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5664146",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5664282",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5678320",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5678714",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5689091",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5701401",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5707189",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5707200",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5716940",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5731366",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5732707",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5745858",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5752598",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5753131",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5753257",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5767752",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5767803",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5769894",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5779352",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4058-M5797559",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-411-M6941685",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-4673-M6486514",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-515-1141709",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-675-M5661813",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-699-M4604214",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-770-M3683541",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-800-M2932198",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-815-M6330603",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-815-M6918713",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-815-M6918745",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-883-M2546408",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-919-1815096",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC1500516",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC1931757",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC2268779",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC3085716",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC3110821",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC4013272",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC4983052",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC5023097",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC5249279",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC5612812",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC5658860",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC5751890",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC5974143",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC5998068",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6073109",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6144893",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6307790",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6465982",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6491694",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6622070",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6628895",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6717747",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6729336",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6731498",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6734215",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6740494",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6740751",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6741489",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6741491",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6753133",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6786035",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6795894",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6811803",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6825426",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6826313",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6832081",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6847589",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6853179",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6854428",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6866077",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6866731",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6869887",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6884973",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6906192",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6924288",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6924315",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6924989",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6927532",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6928161",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6943047",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6946445",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6954329",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6959709",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6972506",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    }
+  ],
+  "warningCounts": {
+    "rent_outlier": 64
+  }
+}

@@ -90,6 +90,59 @@ describe("catalog filtering", () => {
     ).toBe(true);
   });
 
+  it("filters Bogotá and Sabana projects and matches any apartment typology", () => {
+    const sabanaProject = listing({
+      source: "arquitectura-y-concreto",
+      sourceName: "Arquitectura y Concreto",
+      resultType: "Proyecto",
+      market: "sabana",
+      municipality: "Chía",
+      typologies: [
+        {
+          id: "type-1",
+          name: "62 m²",
+          areaM2: 62,
+          privateAreaM2: 55.5,
+          bedrooms: 2,
+          bathrooms: 2,
+          parkingSpaces: 1,
+          priceCop: 320_000_000,
+          priceNote: null,
+          description: null,
+          source: "arquitectura-y-concreto",
+          sourceName: "Arquitectura y Concreto",
+          sourceUrl: "https://example.com/project",
+          sourceKind: "official",
+        },
+        {
+          id: "type-2",
+          name: "80 m²",
+          areaM2: 80,
+          privateAreaM2: 72,
+          bedrooms: 3,
+          bathrooms: 2,
+          parkingSpaces: 1,
+          priceCop: 450_000_000,
+          priceNote: null,
+          description: null,
+          source: "arquitectura-y-concreto",
+          sourceName: "Arquitectura y Concreto",
+          sourceUrl: "https://example.com/project",
+          sourceKind: "official",
+        },
+      ],
+    });
+
+    expect(listingMatches(sabanaProject, query({ market: "sabana" }))).toBe(true);
+    expect(listingMatches(sabanaProject, query({ market: "bogota" }))).toBe(false);
+    expect(
+      listingMatches(
+        sabanaProject,
+        query({ bedrooms: "3", minArea: "75", maxPrice: "500000000" }),
+      ),
+    ).toBe(true);
+  });
+
   it("filters new projects by their verified sale status", () => {
     const construction = listing({
       resultType: "Proyecto",
@@ -179,6 +232,7 @@ describe("explore route search", () => {
         resultType: "House",
         projectStatus: "finished",
         source: "unknown-source",
+        market: "outside",
       }),
     ).toEqual({});
     expect(
@@ -196,6 +250,7 @@ describe("explore route search", () => {
       minPrice: "800000000",
       bedrooms: "3",
       source: "facebook-home-bogota",
+      market: "bogota",
       stratum: "6",
       sort: "priceAsc",
       useMapBounds: true,
@@ -207,6 +262,7 @@ describe("explore route search", () => {
       minPrice: "800000000",
       bedrooms: "3",
       source: "facebook-home-bogota",
+      market: "bogota",
       stratum: "6",
       sort: "priceAsc",
       saved: "saved-1",

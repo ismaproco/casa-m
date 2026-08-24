@@ -2,20 +2,72 @@ export type Locale = "es" | "en";
 
 export type FavoriteStatus = "interested" | "contacted" | "dismissed";
 
-export type ListingSource =
-  | "fincaraiz"
-  | "metrocuadrado"
-  | "facebook-home-bogota"
-  | "myhome"
-  | "amarilo";
+export type ListingSource = string;
+
+export type ProjectMarket = "bogota" | "sabana";
+
+export type ProjectTypology = {
+  id: string;
+  name: string;
+  areaM2: number;
+  privateAreaM2: number | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  parkingSpaces: number | null;
+  priceCop: number | null;
+  priceNote: string | null;
+  description: string | null;
+  source: ListingSource;
+  sourceName: string;
+  sourceUrl: string;
+  sourceKind: "official" | "portal";
+};
+
+export type ProjectEvidence = {
+  source: ListingSource;
+  sourceName: string;
+  sourceKind: "official" | "portal";
+  url: string;
+  collectedAt: string | null;
+  priceCop: number | null;
+  areaM2: number | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  parkingSpaces: number | null;
+  projectStatus: string | null;
+};
+
+export type ProjectDifference = {
+  source: ListingSource;
+  sourceName: string;
+  sourceUrl: string;
+  field:
+    | "priceCop"
+    | "areaM2"
+    | "bedrooms"
+    | "bathrooms"
+    | "parkingSpaces"
+    | "projectStatus";
+  officialValue: string | number | null;
+  portalValue: string | number | null;
+};
 
 export type Listing = {
   id: string;
   source: ListingSource;
   resultType: "Inmueble" | "Proyecto";
+  operationType?: "Venta" | "Arriendo";
   projectName: string | null;
   projectStatus?: string | null;
   deliveryDate?: string | null;
+  sourceName?: string;
+  developerName?: string | null;
+  sourceKind?: "official" | "portal";
+  market?: ProjectMarket;
+  municipality?: string | null;
+  typologies?: ProjectTypology[];
+  evidence?: ProjectEvidence[];
+  sourceDifferences?: ProjectDifference[];
   neighborhood: string | null;
   locality: string | null;
   zone: string | null;
@@ -40,6 +92,7 @@ export type Listing = {
 export type CatalogSnapshot = {
   schemaVersion: 1;
   catalogVersion: string;
+  catalogKind?: "sales" | "rentals";
   publishedAt: string;
   sourceUpdatedAt: string;
   summary: {
@@ -48,6 +101,10 @@ export type CatalogSnapshot = {
     excludedRecords: number;
     approximateCoordinates: number;
     knownStratum: number;
+    officialProjects: number;
+    sabanaProjects: number;
+    apartmentTypes: number;
+    sourceDifferences: number;
   };
   listings: Listing[];
 };
@@ -69,6 +126,7 @@ export type MapBounds = {
 export type SearchQuery = {
   text: string;
   source: string;
+  market: string;
   minPrice: string;
   maxPrice: string;
   minArea: string;
@@ -114,6 +172,7 @@ export type SavedSearch = {
   createdAt: string;
   updatedAt: string;
   lastReviewedCatalogVersion: string;
+  catalogKind?: "sales" | "rentals";
 };
 
 export type Favorite = {

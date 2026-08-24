@@ -5,6 +5,7 @@ import { execFile } from "node:child_process";
 import {
   mkdir,
   readFile,
+  readdir,
   rename,
   stat,
   unlink,
@@ -17,9 +18,11 @@ import sharp from "sharp";
 const uiRoot = path.resolve(import.meta.dirname, "..");
 const repositoryRoot = path.resolve(uiRoot, "..");
 const catalogPath = path.join(uiRoot, "public", "data", "catalog.json");
+const rentalsCatalogPath = path.join(uiRoot, "public", "data", "rentals.json");
 const imageDirectory = path.join(uiRoot, "public", "property-images");
 const manifestPath = path.join(imageDirectory, "manifest.json");
-const sourcePaths = [
+const scrapeDirectory = path.join(repositoryRoot, "scrapes");
+const standardSourceNames = [
   "fincaraiz-stratified-listings.json",
   "fincaraiz-bogota-estrato-1-2-listings.json",
   "metrocuadrado-bogota-estrato-1-2-listings.json",
@@ -27,7 +30,17 @@ const sourcePaths = [
   "amarilo-bogota-new-projects.json",
   "facebook-home-bogota-listings.json",
   "myhome-bogota-listings.json",
-].map((fileName) => path.join(repositoryRoot, "scrapes", fileName));
+  "arquitectura-concreto-bogota-sabana-projects.json",
+  "metrocuadrado-bogota-rental-listings.json",
+  "myhome-bogota-rental-listings.json",
+];
+const discoveredOfficialSourceNames = (await readdir(scrapeDirectory)).filter(
+  (fileName) => /-bogota-sabana-projects\.json$/i.test(fileName),
+);
+const sourcePaths = [...new Set([
+  ...standardSourceNames,
+  ...discoveredOfficialSourceNames,
+])].map((fileName) => path.join(scrapeDirectory, fileName));
 const concurrency = 40;
 const maximumSourceBytes = 30 * 1024 * 1024;
 const execFileAsync = promisify(execFile);
@@ -151,8 +164,9 @@ async function writeVariant(buffer, destination, width, height) {
 
 await mkdir(imageDirectory, { recursive: true });
 
-const [catalog, ...sources] = await Promise.all([
+const [catalog, rentalsCatalog, ...sources] = await Promise.all([
   readJson(catalogPath),
+  readJson(rentalsCatalogPath),
   ...sourcePaths.map((sourcePath) => readJson(sourcePath)),
 ]);
 const sourceById = new Map();
@@ -166,7 +180,9 @@ const previousManifest = await readJson(manifestPath, {
   entries: {},
 });
 const now = new Date().toISOString();
-const currentIds = new Set(catalog.listings.map((listing) => listing.id));
+const catalogs = [catalog, rentalsCatalog].filter(Boolean);
+const currentListings = catalogs.flatMap((value) => value.listings);
+const currentIds = new Set(currentListings.map((listing) => listing.id));
 const entries = { ...previousManifest.entries };
 
 for (const [id, entry] of Object.entries(entries)) {
@@ -180,7 +196,7 @@ for (const [id, entry] of Object.entries(entries)) {
   }
 }
 
-const queue = catalog.listings
+const queue = currentListings
   .map((listing) => {
     const source = sourceById.get(listing.id);
     return {

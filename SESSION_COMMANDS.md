@@ -75,3 +75,46 @@ jq -s '{archivos:length, registros:(map(.record_count // 0)|add), pagina_minima:
 jq '{record_count}' "$casa_dir"/listings-master.json
 jq -s '{paginas:length, nuevos:([.[].records[]]|length), ids_unicos:([.[].records[].listing_id]|unique|length)}' "$casa_dir"/estrato-3-plus/chunk-*.json
 ```
+
+## Proyectos oficiales de constructoras
+
+- El universo de referencia es el segmento **Constructores y Promotores
+  Inmobiliarios** de Camacol Bogotá y Cundinamarca.
+- La cobertura geográfica admite Bogotá D.C. y la Sabana como mercados
+  separados.
+- Se incluyen lanzamiento, preventa/sobre planos, ventas y construcción; se
+  excluyen agotados y proyectos completamente entregados.
+- No se inventan precios ni tipologías. Las fichas oficiales incompletas quedan
+  documentadas en `exclusions` dentro del artefacto de recolección.
+- Arquitectura y Concreto tiene un colector estructurado en
+  `scripts/scrape-arquitectura-concreto-projects.mjs` que consume únicamente
+  datos públicos de Gatsby/Contentful.
+
+```sh
+source /Users/savathos/.nvm/nvm.sh
+nvm use 22.23.1
+node scripts/scrape-arquitectura-concreto-projects.mjs
+cd ui
+npm run images:cache
+npm run catalog:build
+```
+
+## Arriendos separados de ventas
+
+- Metrocuadrado reportó 9.312 apartamentos en arriendo; el colector guardó
+  9.309 y el catálogo publicó 9.160 con coordenadas válidas.
+- MyHome usa el estado técnico `for-rent` (etiquetado “Renta”): guardó y publicó
+  83 resultados.
+- El catálogo independiente `ui/public/data/rentals.json` contiene 9.243
+  arriendos de Bogotá, de cualquier cantidad de habitaciones. No se fusiona
+  con `catalog.json`, que continúa siendo exclusivamente de ventas.
+
+```sh
+source /Users/savathos/.nvm/nvm.sh
+nvm use 22.23.1
+node scripts/scrape-metrocuadrado.mjs --operation=rent --min-bedrooms=0 --strata=all
+node scripts/scrape-myhome.mjs --operation=rent
+cd ui
+npm run images:cache
+npm run rentals:build
+```

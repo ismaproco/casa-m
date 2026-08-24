@@ -6,13 +6,23 @@ import { fileURLToPath } from "node:url";
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const repositoryRoot = path.resolve(scriptDirectory, "..");
+const operation =
+  process.argv
+    .find((argument) => argument.startsWith("--operation="))
+    ?.split("=")[1] ?? "sale";
+if (operation !== "sale" && operation !== "rent") {
+  throw new Error(`Unsupported operation: ${operation}`);
+}
+const isRental = operation === "rent";
 const outputPath = path.join(
   repositoryRoot,
   "scrapes",
-  "myhome-bogota-listings.json",
+  isRental
+    ? "myhome-bogota-rental-listings.json"
+    : "myhome-bogota-listings.json",
 );
 const searchParameters =
-  "type=apartamento&status=venta&location%5B0%5D=-";
+  `type=apartamento&status=${isRental ? "for-rent" : "venta"}&location%5B0%5D=-`;
 const sourceUrl = `https://www.myhome.com.co/busqueda/?${searchParameters}`;
 const concurrency = 4;
 
@@ -178,10 +188,11 @@ function parseDetail(card, html) {
   }
   if (!priceCop) throw new Error(`missing_price:${propertyId}`);
   return {
-    id: `MYHOME-${propertyId}`,
+    id: `${isRental ? "MYHOME-RENT" : "MYHOME"}-${propertyId}`,
     source: "myhome",
     source_id: propertyId,
     result_type: "Inmueble",
+    operation_type: isRental ? "Arriendo" : "Venta",
     title: card.title,
     neighborhood: neighborhoodFromTitle(card.title),
     locality: null,
@@ -266,7 +277,7 @@ const output = {
   source_url: sourceUrl,
   criteria: {
     city: "Bogotá D.C.",
-    transaction: "venta",
+    transaction: isRental ? "arriendo" : "venta",
     property_type: "apartamento",
     minimum_bedrooms: 0,
   },

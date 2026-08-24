@@ -8,13 +8,15 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 3000",
     "catalog:build": "node scripts/build-catalog.mjs",
+    "rentals:build": "node scripts/build-rentals.mjs",
+    "data:build": "npm run catalog:build && npm run rentals:build",
     "images:cache": "node scripts/cache-property-images.mjs",
-    "build": "npm run catalog:build && vite build",
+    "build": "npm run data:build && vite build",
     "start": "vite preview --host 0.0.0.0 --port 3000",
     "test": "vitest run",
     "test:browser": "playwright test",
     "typecheck": "tsc --noEmit --incremental false",
-    "verify": "npm run catalog:build && npm run test && npm run test:browser && npm run lint && npm run typecheck && vite build",
+    "verify": "npm run data:build && npm run test && npm run test:browser && npm run lint && npm run typecheck && vite build",
     "release": "npm run verify",
     "lint": "eslint . --ignore-pattern dist"
   },

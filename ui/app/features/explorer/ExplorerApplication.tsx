@@ -14,6 +14,7 @@ import {
   FileUp,
   Filter,
   Heart,
+  KeyRound,
   Languages,
   List,
   Map as MapIcon,
@@ -90,7 +91,7 @@ import type {
   SearchQuery,
 } from "@/app/lib/types";
 
-type MainView = "explore" | "stats" | "favorites" | "saved";
+type MainView = "explore" | "rentals" | "stats" | "favorites" | "saved";
 type MobilePane = "list" | "map";
 type Theme = "dark" | "light";
 
@@ -127,6 +128,8 @@ function sourceActionLabel(url: string, locale: Locale, fallback: string) {
             ? "MyHome"
             : hostname.includes("amarilo")
               ? "Amarilo"
+            : hostname.includes("arquitecturayconcreto")
+              ? "Arquitectura y Concreto"
             : null;
     if (!source) return fallback;
     return locale === "es" ? `Ver en ${source}` : `View on ${source}`;
@@ -229,9 +232,15 @@ function UnknownProperty({
 }
 
 export default function ExplorerApplication() {
-  const { data: catalog, error: catalogError } = useCatalog();
   const router = useRouter();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const rentalsRoute = pathname.startsWith("/rentals");
+  const needsBothCatalogs =
+    pathname.startsWith("/favorites") || pathname.startsWith("/saved");
+  const salesQuery = useCatalog("sales", !rentalsRoute || needsBothCatalogs);
+  const rentalsQuery = useCatalog("rentals", rentalsRoute || needsBothCatalogs);
+  const catalog = rentalsRoute ? rentalsQuery.data : salesQuery.data;
+  const catalogError = rentalsRoute ? rentalsQuery.error : salesQuery.error;
   const rawRouterSearch = useRouterState({
     select: (state) => state.location.search,
   }) as Record<string, unknown>;
@@ -243,7 +252,11 @@ export default function ExplorerApplication() {
       ? "favorites"
       : pathname.startsWith("/saved")
         ? "saved"
-        : "explore";
+        : rentalsRoute
+          ? "rentals"
+          : "explore";
+  const isListingView = view === "explore" || view === "rentals";
+  const catalogKind = rentalsRoute ? "rentals" : "sales";
   const [locale, setLocale] = useState<Locale>("es");
   const [localeReady, setLocaleReady] = useState(false);
   const [theme, setTheme] = useState<Theme>("dark");
@@ -277,7 +290,15 @@ export default function ExplorerApplication() {
       if (next === "explore") {
         void router.navigate({
           to: "/explore",
-          search: queryToRouterSearch(query, activeSavedId),
+          search: queryToRouterSearch(
+            rentalsRoute ? DEFAULT_QUERY : query,
+            rentalsRoute ? null : activeSavedId,
+          ),
+        });
+      } else if (next === "rentals") {
+        void router.navigate({
+          to: "/rentals",
+          search: queryToRouterSearch(DEFAULT_QUERY),
         });
       } else if (next === "stats") {
         void router.navigate({ to: "/stats" });
@@ -287,12 +308,23 @@ export default function ExplorerApplication() {
         void router.navigate({ to: "/saved" });
       }
     },
-    [activeSavedId, query, router],
+    [activeSavedId, query, rentalsRoute, router],
   );
 
   const navigateToProperty = useCallback(
     (listingId: string | null) => {
-      if (listingId) {
+      if (rentalsRoute && listingId) {
+        void router.navigate({
+          to: "/rentals/property/$listingId",
+          params: { listingId },
+          search: queryToRouterSearch(query, activeSavedId),
+        });
+      } else if (rentalsRoute) {
+        void router.navigate({
+          to: "/rentals",
+          search: queryToRouterSearch(query, activeSavedId),
+        });
+      } else if (listingId) {
         void router.navigate({
           to: "/explore/property/$listingId",
           params: { listingId },
@@ -305,13 +337,22 @@ export default function ExplorerApplication() {
         });
       }
     },
-    [activeSavedId, query, router],
+    [activeSavedId, query, rentalsRoute, router],
   );
 
   const replaceFilterSearch = useCallback(
     (nextQuery: SearchQuery, savedId = activeSavedId) => {
       const search = queryToRouterSearch(nextQuery, savedId);
-      if (selectedId) {
+      if (rentalsRoute && selectedId) {
+        void router.navigate({
+          to: "/rentals/property/$listingId",
+          params: { listingId: selectedId },
+          search,
+          replace: true,
+        });
+      } else if (rentalsRoute) {
+        void router.navigate({ to: "/rentals", search, replace: true });
+      } else if (selectedId) {
         void router.navigate({
           to: "/explore/property/$listingId",
           params: { listingId: selectedId },
@@ -322,7 +363,7 @@ export default function ExplorerApplication() {
         void router.navigate({ to: "/explore", search, replace: true });
       }
     },
-    [activeSavedId, router, selectedId],
+    [activeSavedId, rentalsRoute, router, selectedId],
   );
 
   const updateQuery = useCallback(
@@ -361,7 +402,7 @@ export default function ExplorerApplication() {
   }, []);
 
   useEffect(() => {
-    if (view !== "explore") return;
+    if (!isListingView) return;
     // Back/forward navigation is the one external event that must rehydrate
     // controlled filter inputs while preserving transient map state.
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -371,15 +412,28 @@ export default function ExplorerApplication() {
       mapBounds: current.mapBounds,
     }));
     setActiveSavedId(routerSearch.saved ?? null);
-  }, [pathname, routerSearch, view]);
+  }, [isListingView, pathname, routerSearch]);
 
   useEffect(() => {
-    if (view !== "explore") return;
+    if (!isListingView) return;
     const canonical = validateExploreSearch(rawRouterSearch);
     const rawEntries = JSON.stringify(Object.entries(rawRouterSearch).sort());
     const canonicalEntries = JSON.stringify(Object.entries(canonical).sort());
     if (rawEntries === canonicalEntries) return;
-    if (selectedId) {
+    if (rentalsRoute && selectedId) {
+      void router.navigate({
+        to: "/rentals/property/$listingId",
+        params: { listingId: selectedId },
+        search: canonical,
+        replace: true,
+      });
+    } else if (rentalsRoute) {
+      void router.navigate({
+        to: "/rentals",
+        search: canonical,
+        replace: true,
+      });
+    } else if (selectedId) {
       void router.navigate({
         to: "/explore/property/$listingId",
         params: { listingId: selectedId },
@@ -393,7 +447,7 @@ export default function ExplorerApplication() {
         replace: true,
       });
     }
-  }, [rawRouterSearch, router, selectedId, view]);
+  }, [isListingView, rawRouterSearch, rentalsRoute, router, selectedId]);
 
   useEffect(() => {
     document.documentElement.lang = locale;
@@ -436,9 +490,25 @@ export default function ExplorerApplication() {
     [catalog, query],
   );
   const listingById = useMemo(
-    () => new Map((catalog?.listings ?? []).map((listing) => [listing.id, listing])),
-    [catalog],
+    () =>
+      new Map(
+        [
+          ...(salesQuery.data?.listings ?? []),
+          ...(rentalsQuery.data?.listings ?? []),
+        ].map((listing) => [listing.id, listing]),
+      ),
+    [rentalsQuery.data, salesQuery.data],
   );
+  const sourceOptions = useMemo(() => {
+    const sources = new Map<string, string>();
+    for (const listing of catalog?.listings ?? []) {
+      sources.set(listing.source, listing.sourceName ?? listing.source);
+      for (const evidence of listing.evidence ?? []) {
+        sources.set(evidence.source, evidence.sourceName);
+      }
+    }
+    return [...sources].sort(([, a], [, b]) => a.localeCompare(b, locale));
+  }, [catalog, locale]);
   const selectedListing = selectedId ? listingById.get(selectedId) ?? null : null;
   useEffect(() => {
     if (!selectedListing) return;
@@ -448,7 +518,11 @@ export default function ExplorerApplication() {
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
   }, [navigateToProperty, selectedListing]);
-  const activeSaved = savedSearches.find((saved) => saved.id === activeSavedId);
+  const activeSaved = savedSearches.find(
+    (saved) =>
+      saved.id === activeSavedId &&
+      (saved.catalogKind ?? "sales") === catalogKind,
+  );
   const activeUpdates = activeSaved
     ? compareSnapshot(activeSaved.snapshot, filteredListings)
     : null;
@@ -524,6 +598,7 @@ export default function ExplorerApplication() {
       createdAt: now,
       updatedAt: now,
       lastReviewedCatalogVersion: catalog.catalogVersion,
+      catalogKind,
     };
     try {
       await db.savedSearches.put(saved);
@@ -552,6 +627,7 @@ export default function ExplorerApplication() {
       snapshot: createSnapshot(filteredListings),
       updatedAt: new Date().toISOString(),
       lastReviewedCatalogVersion: catalog.catalogVersion,
+      catalogKind,
     };
     await db.savedSearches.put(updated);
   }
@@ -563,6 +639,7 @@ export default function ExplorerApplication() {
       snapshot: createSnapshot(filteredListings),
       updatedAt: new Date().toISOString(),
       lastReviewedCatalogVersion: catalog.catalogVersion,
+      catalogKind,
     };
     await db.savedSearches.put(updated);
   }
@@ -572,10 +649,17 @@ export default function ExplorerApplication() {
     setQuery(storedQuery);
     setActiveSavedId(saved.id);
     setVisibleLimit(80);
-    void router.navigate({
-      to: "/explore",
-      search: queryToRouterSearch(storedQuery, saved.id),
-    });
+    if (saved.catalogKind === "rentals") {
+      void router.navigate({
+        to: "/rentals",
+        search: queryToRouterSearch(storedQuery, saved.id),
+      });
+    } else {
+      void router.navigate({
+        to: "/explore",
+        search: queryToRouterSearch(storedQuery, saved.id),
+      });
+    }
   }
 
   async function deleteSavedSearch(saved: SavedSearch) {
@@ -710,12 +794,12 @@ export default function ExplorerApplication() {
               {catalog.summary.publishedRecords.toLocaleString(
                 locale === "es" ? "es-CO" : "en-US",
               )}{" "}
-              {c.verified}
+              {rentalsRoute ? c.rentalsVerified : c.verified}
             </small>
           </span>
         </button>
         <TabsList
-          className="h-full items-stretch gap-1 rounded-none bg-transparent p-0 max-[1024px]:fixed max-[1024px]:inset-x-0 max-[1024px]:bottom-0 max-[1024px]:z-50 max-[1024px]:grid max-[1024px]:h-14 max-[1024px]:w-full max-[1024px]:grid-cols-4 max-[1024px]:border-t max-[1024px]:bg-card max-[1024px]:p-1 max-[1024px]:text-foreground max-[1024px]:shadow-[0_-8px_24px_rgb(0_0_0/0.08)]"
+          className="h-full items-stretch gap-1 rounded-none bg-transparent p-0 max-[1024px]:fixed max-[1024px]:inset-x-0 max-[1024px]:bottom-0 max-[1024px]:z-50 max-[1024px]:grid max-[1024px]:h-14 max-[1024px]:w-full max-[1024px]:grid-cols-5 max-[1024px]:border-t max-[1024px]:bg-card max-[1024px]:p-1 max-[1024px]:text-foreground max-[1024px]:shadow-[0_-8px_24px_rgb(0_0_0/0.08)]"
           variant="line"
           aria-label="Main navigation"
         >
@@ -723,7 +807,13 @@ export default function ExplorerApplication() {
             value="explore"
             className="h-full rounded-none px-[15px] text-[13px] font-semibold text-[#aebdc2] data-active:text-white max-[1024px]:flex-col max-[1024px]:gap-0.5 max-[1024px]:rounded-lg max-[1024px]:px-1 max-[1024px]:text-[10px] max-[1024px]:text-muted-foreground max-[1024px]:data-active:bg-accent max-[1024px]:data-active:text-primary"
           >
-            <MapPin size={17} /> {c.explore}
+            <MapPin size={17} /> {c.sales}
+          </TabsTrigger>
+          <TabsTrigger
+            value="rentals"
+            className="h-full rounded-none px-[15px] text-[13px] font-semibold text-[#aebdc2] data-active:text-white max-[1024px]:flex-col max-[1024px]:gap-0.5 max-[1024px]:rounded-lg max-[1024px]:px-1 max-[1024px]:text-[10px] max-[1024px]:text-muted-foreground max-[1024px]:data-active:bg-accent max-[1024px]:data-active:text-primary"
+          >
+            <KeyRound size={17} /> {c.rentals}
           </TabsTrigger>
           <TabsTrigger
             value="stats"
@@ -814,7 +904,7 @@ export default function ExplorerApplication() {
         </Alert>
       )}
 
-      {view === "explore" && (
+      {isListingView && (
         <div className="grid h-[calc(100vh-var(--topbar))] min-h-0 grid-cols-[300px_minmax(360px,40%)_minmax(0,1fr)] overflow-hidden max-[1120px]:grid-cols-[280px_minmax(350px,42%)_minmax(0,1fr)] max-[1024px]:h-[calc(100vh-var(--topbar)-56px)] max-[860px]:relative max-[860px]:block">
           <aside
             className={cn(
@@ -852,10 +942,10 @@ export default function ExplorerApplication() {
                 </div>
               </Field>
               <div className="grid gap-2">
-                <span className="text-[10px] font-extrabold tracking-[0.06em] text-muted-foreground uppercase">{c.price}</span>
+                <span className="text-[10px] font-extrabold tracking-[0.06em] text-muted-foreground uppercase">{rentalsRoute ? c.monthlyRent : c.price}</span>
                 <div className="grid min-w-0 grid-cols-[repeat(2,minmax(0,1fr))] gap-1.5">
                   <Input
-                    aria-label={`${c.price} ${c.min}`}
+                    aria-label={`${rentalsRoute ? c.monthlyRent : c.price} ${c.min}`}
                     inputMode="numeric"
                     value={query.minPrice}
                     onChange={(event) =>
@@ -864,7 +954,7 @@ export default function ExplorerApplication() {
                     placeholder={c.min}
                   />
                   <Input
-                    aria-label={`${c.price} ${c.max}`}
+                    aria-label={`${rentalsRoute ? c.monthlyRent : c.price} ${c.max}`}
                     inputMode="numeric"
                     value={query.maxPrice}
                     onChange={(event) =>
@@ -969,15 +1059,24 @@ export default function ExplorerApplication() {
                     }
                   >
                     <option value="">{c.all}</option>
-                    <option value="fincaraiz">{c.sourceFincaraiz}</option>
-                    <option value="metrocuadrado">{c.sourceMetrocuadrado}</option>
-                    <option value="facebook-home-bogota">
-                      {c.sourceHomeBogota}
-                    </option>
-                    <option value="myhome">{c.sourceMyHome}</option>
-                    <option value="amarilo">{c.sourceAmarilo}</option>
+                    {sourceOptions.map(([value, label]) => (
+                      <option value={value} key={value}>{label}</option>
+                    ))}
                   </NativeSelect>
                 </Field>
+                <Field label={c.market}>
+                  <NativeSelect
+                    className="w-full"
+                    value={query.market}
+                    onChange={(event) => updateQuery("market", event.target.value)}
+                  >
+                    <option value="">{c.all}</option>
+                    <option value="bogota">{c.bogota}</option>
+                    <option value="sabana">{c.sabana}</option>
+                  </NativeSelect>
+                </Field>
+              </div>
+              <div className="grid min-w-0 grid-cols-[repeat(2,minmax(0,1fr))] gap-1.5">
                 <Field label={c.projectStatus}>
                   <NativeSelect
                     className="w-full"
@@ -993,21 +1092,19 @@ export default function ExplorerApplication() {
                     <option value="immediate">{c.immediateDelivery}</option>
                   </NativeSelect>
                 </Field>
+                <Field label={c.stratum} helper={c.stratumHelp}>
+                  <NativeSelect className="w-full"
+                    value={query.stratum}
+                    onChange={(event) => updateQuery("stratum", event.target.value)}
+                  >
+                    <option value="">{c.all}</option>
+                    {[1, 2, 3, 4, 5, 6].map((value) => (
+                      <option value={value} key={value}>{value}</option>
+                    ))}
+                    <option value="unknown">{c.unknown}</option>
+                  </NativeSelect>
+                </Field>
               </div>
-              <Field label={c.stratum} helper={c.stratumHelp}>
-                <NativeSelect className="w-full"
-                  value={query.stratum}
-                  onChange={(event) => updateQuery("stratum", event.target.value)}
-                >
-                  <option value="">{c.all}</option>
-                  {[1, 2, 3, 4, 5, 6].map((value) => (
-                    <option value={value} key={value}>
-                      {value}
-                    </option>
-                  ))}
-                  <option value="unknown">{c.unknown}</option>
-                </NativeSelect>
-              </Field>
               <Field label={c.sort}>
                 <NativeSelect className="w-full"
                   value={query.sort}
@@ -1267,7 +1364,11 @@ export default function ExplorerApplication() {
             <div className="grid gap-2">
               {savedSearches.map((saved) => {
                 const storedQuery = { ...DEFAULT_QUERY, ...saved.query };
-                const matches = filterListings(catalog.listings, storedQuery);
+                const savedCatalog =
+                  saved.catalogKind === "rentals"
+                    ? rentalsQuery.data
+                    : salesQuery.data;
+                const matches = filterListings(savedCatalog?.listings ?? [], storedQuery);
                 const updates = compareSnapshot(saved.snapshot, matches);
                 const count =
                   updates.added.length +
@@ -1455,6 +1556,9 @@ function ListingCard({
         </span>
         <strong className="col-start-2 self-start text-[17px] tracking-[-0.035em] max-[520px]:text-[15px]">
           {formatCompactCop(listing.priceCop, locale)}
+          {listing.operationType === "Arriendo" && (
+            <small className="ml-1 text-[9px] font-semibold text-muted-foreground">{c.perMonth}</small>
+          )}
         </strong>
         <span className="col-start-2 min-w-0 max-w-full overflow-hidden text-[13px] font-bold text-ellipsis whitespace-nowrap">
           {listing.projectName && <b>{listing.projectName} · </b>}
@@ -1574,6 +1678,9 @@ function ListingDrawer({
         )}
         <strong className="mt-5 block text-[22px] tracking-[-0.04em]">
           {formatCop(listing.priceCop, locale)}
+          {listing.operationType === "Arriendo" && (
+            <small className="ml-1.5 text-[10px] font-semibold tracking-normal text-muted-foreground">{c.perMonth}</small>
+          )}
         </strong>
         {listing.dataWarnings.length > 0 && (
           <div className="mt-2.5 flex items-center gap-2 rounded-lg border border-[#f0c3bc] bg-[#fff0ed] p-2 text-[10px] font-bold text-[#943c32]">
@@ -1625,7 +1732,108 @@ function ListingDrawer({
                   : "Listing coordinate"}
             </dd>
           </div>
+          {listing.market && (
+            <div>
+              <dt>{c.market}</dt>
+              <dd>
+                {listing.market === "sabana"
+                  ? `${c.sabana}${listing.municipality ? ` · ${listing.municipality}` : ""}`
+                  : c.bogota}
+              </dd>
+            </div>
+          )}
+          {listing.developerName && (
+            <div>
+              <dt>{c.officialSource}</dt>
+              <dd>{listing.developerName}</dd>
+            </div>
+          )}
         </dl>
+        {listing.typologies && listing.typologies.length > 0 && (
+          <section className="mt-6" aria-labelledby="project-typologies">
+            <h3 id="project-typologies" className="text-sm font-extrabold">
+              {c.apartmentTypes} ({listing.typologies.length})
+            </h3>
+            <div className="mt-2 grid gap-2">
+              {listing.typologies.map((typology) => (
+                <article
+                  key={`${typology.source}-${typology.id}`}
+                  className="rounded-xl border border-[#d7dedb] bg-[#f7f9f8] p-3 dark:border-[#263842] dark:bg-[#17242c]"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <strong className="text-sm">{typology.name}</strong>
+                      <p className="mt-0.5 text-[10px] text-[#68777d] dark:text-[#91a4ad]">
+                        {typology.sourceName}
+                        {typology.sourceKind === "official"
+                          ? ` · ${c.officialSource}`
+                          : ""}
+                      </p>
+                    </div>
+                    <strong className="text-right text-sm text-[#168f87] dark:text-[#38c7b7]">
+                      {typology.priceCop
+                        ? formatCop(typology.priceCop, locale)
+                        : c.consultPrice}
+                    </strong>
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 font-mono text-[10px] text-[#4c5d64] dark:text-[#b0c0c7]">
+                    <span>{typology.areaM2} m²</span>
+                    {typology.privateAreaM2 && (
+                      <span>{c.privateArea}: {typology.privateAreaM2} m²</span>
+                    )}
+                    {typology.bedrooms !== null && <span>{typology.bedrooms} {c.bedrooms.toLowerCase()}</span>}
+                    {typology.bathrooms !== null && <span>{typology.bathrooms} {c.bathrooms.replace(" mín.", "").replace("Min. ", "").toLowerCase()}</span>}
+                    {typology.parkingSpaces !== null && <span>{typology.parkingSpaces} {c.parking.replace(" mín.", "").replace("Min. ", "").toLowerCase()}</span>}
+                  </div>
+                  {typology.priceNote && (
+                    <p className="mt-2 text-[10px] text-[#68777d] dark:text-[#91a4ad]">{typology.priceNote}</p>
+                  )}
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+        {listing.sourceDifferences && listing.sourceDifferences.length > 0 && (
+          <section className="mt-6" aria-labelledby="source-differences">
+            <h3 id="source-differences" className="text-sm font-extrabold">{c.sourceDifferences}</h3>
+            <div className="mt-2 overflow-hidden rounded-xl border border-[#d7dedb] dark:border-[#263842]">
+              {listing.sourceDifferences.map((difference, index) => (
+                <a
+                  key={`${difference.source}-${difference.field}-${index}`}
+                  href={difference.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="grid grid-cols-[minmax(0,1fr)_auto] gap-2 border-b border-[#d7dedb] p-3 text-[10px] last:border-b-0 hover:bg-[#eef2ef] dark:border-[#263842] dark:hover:bg-[#17242c]"
+                >
+                  <span>
+                    <strong>{difference.sourceName}</strong> · {difference.field}
+                  </span>
+                  <span className="text-right font-mono">
+                    {String(difference.officialValue)} → {String(difference.portalValue)}
+                  </span>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+        {listing.evidence && listing.evidence.length > 1 && (
+          <section className="mt-6">
+            <h3 className="text-sm font-extrabold">{c.source}</h3>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {listing.evidence.map((evidence, index) => (
+                <a
+                  key={`${evidence.source}-${index}`}
+                  href={evidence.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 rounded-full border border-[#d7dedb] px-2.5 py-1.5 text-[10px] font-bold hover:border-[#168f87] dark:border-[#263842]"
+                >
+                  {evidence.sourceName} <ExternalLink size={11} />
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
       <div className="grid grid-cols-[0.8fr_1.2fr] gap-2 border-t border-[#d7dedb] bg-[#fafbfa] p-3 dark:border-[#263842] dark:bg-[#0d171d]">
         <Button
@@ -1688,7 +1896,12 @@ function FavoriteCard({
         <div className="min-w-0">
           <span className="font-mono text-[9px] font-extrabold tracking-[0.08em] text-primary uppercase">{listing.resultType}</span>
           <h2 className="my-1.5 overflow-hidden text-[17px] tracking-[-0.03em] text-ellipsis whitespace-nowrap">{listing.projectName ?? listing.neighborhood ?? listing.id}</h2>
-          <strong className="text-sm">{formatCop(listing.priceCop, locale)}</strong>
+          <strong className="text-sm">
+            {formatCop(listing.priceCop, locale)}
+            {listing.operationType === "Arriendo" && (
+              <small className="ml-1 text-[9px] text-muted-foreground">{c.perMonth}</small>
+            )}
+          </strong>
         </div>
         <Button
           variant="ghost"
@@ -1787,13 +2000,18 @@ function SearchSummary({
         ? c.sourceHomeBogota
         : query.source === "amarilo"
           ? c.sourceAmarilo
+        : query.source === "arquitectura-y-concreto"
+          ? "Arquitectura y Concreto"
         : query.source === "myhome"
           ? c.sourceMyHome
         : query.source === "metrocuadrado"
           ? c.sourceMetrocuadrado
-          : c.sourceFincaraiz,
+          : query.source === "fincaraiz"
+            ? c.sourceFincaraiz
+            : query.source,
     );
   }
+  if (query.market) parts.push(query.market === "sabana" ? c.sabana : c.bogota);
   if (query.stratum) parts.push(`${c.stratum} ${query.stratum}`);
   if (query.useMapBounds) parts.push(c.mapArea);
   return (

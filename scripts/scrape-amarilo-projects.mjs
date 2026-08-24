@@ -73,11 +73,58 @@ async function fetchText(url, accept = "text/html,application/xhtml+xml") {
   return text;
 }
 
-async function deliveryDate(url, state) {
-  if (state === "Entrega inmediata") return "Inmediata";
+function numberFromText(value, pattern) {
+  const match = decodeHtml(value ?? "").match(pattern);
+  if (!match) return null;
+  return numeric(match[1].replace(",", "."));
+}
+
+async function projectDetails(url, state) {
   const html = await fetchText(url);
-  const match = html.match(/Fecha entrega:\s*(?:<[^>]+>)*(.{1,300}?)(?:<\/strong>|<style)/i);
-  return match ? decodeHtml(match[1]) : null;
+  const dataMatch = html.match(
+    /<script id="__NEXT_DATA__" type="application\/json">(.*?)<\/script>/s,
+  );
+  if (!dataMatch) throw new Error(`missing_next_data:${url}`);
+  const project = JSON.parse(dataMatch[1]).props?.pageProps?.project;
+  if (!project) throw new Error(`missing_project_data:${url}`);
+  const typologies = (project.field_proy_planos ?? []).flatMap((plan, index) => {
+    const features = plan.field_proy_plano_caracteristicas?.processed ??
+      plan.field_proy_plano_caracteristicas?.value ?? "";
+    const area = numberFromText(features, /Área construida:\s*([\d.,]+)/i);
+    if (!area) return [];
+    const privateArea = numberFromText(features, /Área privada:\s*([\d.,]+)/i);
+    const bedrooms = numberFromText(features, /(?:N[º°o]\s*de\s*)?habitaciones:\s*([\d.,]+)/i);
+    const bathrooms = numberFromText(features, /(?:N[º°o]\s*de\s*)?baños:\s*([\d.,]+)/i);
+    const price = numeric(plan.field_proy_plano_precio_desde);
+    return [{
+      id: `${project.drupal_internal__nid}-${index + 1}`,
+      name: plan.field_proy_plano_nombre || `${area} m²`,
+      area_m2: area,
+      private_area_m2: privateArea,
+      bedrooms,
+      bathrooms,
+      parking_spaces: null,
+      price_cop: price && price > 0 ? price : null,
+      price_note: price ? null : "Precio específico no publicado por la constructora",
+      description: decodeHtml(features) || null,
+      source: "amarilo",
+      source_name: "Amarilo",
+      source_url: url,
+      source_kind: "official",
+    }];
+  });
+  const deliveryMatch = html.match(
+    /Fecha entrega:\s*(?:<[^>]+>)*(.{1,300}?)(?:<\/strong>|<style)/i,
+  );
+  return {
+    delivery:
+      state === "Entrega inmediata"
+        ? "Inmediata"
+        : deliveryMatch
+          ? decodeHtml(deliveryMatch[1])
+          : project.field_proy_fecha_entrega ?? null,
+    typologies,
+  };
 }
 
 const payload = JSON.parse(await fetchText(apiUrl, "application/json"));
@@ -123,9 +170,9 @@ for (const project of payload.data) {
   }
 
   const listingUrl = new URL(project.url, "https://amarilo.com.co").href;
-  let delivery = null;
+  let details;
   try {
-    delivery = await deliveryDate(listingUrl, project.field_proy_estado);
+    details = await projectDetails(listingUrl, project.field_proy_estado);
   } catch (error) {
     exclusions.push({
       id: sourceId,
@@ -136,13 +183,16 @@ for (const project of payload.data) {
   records.push({
     id: `AMARILO-${sourceId}`,
     source: "amarilo",
+    source_name: "Amarilo",
+    source_kind: "official",
+    developer_name: "Amarilo",
     source_id: sourceId,
     listing_url: listingUrl,
     title: project.title,
     result_type: "Proyecto",
     operation_type: "Venta",
     project_status: project.field_proy_estado || "Proyecto nuevo",
-    delivery_date: delivery,
+    delivery_date: details.delivery,
     price_cop: price,
     area_m2: area,
     price_per_m2: Math.round(price / area),
@@ -156,11 +206,31 @@ for (const project of payload.data) {
     country: "Colombia",
     state: "Bogotá D.C.",
     city: "Bogotá D.C.",
+    municipality: "Bogotá",
+    market: "bogota",
     locality: null,
     zone: null,
     neighborhood: project.field_grandes_desarrollo || null,
     address: project.field_proy_direccion || null,
     image_url: project.field_proy_galeria?.[0] ?? null,
+    typologies: details.typologies.length
+      ? details.typologies
+      : [{
+          id: `${sourceId}-summary`,
+          name: `${area} m²`,
+          area_m2: area,
+          private_area_m2: null,
+          bedrooms,
+          bathrooms,
+          parking_spaces: null,
+          price_cop: price,
+          price_note: "Precio desde publicado por la constructora",
+          description: null,
+          source: "amarilo",
+          source_name: "Amarilo",
+          source_url: listingUrl,
+          source_kind: "official",
+        }],
     raw_card: `${project.title} · ${project.field_proy_estado}`,
   });
 }

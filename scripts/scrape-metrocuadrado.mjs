@@ -6,20 +6,45 @@ import process from "node:process";
 
 const repositoryRoot = path.resolve(import.meta.dirname, "..");
 const scrapeDirectory = path.join(repositoryRoot, "scrapes");
+const operationArgument =
+  process.argv
+    .find((argument) => argument.startsWith("--operation="))
+    ?.split("=")[1] ?? "venta";
+const operation = ["rent", "rental", "arriendo"].includes(operationArgument)
+  ? "arriendo"
+  : operationArgument;
+if (operation !== "venta" && operation !== "arriendo") {
+  throw new Error(`Unsupported operation: ${operationArgument}`);
+}
+const minimumBedrooms = Number(
+  process.argv
+    .find((argument) => argument.startsWith("--min-bedrooms="))
+    ?.split("=")[1] ?? "3",
+);
+if (!Number.isInteger(minimumBedrooms) || minimumBedrooms < 0) {
+  throw new Error("Minimum bedrooms must be a non-negative integer");
+}
 const strataArgument =
   process.argv
     .find((argument) => argument.startsWith("--strata="))
     ?.split("=")[1] ?? "1,2";
-const strata = strataArgument
-  .split(",")
-  .map(Number)
-  .filter((value) => Number.isInteger(value) && value >= 1 && value <= 6);
+const strata = strataArgument === "all"
+  ? []
+  : strataArgument
+      .split(",")
+      .map(Number)
+      .filter((value) => Number.isInteger(value) && value >= 1 && value <= 6);
 const outputPrefix =
   process.argv
     .find((argument) => argument.startsWith("--output-prefix="))
-    ?.split("=")[1] ?? `metrocuadrado-bogota-estrato-${strata.join("-")}`;
+    ?.split("=")[1] ??
+  (operation === "arriendo"
+    ? "metrocuadrado-bogota-rental"
+    : `metrocuadrado-bogota-estrato-${strata.join("-")}`);
 
-if (strata.length === 0) throw new Error("At least one valid stratum is required");
+if (strata.length === 0 && strataArgument !== "all") {
+  throw new Error("At least one valid stratum is required");
+}
 if (!/^[a-z0-9][a-z0-9-]*$/i.test(outputPrefix)) {
   throw new Error(`Invalid output prefix: ${outputPrefix}`);
 }
@@ -36,9 +61,13 @@ const userAgent =
   "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138 Safari/537.36";
 
 function sourceUrl(stratum, page = 1) {
+  const filterParts = [];
+  if (minimumBedrooms > 0) filterParts.push(`${minimumBedrooms}-habitaciones`);
+  if (stratum) filterParts.push(`estrato-${stratum}`);
+  const filterPath = filterParts.length > 0 ? `${filterParts.join("-")}/` : "";
   const url = new URL(
-    `https://www.metrocuadrado.com/apartamento/venta/bogota/` +
-      `3-habitaciones-estrato-${stratum}/`,
+    `https://www.metrocuadrado.com/apartamento/${operation}/bogota/` +
+      filterPath,
   );
   url.searchParams.set("search", "form");
   if (page > 1) url.searchParams.set("page", String(page));
@@ -110,10 +139,12 @@ async function fetchResults(config, stratum, from) {
       url.searchParams.set("size", String(pageSize));
       url.searchParams.set("from", String(from));
       url.searchParams.set("realEstateTypeList", "apartamento");
-      url.searchParams.set("realEstateBusinessList", "venta");
+      url.searchParams.set("realEstateBusinessList", operation);
       url.searchParams.set("city", "bogota");
-      url.searchParams.set("roomList", "3");
-      url.searchParams.set("stratumList", String(stratum));
+      if (minimumBedrooms > 0) {
+        url.searchParams.set("roomList", String(minimumBedrooms));
+      }
+      if (stratum) url.searchParams.set("stratumList", String(stratum));
       const response = await fetch(url, {
         headers: {
           accept: "application/json",
@@ -135,7 +166,7 @@ async function fetchResults(config, stratum, from) {
     }
   }
   throw new Error(
-    `Stratum ${stratum}, offset ${from} failed after retries: ${lastError}`,
+    `Scope ${stratum ?? "all"}, offset ${from} failed after retries: ${lastError}`,
   );
 }
 
@@ -166,7 +197,9 @@ function normalizeProperty(property, requestedStratum) {
     numericValue(property.marea) ??
     numericValue(property.mareac) ??
     numericValue(property.areaprivada);
-  const price = numericValue(property.mvalorventa);
+  const price = numericValue(
+    operation === "arriendo" ? property.mvalorarriendo : property.mvalorventa,
+  );
   const bedrooms = numericValue(property.mnrocuartos);
   const bathrooms = numericValue(property.mnrobanos);
   const parking = numericValue(property.mnrogarajes);
@@ -174,7 +207,7 @@ function normalizeProperty(property, requestedStratum) {
   const coordinate = coordinates(property);
 
   return {
-    id: `MC-${sourceId}`,
+    id: `${operation === "arriendo" ? "MC-RENT" : "MC"}-${sourceId}`,
     source: "metrocuadrado",
     source_id: sourceId,
     listing_url: new URL(
@@ -187,7 +220,7 @@ function normalizeProperty(property, requestedStratum) {
       property.categoria === "Proyecto" || property.mnombreproyecto
         ? "Proyecto"
         : "Apartamento",
-    operation_type: "Venta",
+    operation_type: operation === "arriendo" ? "Arriendo" : "Venta",
     price_cop: price,
     area_m2: area,
     price_per_m2:
@@ -238,7 +271,8 @@ await mkdir(scrapeDirectory, { recursive: true });
 const recordsById = new Map();
 const strataSummary = [];
 
-for (const stratum of strata) {
+const scopes = strata.length ? strata : [null];
+for (const stratum of scopes) {
   const config = await loadSearchConfig(stratum);
   const rawById = new Map();
   let reportedTotal = 0;
@@ -283,8 +317,8 @@ for (const stratum of strata) {
     const record = normalizeProperty(property, stratum);
     if (
       record.bedrooms === null ||
-      record.bedrooms < 3 ||
-      record.stratum !== stratum ||
+      record.bedrooms < minimumBedrooms ||
+      (stratum !== null && record.stratum !== stratum) ||
       !/^Bogotá(?: D\.C\.)?$/i.test(record.city)
     ) {
       continue;
@@ -314,9 +348,9 @@ const output = {
   filters: {
     city: "Bogotá D.C.",
     property_type: "Apartamento",
-    operation_type: "Venta",
-    minimum_bedrooms: 3,
-    strata,
+    operation_type: operation === "arriendo" ? "Arriendo" : "Venta",
+    minimum_bedrooms: minimumBedrooms,
+    strata: strata.length ? strata : "all",
   },
   strata_summary: strataSummary,
   records_count: records.length,

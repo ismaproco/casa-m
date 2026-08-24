@@ -21,9 +21,15 @@ and server infrastructure for single-user data.
 ### Static catalog, local user data
 
 Root-level collection and enrichment scripts produce source artifacts.
-`ui/scripts/build-catalog.mjs` validates and deduplicates those records, attaches
-cached images, computes fingerprints, and writes the catalog consumed by the
-application.
+`ui/scripts/build-catalog.mjs` builds the sales catalog and
+`ui/scripts/build-rentals.mjs` builds an independent rental catalog. Both attach
+cached images and compute fingerprints; the UI never mixes their result sets.
+
+New developments are grouped into a single project even when several portals
+publish the same inventory. Official developer data is preferred, while every
+portal observation and material difference remains attached to the project.
+Apartment typologies retain their own price, built/private area, bedrooms,
+bathrooms, parking, source, and collection evidence.
 
 The browser fetches that generated catalog through TanStack Query. Favorites,
 listing statuses, notes, saved searches, catalog baselines, locale, and theme
@@ -129,7 +135,8 @@ npm install
 npm run dev
 ```
 
-Open `http://127.0.0.1:3000/explore`.
+Open `http://127.0.0.1:3000/explore` for sales or
+`http://127.0.0.1:3000/rentals` for rentals.
 
 Useful commands:
 
@@ -142,6 +149,52 @@ npm run build
 npm run verify
 npm start
 ```
+
+Refresh the Bogotá rental sources (all bedroom counts) before rebuilding:
+
+```bash
+node scripts/scrape-metrocuadrado.mjs --operation=rent --min-bedrooms=0 --strata=all
+node scripts/scrape-myhome.mjs --operation=rent
+cd ui
+npm run images:cache
+npm run rentals:build
+```
+
+Refresh the structured Arquitectura y Concreto inventory for Bogotá and the
+Sabana before rebuilding the catalog:
+
+```bash
+node scripts/scrape-arquitectura-concreto-projects.mjs
+cd ui
+npm run images:cache
+npm run build
+```
+
+The collector only reads the public Gatsby/Contentful project data. It records
+projects without disclosed prices, missing apartment types, inactive states,
+or invalid coordinates as audited exclusions instead of inventing values or
+bypassing access controls.
+
+## Deploy to the local server
+
+Git does not carry `scrapes/` or the cached property images. From a clean,
+pushed worktree, use the deployment script to pull application code on the
+server, incrementally synchronize those local resources, run the one-shot
+Docker build, and validate both Nginx and the public HTTPS endpoint:
+
+```bash
+./scripts/deploy-server.sh
+```
+
+Defaults:
+
+- SSH host: `server.local`
+- remote repository: `~/repos/casa-m`
+- public URL: `https://casa.micro.isma.to`
+
+Override them when needed with `CASA_DEPLOY_HOST`, `CASA_DEPLOY_DIR`, and
+`CASA_DEPLOY_URL`. The script intentionally refuses a dirty Git worktree so the
+remote code and the local data artifacts cannot drift apart.
 
 ## Repository layout
 

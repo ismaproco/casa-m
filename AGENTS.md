@@ -55,17 +55,20 @@ No global state library is used.
 - `/` redirects to `/explore`.
 - `/explore`
 - `/explore/property/$listingId`
+- `/rentals`
+- `/rentals/property/$listingId`
 - `/stats`
 - `/favorites`
 - `/saved`
 
-Explore filters are validated URL search parameters. Invalid numeric, sorting,
+Explore and rental filters are validated URL search parameters. Invalid numeric, sorting,
 stratum, bedroom, result-type, parking, and bathroom values are removed and
 defaults restored. Typing filters replaces the current history entry. View
 changes and property selection push normal history entries.
 
-Map bounds and other temporary UI state do not belong in the URL. Closing a
-property returns to `/explore` with active filters intact. An unknown property
+Sales and rentals use physically separate generated catalogs and navigation
+tabs. Map bounds and other temporary UI state do not belong in the URL. Closing a
+property returns to its `/explore` or `/rentals` parent with active filters intact. An unknown property
 ID keeps the explorer shell visible and offers a return to results.
 
 ## Project structure
@@ -111,6 +114,7 @@ casa/                              # Git repository root
     │   └── property-images/       # Locally cached WebP imagery
     ├── scripts/
     │   ├── build-catalog.mjs
+    │   ├── build-rentals.mjs
     │   └── cache-property-images.mjs
     ├── tests/
     │   ├── browser/               # Playwright integration tests
@@ -137,9 +141,8 @@ npm start
 ```
 
 - Development and preview bind to `0.0.0.0:3000`.
-- `npm run build` runs `catalog:build` first, so it rewrites
-  `public/data/catalog.json` and `catalog-report.json`, including generation
-  timestamps.
+- `npm run build` runs `data:build` first, rewriting the independent sales
+  `catalog.json` and rental `rentals.json` catalogs and their reports.
 - `npm run verify` runs catalog generation, Vitest, Playwright, ESLint, strict
   TypeScript, and a production Vite build.
 - Prefer targeted tests while iterating, then run checks proportional to the
@@ -205,10 +208,11 @@ npm start
 ## Data flow and persistence
 
 1. Root scripts collect and enrich source records under `scrapes/`.
-2. `ui/scripts/build-catalog.mjs` reads merged root inputs, validates Bogotá
-   coordinates and URLs, deduplicates records, attaches local images, computes
-   fingerprints, and writes the public catalog/report.
-3. TanStack Query fetches `/data/catalog.json` in the browser.
+2. `ui/scripts/build-catalog.mjs` builds sales while `build-rentals.mjs` builds
+   rentals from their own scrape artifacts. Both validate coordinates and URLs,
+   attach local images, and compute fingerprints.
+3. TanStack Query fetches `/data/catalog.json` or `/data/rentals.json` according
+   to the active sales/rentals route.
 4. Pure helpers in `app/lib/core.ts` validate route search, filter and sort
    listings, and compare saved-search snapshots.
 5. Dexie stores favorites, saved searches, catalog baselines, locale, and theme.

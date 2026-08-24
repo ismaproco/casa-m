@@ -39,7 +39,7 @@ describe("application routes", () => {
     expect(router.state.matches.at(-1)?.params).toMatchObject({
       listingId: "FR-123",
     });
-    expect(router.state.matches.at(-1)?.search).toMatchObject({
+    expect(router.state.location.search).toMatchObject({
       text: "Cedritos",
       stratum: "4",
     });
@@ -49,7 +49,7 @@ describe("application routes", () => {
       search: { text: "Cedritos", stratum: "4" },
     });
     expect(router.state.location.pathname).toBe("/explore");
-    expect(router.state.matches.at(-1)?.search).toMatchObject({
+    expect(router.state.location.search).toMatchObject({
       text: "Cedritos",
       stratum: "4",
     });
@@ -64,10 +64,34 @@ describe("application routes", () => {
     );
   });
 
-  it("navigates through stats, favorites, and saved routes", async () => {
+  it("supports rental filters and direct rental property loading", async () => {
+    const router = testRouter("/rentals?source=myhome&bedrooms=1");
+    await router.load();
+    expect(router.state.location.pathname).toBe("/rentals");
+    expect(router.state.location.search).toMatchObject({
+      source: "myhome",
+      bedrooms: 1,
+    });
+    await router.navigate({
+      to: "/rentals/property/$listingId",
+      params: { listingId: "MC-RENT-123" },
+      search: { source: "metrocuadrado", bedrooms: "2" },
+    });
+    expect(router.state.location.pathname).toBe(
+      "/rentals/property/MC-RENT-123",
+    );
+    expect(router.state.location.search).toMatchObject({
+      source: "metrocuadrado",
+      bedrooms: "2",
+    });
+  });
+
+  it("navigates through rentals, stats, favorites, and saved routes", async () => {
     const router = testRouter("/stats");
     await router.load();
     expect(router.state.location.pathname).toBe("/stats");
+    await router.navigate({ to: "/rentals" });
+    expect(router.state.location.pathname).toBe("/rentals");
     await router.navigate({ to: "/favorites" });
     expect(router.state.location.pathname).toBe("/favorites");
     await router.navigate({ to: "/saved" });
