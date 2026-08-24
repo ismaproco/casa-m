@@ -128,6 +128,11 @@ export type MapBounds = {
 export type SearchQuery = {
   text: string;
   source: string;
+  developer: string;
+  locality: string;
+  municipality: string;
+  neighborhood: string;
+  coordinatePrecision: string;
   market: string;
   minPrice: string;
   maxPrice: string;
@@ -148,6 +153,13 @@ export type ExploreSearch = Partial<
   Omit<SearchQuery, "useMapBounds" | "mapBounds">
 > & {
   saved?: string;
+  favorites?: "only";
+};
+
+export type StatsScope = "all" | "sales" | "rentals" | "projects" | "resale";
+
+export type StatsSearch = ExploreSearch & {
+  scope?: StatsScope;
 };
 
 export type ListingSummary = Pick<

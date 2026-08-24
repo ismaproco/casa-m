@@ -91,6 +91,19 @@ describe("statistics", () => {
     ).toBe(5);
   });
 
+  it("uses monthly-rent buckets independently from sale prices", () => {
+    const rows = [
+      listing({ id: "low-rent", priceCop: 2_000_000, operationType: "Arriendo" }),
+      listing({ id: "mid-rent", priceCop: 4_000_001, operationType: "Arriendo" }),
+      listing({ id: "high-rent", priceCop: 25_000_001, operationType: "Arriendo" }),
+    ];
+    const buckets = priceDistribution(rows, "rental");
+    expect(buckets.reduce((sum, bucket) => sum + bucket.count, 0)).toBe(3);
+    expect(buckets.find((bucket) => bucket.id === "rent-under-2")?.count).toBe(1);
+    expect(buckets.find((bucket) => bucket.id === "rent-4-8")?.count).toBe(1);
+    expect(buckets.find((bucket) => bucket.id === "rent-over-25")?.count).toBe(1);
+  });
+
   it("downsamples scatter data and excludes top outliers", () => {
     const rows = Array.from({ length: 100 }, (_, index) =>
       listing({

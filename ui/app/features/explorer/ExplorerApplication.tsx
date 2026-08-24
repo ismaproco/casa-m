@@ -72,6 +72,7 @@ import {
   queryFromRouterSearch,
   queryToRouterSearch,
   validateExploreSearch,
+  validateStatsSearch,
 } from "@/app/lib/core";
 import {
   db,
@@ -89,6 +90,7 @@ import type {
   MapBounds,
   SavedSearch,
   SearchQuery,
+  StatsSearch,
 } from "@/app/lib/types";
 
 type MainView = "explore" | "rentals" | "stats" | "favorites" | "saved";
@@ -237,7 +239,9 @@ export default function ExplorerApplication() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const rentalsRoute = pathname.startsWith("/rentals");
   const needsBothCatalogs =
-    pathname.startsWith("/favorites") || pathname.startsWith("/saved");
+    pathname.startsWith("/favorites") ||
+    pathname.startsWith("/saved") ||
+    pathname.startsWith("/stats");
   const salesQuery = useCatalog("sales", !rentalsRoute || needsBothCatalogs);
   const rentalsQuery = useCatalog("rentals", rentalsRoute || needsBothCatalogs);
   const catalog = rentalsRoute ? rentalsQuery.data : salesQuery.data;
@@ -246,6 +250,7 @@ export default function ExplorerApplication() {
     select: (state) => state.location.search,
   }) as Record<string, unknown>;
   const routerSearch = useSearch({ strict: false }) as Partial<ExploreSearch>;
+  const statsSearch = rawRouterSearch as StatsSearch;
   const params = useParams({ strict: false }) as { listingId?: string };
   const view: MainView = pathname.startsWith("/stats")
     ? "stats"
@@ -451,6 +456,19 @@ export default function ExplorerApplication() {
   }, [isListingView, rawRouterSearch, rentalsRoute, router, selectedId]);
 
   useEffect(() => {
+    if (view !== "stats") return;
+    const canonical = validateStatsSearch(rawRouterSearch);
+    const rawEntries = JSON.stringify(Object.entries(rawRouterSearch).sort());
+    const canonicalEntries = JSON.stringify(Object.entries(canonical).sort());
+    if (rawEntries === canonicalEntries) return;
+    void router.navigate({
+      to: "/stats",
+      search: canonical,
+      replace: true,
+    });
+  }, [rawRouterSearch, router, view]);
+
+  useEffect(() => {
     document.documentElement.lang = locale;
     if (!localeReady) return;
     db.settings
@@ -486,10 +504,12 @@ export default function ExplorerApplication() {
     return () => window.clearTimeout(timer);
   }, [toast]);
 
-  const filteredListings = useMemo(
-    () => filterListings(catalog?.listings ?? [], query),
-    [catalog, query],
-  );
+  const filteredListings = useMemo(() => {
+    const filtered = filterListings(catalog?.listings ?? [], query);
+    if (routerSearch.favorites !== "only") return filtered;
+    const favoriteIds = new Set(favorites.map((favorite) => favorite.listingId));
+    return filtered.filter((listing) => favoriteIds.has(listing.id));
+  }, [catalog, favorites, query, routerSearch.favorites]);
   const listingById = useMemo(
     () =>
       new Map(
@@ -736,22 +756,31 @@ export default function ExplorerApplication() {
     setVisibleLimit(80);
   };
 
-  const applyStatsFilters = (patch: Partial<SearchQuery>) => {
-    const nextQuery = {
-      ...query,
-      ...patch,
-      useMapBounds: false,
-      mapBounds: null,
-    };
+  const applyStatsFilters = (
+    kind: "sales" | "rentals",
+    nextQuery: SearchQuery,
+  ) => {
     setQuery(nextQuery);
     setVisibleLimit(80);
     void router.navigate({
-      to: "/explore",
-      search: queryToRouterSearch(nextQuery),
+      to: kind === "rentals" ? "/rentals" : "/explore",
+      search: {
+        ...queryToRouterSearch(nextQuery),
+        ...(statsSearch.favorites === "only" ? { favorites: "only" as const } : {}),
+      },
     });
   };
 
-  if (!catalog && !catalogError) {
+  const updateStatsSearch = (nextSearch: StatsSearch) => {
+    void router.navigate({ to: "/stats", search: nextSearch, replace: true });
+  };
+
+  const statsLoading =
+    view === "stats" && (!salesQuery.data || !rentalsQuery.data);
+  const statsError =
+    view === "stats" && (salesQuery.error || rentalsQuery.error);
+
+  if ((!catalog && !catalogError) || (statsLoading && !statsError)) {
     return (
       <main className="grid min-h-screen place-content-center justify-items-center gap-3 bg-[#10212a] text-xs font-semibold tracking-[0.04em] text-white">
         <div className="grid size-10 place-items-center rounded-lg bg-[#2bb7a9] font-mono text-[13px] font-black tracking-[-0.04em] text-[#10212a]">
@@ -761,12 +790,12 @@ export default function ExplorerApplication() {
       </main>
     );
   }
-  if (catalogError || !catalog) {
+  if (catalogError || !catalog || statsError) {
     return (
       <main className="grid min-h-screen place-content-center justify-items-center gap-3 bg-[#10212a] text-xs font-semibold tracking-[0.04em] text-white">
         <CircleAlert />
         <strong>Catalog unavailable</strong>
-        <span>{String(catalogError)}</span>
+        <span>{String(catalogError || statsError)}</span>
       </main>
     );
   }
@@ -854,6 +883,7 @@ export default function ExplorerApplication() {
             variant="ghost"
             className="h-[38px] border border-white/15 bg-white/[0.06] px-2.5 text-xs font-bold text-slate-200 hover:bg-white/10 hover:text-white max-[1024px]:size-9 max-[1024px]:px-0"
             onClick={() => setLocale(locale === "es" ? "en" : "es")}
+            disabled={!localeReady}
             aria-label={locale === "es" ? "Switch to English" : "Cambiar a español"}
           >
             <Languages size={17} />
@@ -866,6 +896,7 @@ export default function ExplorerApplication() {
             onClick={() =>
               setTheme((current) => (current === "dark" ? "light" : "dark"))
             }
+            disabled={!localeReady}
             aria-label={
               theme === "dark"
                 ? locale === "es"
@@ -1338,14 +1369,13 @@ export default function ExplorerApplication() {
 
       {view === "stats" && (
         <StatsDashboard
-          allListings={catalog.listings}
-          listings={filteredListings}
-          query={query}
+          salesListings={salesQuery.data?.listings ?? []}
+          rentalListings={rentalsQuery.data?.listings ?? []}
+          favoriteIds={favorites.map((favorite) => favorite.listingId)}
+          search={statsSearch}
           locale={locale}
-          onApplyFilters={applyStatsFilters}
-          onShowResults={() => {
-            navigateToView("explore");
-          }}
+          onSearchChange={updateStatsSearch}
+          onDrillDown={applyStatsFilters}
         />
       )}
 

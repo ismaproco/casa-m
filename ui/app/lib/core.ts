@@ -10,6 +10,11 @@ import type {
 export const DEFAULT_QUERY: SearchQuery = {
   text: "",
   source: "",
+  developer: "",
+  locality: "",
+  municipality: "",
+  neighborhood: "",
+  coordinatePrecision: "",
   market: "",
   minPrice: "",
   maxPrice: "",
@@ -56,6 +61,26 @@ export function listingMatches(listing: Listing, query: SearchQuery) {
     !listing.evidence?.some((entry) => entry.source === query.source)
   ) return false;
   if (query.market && listing.market !== query.market) return false;
+  if (
+    query.developer &&
+    normalizeText(listing.developerName) !== normalizeText(query.developer)
+  ) return false;
+  if (
+    query.locality &&
+    normalizeText(listing.locality) !== normalizeText(query.locality)
+  ) return false;
+  if (
+    query.municipality &&
+    normalizeText(listing.municipality) !== normalizeText(query.municipality)
+  ) return false;
+  if (
+    query.neighborhood &&
+    normalizeText(listing.neighborhood) !== normalizeText(query.neighborhood)
+  ) return false;
+  if (
+    query.coordinatePrecision &&
+    listing.coordinatePrecision !== query.coordinatePrecision
+  ) return false;
 
   const minPrice = optionalNumber(query.minPrice);
   const maxPrice = optionalNumber(query.maxPrice);
@@ -261,6 +286,22 @@ export function validateExploreSearch(
   if (input.market === "bogota" || input.market === "sabana") {
     result.market = input.market;
   }
+  for (const key of [
+    "developer",
+    "locality",
+    "municipality",
+    "neighborhood",
+  ] as const) {
+    if (typeof input[key] === "string" && input[key].trim()) {
+      result[key] = input[key].trim();
+    }
+  }
+  if (
+    input.coordinatePrecision === "listing" ||
+    input.coordinatePrecision === "neighborhood_centroid"
+  ) {
+    result.coordinatePrecision = input.coordinatePrecision;
+  }
 
   for (const key of NUMERIC_SEARCH_KEYS) {
     const value = validNumericSearch(input[key]);
@@ -302,6 +343,7 @@ export function validateExploreSearch(
   if (typeof input.saved === "string" && input.saved.trim()) {
     result.saved = input.saved;
   }
+  if (input.favorites === "only") result.favorites = "only";
   return result;
 }
 
@@ -313,6 +355,11 @@ export function queryFromRouterSearch(
   for (const key of [
     "text",
     "source",
+    "developer",
+    "locality",
+    "municipality",
+    "neighborhood",
+    "coordinatePrecision",
     "market",
     "minPrice",
     "maxPrice",
@@ -329,6 +376,21 @@ export function queryFromRouterSearch(
   }
   query.sort = validated.sort ?? DEFAULT_QUERY.sort;
   return query;
+}
+
+export function validateStatsSearch(
+  input: Record<string, unknown>,
+): import("./types").StatsSearch {
+  const result: import("./types").StatsSearch = validateExploreSearch(input);
+  if (
+    input.scope === "sales" ||
+    input.scope === "rentals" ||
+    input.scope === "projects" ||
+    input.scope === "resale"
+  ) {
+    result.scope = input.scope;
+  }
+  return result;
 }
 
 export function queryToRouterSearch(

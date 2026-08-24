@@ -420,6 +420,47 @@ test("filters, property selection, close, and history stay synchronized", async 
   await expect(page).toHaveURL(/\/explore\?text=Cedritos&stratum=4$/);
 });
 
+test("statistics scopes keep markets separate and drill down to the matching route", async ({
+  page,
+}) => {
+  await page.goto("/stats");
+  await expect(page.getByRole("heading", { name: /precios de venta|sale prices/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /cánones mensuales|monthly rents/i })).toBeVisible();
+
+  await page.goto("/stats?scope=invalid&bedrooms=99&favorites=yes");
+  await expect(page).toHaveURL(/\/stats$/);
+
+  const scope = page.getByRole("combobox", { name: /ámbito|scope/i });
+  await scope.selectOption("rentals");
+  await expect(page).toHaveURL(/\/stats\?scope=rentals$/);
+  await page.getByRole("combobox", { name: /habitaciones|bedrooms/i }).selectOption("3");
+  await expect(page).toHaveURL(/scope=rentals.*bedrooms=3|bedrooms=3.*scope=rentals/);
+  await expect(page.getByText(/canon mediano|median monthly rent/i)).toBeVisible();
+
+  await page.getByRole("button", { name: /hasta \$2m|up to \$2m/i }).click();
+  await expect(page).toHaveURL(/\/rentals\?/);
+  await expect(page).toHaveURL(/bedrooms=3/);
+  await expect(page).toHaveURL(/maxPrice=2000000/);
+
+  await page.goto("/stats?scope=projects");
+  await expect(page.getByRole("combobox", { name: /constructora|developer/i })).toBeVisible();
+  await expect(page.getByRole("combobox", { name: /estado del proyecto|project status/i })).toBeVisible();
+  await page.getByRole("button", { name: /abrir anuncios|open listings/i }).click();
+  await expect(page).toHaveURL(/\/explore\?/);
+  await expect(page).toHaveURL(/resultType=Proyecto/);
+  await expect(page).toHaveURL(/projectStatus=new/);
+});
+
+test("statistics filters remain contained on mobile", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/stats?scope=projects");
+  await expect(page.getByRole("combobox", { name: /ámbito|scope/i })).toBeVisible();
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - window.innerWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(1);
+});
+
 test("responsive controls remain contained at a narrow viewport", async ({
   page,
 }) => {

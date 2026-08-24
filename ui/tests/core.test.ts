@@ -8,6 +8,7 @@ import {
   queryFromRouterSearch,
   queryToRouterSearch,
   validateExploreSearch,
+  validateStatsSearch,
 } from "../app/lib/core";
 import type { Listing, SearchQuery } from "../app/lib/types";
 import { DEFAULT_QUERY } from "../app/lib/core";
@@ -101,6 +102,24 @@ describe("catalog filtering", () => {
         query({ source: "amarilo", resultType: "Proyecto" }),
       ),
     ).toBe(true);
+  });
+
+  it("matches exact URL-backed statistics drill-down fields", () => {
+    const row = listing({
+      locality: "Chapinero",
+      neighborhood: "Chicó",
+      municipality: "Bogotá",
+      developerName: "Constructora Bolívar",
+      coordinatePrecision: "listing",
+    });
+    expect(listingMatches(row, query({
+      locality: "chapinero",
+      neighborhood: "chico",
+      municipality: "Bogotá",
+      developer: "Constructora Bolívar",
+      coordinatePrecision: "listing",
+    }))).toBe(true);
+    expect(listingMatches(row, query({ locality: "Usaquén" }))).toBe(false);
   });
 
   it("filters Bogotá and Sabana projects and matches any apartment typology", () => {
@@ -336,5 +355,30 @@ describe("explore route search", () => {
     expect(validateExploreSearch({ source: "zonario" })).toEqual({
       source: "zonario",
     });
+  });
+
+  it("validates statistics scopes and advanced drill-down filters", () => {
+    expect(validateStatsSearch({
+      scope: "rentals",
+      locality: "Chapinero",
+      municipality: "Chía",
+      neighborhood: "Chicó",
+      developer: "Constructora Bolívar",
+      coordinatePrecision: "listing",
+      favorites: "only",
+    })).toMatchObject({
+      scope: "rentals",
+      locality: "Chapinero",
+      municipality: "Chía",
+      neighborhood: "Chicó",
+      developer: "Constructora Bolívar",
+      coordinatePrecision: "listing",
+      favorites: "only",
+    });
+    expect(validateStatsSearch({
+      scope: "mixed-prices",
+      coordinatePrecision: "street",
+      favorites: "yes",
+    })).toEqual({});
   });
 });

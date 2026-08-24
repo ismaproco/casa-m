@@ -136,8 +136,18 @@ export function bedroomDistribution(listings: Listing[]) {
   );
 }
 
-export function priceDistribution(listings: Listing[]) {
-  const buckets: Array<DistributionBucket> = [
+export function priceDistribution(
+  listings: Listing[],
+  scale: "sale" | "rental" = "sale",
+) {
+  const buckets: Array<DistributionBucket> = scale === "rental" ? [
+    { id: "rent-under-2", label: "Hasta $2M", max: 2_000_000, count: 0 },
+    { id: "rent-2-4", label: "$2M–$4M", min: 2_000_001, max: 4_000_000, count: 0 },
+    { id: "rent-4-8", label: "$4M–$8M", min: 4_000_001, max: 8_000_000, count: 0 },
+    { id: "rent-8-15", label: "$8M–$15M", min: 8_000_001, max: 15_000_000, count: 0 },
+    { id: "rent-15-25", label: "$15M–$25M", min: 15_000_001, max: 25_000_000, count: 0 },
+    { id: "rent-over-25", label: "Más de $25M", min: 25_000_001, count: 0 },
+  ] : [
     { id: "price-under-300", label: "Hasta $300M", max: 300_000_000, count: 0 },
     {
       id: "price-300-500",

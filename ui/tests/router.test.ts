@@ -97,4 +97,17 @@ describe("application routes", () => {
     await router.navigate({ to: "/saved" });
     expect(router.state.location.pathname).toBe("/saved");
   });
+
+  it("validates URL-backed statistics scope and filters", async () => {
+    const router = testRouter(
+      "/stats?scope=rentals&bedrooms=3&favorites=only&coordinatePrecision=listing",
+    );
+    await router.load();
+    expect(router.state.location.search).toMatchObject({
+      scope: "rentals",
+      bedrooms: 3,
+      favorites: "only",
+      coordinatePrecision: "listing",
+    });
+  });
 });
