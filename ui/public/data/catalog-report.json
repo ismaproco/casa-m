@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-08-24T18:25:03.491Z",
-  "catalogVersion": "6f0f6141c1c71ae2",
+  "generatedAt": "2026-08-24T18:34:29.011Z",
+  "catalogVersion": "11b01d50f8b196f8",
   "summary": {
     "sourceRecords": 13227,
-    "publishedRecords": 13074,
+    "publishedRecords": 13046,
     "excludedRecords": 8,
-    "approximateCoordinates": 385,
+    "approximateCoordinates": 357,
     "knownStratum": 12340,
     "officialProjects": 44,
     "sabanaProjects": 65,
     "apartmentTypes": 1894,
-    "sourceDifferences": 61,
+    "sourceDifferences": 133,
     "topDevelopersAudited": 100,
     "topDevelopersWithRegionalProjects": 52
   },
@@ -132,6 +132,13 @@
       ]
     }
   ],
+  "deduplication": {
+    "inputProjectRecords": 586,
+    "publishedProjects": 413,
+    "mergedRecords": 173,
+    "crossSourceGroups": 102,
+    "officialPreferredGroups": 32
+  },
   "warningCounts": {
     "missing_apartment_typologies": 1,
     "missing_price": 1,
@@ -139,8 +146,8 @@
     "area_outlier": 6
   },
   "images": {
-    "available": 12765,
-    "missing": 309,
+    "available": 12754,
+    "missing": 292,
     "archived": 46
   },
   "developerAudit": {

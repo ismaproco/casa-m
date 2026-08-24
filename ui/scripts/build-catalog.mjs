@@ -215,6 +215,85 @@ function normalizedProjectName(value) {
     .trim();
 }
 
+const projectNameStopWords = new Set([
+  "de",
+  "del",
+  "el",
+  "en",
+  "la",
+  "las",
+  "los",
+]);
+
+function projectNameTokens(value) {
+  return [...new Set(
+    normalizedProjectName(value)
+      .split(/\s+/)
+      .filter((token) => token && !projectNameStopWords.has(token)),
+  )].sort();
+}
+
+function normalizedDeveloperName(value) {
+  const ignored = new Set([
+    "a",
+    "bogota",
+    "colombia",
+    "constructora",
+    "constructor",
+    "construcciones",
+    "s",
+    "sa",
+    "sas",
+  ]);
+  return String(value ?? "")
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLocaleLowerCase("es")
+    .replace(/[^a-z0-9]+/g, " ")
+    .split(/\s+/)
+    .filter((token) => token && !ignored.has(token))
+    .join(" ");
+}
+
+function sameProjectGeography(left, right) {
+  if (left.market !== right.market) return false;
+  return left.market !== "sabana" || left.municipality === right.municipality;
+}
+
+function sameProjectDeveloper(left, right) {
+  const leftDeveloper = normalizedDeveloperName(left.developerName);
+  const rightDeveloper = normalizedDeveloperName(right.developerName);
+  return Boolean(
+    leftDeveloper &&
+      rightDeveloper &&
+      leftDeveloper === rightDeveloper,
+  );
+}
+
+function isTokenSubset(smaller, larger) {
+  const largerSet = new Set(larger);
+  return smaller.length > 0 && smaller.every((token) => largerSet.has(token));
+}
+
+function shouldMergeProjects(left, right) {
+  if (!sameProjectGeography(left, right)) return false;
+  if (normalizedProjectName(left.projectName) === normalizedProjectName(right.projectName)) {
+    return true;
+  }
+  if (!sameProjectDeveloper(left, right)) return false;
+
+  const leftTokens = projectNameTokens(left.projectName);
+  const rightTokens = projectNameTokens(right.projectName);
+  if (leftTokens.join(" ") === rightTokens.join(" ")) return true;
+
+  const hasOfficialRecord =
+    left.sourceKind === "official" || right.sourceKind === "official";
+  if (!hasOfficialRecord) return false;
+  return leftTokens.length <= rightTokens.length
+    ? isTokenSubset(leftTokens, rightTokens)
+    : isTokenSubset(rightTokens, leftTokens);
+}
+
 function projectTypology(listing) {
   return {
     id: listing.id,
@@ -280,21 +359,45 @@ function sourceDifferences(official, evidence) {
   });
 }
 
-const projectGroups = new Map();
 const regularListings = [];
+const projectListings = [];
 for (const listing of listings) {
   if (listing.resultType !== "Proyecto") {
     regularListings.push(listing);
     continue;
   }
-  const key = [
-    listing.market,
-    listing.market === "sabana" ? listing.municipality : "",
-    normalizedProjectName(listing.projectName),
-  ].join(":");
-  const group = projectGroups.get(key) ?? [];
-  group.push(listing);
-  projectGroups.set(key, group);
+  projectListings.push(listing);
+}
+
+const projectParents = projectListings.map((_, index) => index);
+function findProjectParent(index) {
+  if (projectParents[index] !== index) {
+    projectParents[index] = findProjectParent(projectParents[index]);
+  }
+  return projectParents[index];
+}
+function joinProjectGroups(leftIndex, rightIndex) {
+  const leftParent = findProjectParent(leftIndex);
+  const rightParent = findProjectParent(rightIndex);
+  if (leftParent !== rightParent) projectParents[rightParent] = leftParent;
+}
+for (let leftIndex = 0; leftIndex < projectListings.length; leftIndex += 1) {
+  for (
+    let rightIndex = leftIndex + 1;
+    rightIndex < projectListings.length;
+    rightIndex += 1
+  ) {
+    if (shouldMergeProjects(projectListings[leftIndex], projectListings[rightIndex])) {
+      joinProjectGroups(leftIndex, rightIndex);
+    }
+  }
+}
+const projectGroups = new Map();
+for (let index = 0; index < projectListings.length; index += 1) {
+  const parent = findProjectParent(index);
+  const group = projectGroups.get(parent) ?? [];
+  group.push(projectListings[index]);
+  projectGroups.set(parent, group);
 }
 
 const mergedProjects = [...projectGroups.values()].map((group) => {
@@ -436,6 +539,19 @@ const report = {
     scrapedAt: data.scraped_at ?? data.updated_at ?? null,
   })),
   exclusions,
+  deduplication: {
+    inputProjectRecords: projectListings.length,
+    publishedProjects: mergedProjects.length,
+    mergedRecords: projectListings.length - mergedProjects.length,
+    crossSourceGroups: [...projectGroups.values()].filter(
+      (group) => new Set(group.map((listing) => listing.source)).size > 1,
+    ).length,
+    officialPreferredGroups: [...projectGroups.values()].filter(
+      (group) =>
+        group.length > 1 &&
+        group.some((listing) => listing.sourceKind === "official"),
+    ).length,
+  },
   warningCounts: listings.reduce((counts, listing) => {
     for (const warning of listing.dataWarnings) {
       counts[warning] = (counts[warning] ?? 0) + 1;

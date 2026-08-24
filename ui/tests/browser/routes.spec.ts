@@ -196,6 +196,20 @@ test("official Amarilo projects are filterable with current sale status", async 
   );
 
   expect(projects).toHaveLength(23);
+  const coral = projects.find(
+    (listing: { projectName: string }) =>
+      listing.projectName === "Coral - La Felicidad",
+  ) as { evidence: Array<{ source: string }> };
+  expect(coral.evidence.map((entry) => entry.source)).toEqual(
+    expect.arrayContaining(["amarilo", "ciencuadras", "zonario"]),
+  );
+  expect(
+    catalog.listings.some(
+      (listing: { projectName?: string | null }) =>
+        listing.projectName === "La felicidad - coral" ||
+        listing.projectName === "CORAL",
+    ),
+  ).toBe(false);
   expect(
     projects.every(
       (listing: { deliveryDate?: string | null }) => listing.deliveryDate,

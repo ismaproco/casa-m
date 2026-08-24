@@ -197,8 +197,12 @@ visible Ciencuadras result pages in Chrome. Its records remain portal evidence,
 not official developer evidence. The catalog merger keeps an official
 developer record as the preferred project whenever both sources describe the
 same project, while retaining Ciencuadras prices and apartment types for the
-source comparison. Listings without an exact point use an explicitly
-approximate locality centroid.
+source comparison. Deduplication also recognizes reordered project names and
+short portal names that omit an official macroproject, but only applies the
+latter rule when the normalized developer and geography match. Distinctive
+subprojects remain separate. The generated `catalog-report.json` records the
+number of merged records and official-preferred groups. Listings without an
+exact point use an explicitly approximate locality centroid.
 
 The national developer census ranks exactly 100 normalized developer/promoter
 groups by the number of active projects in Zonario's public nationwide
