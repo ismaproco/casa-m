@@ -291,4 +291,16 @@ describe("explore route search", () => {
       projectStatus: "construction",
     });
   });
+
+  it("validates the Construcciones Planificadas source filter", () => {
+    expect(
+      validateExploreSearch({ source: "construcciones-planificadas" }),
+    ).toEqual({ source: "construcciones-planificadas" });
+  });
+
+  it("validates the Ciencuadras project source filter", () => {
+    expect(validateExploreSearch({ source: "ciencuadras" })).toEqual({
+      source: "ciencuadras",
+    });
+  });
 });

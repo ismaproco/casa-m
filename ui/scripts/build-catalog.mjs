@@ -17,6 +17,7 @@ const standardSourceNames = [
   "amarilo-bogota-new-projects.json",
   "facebook-home-bogota-listings.json",
   "myhome-bogota-listings.json",
+  "ciencuadras-bogota-projects.json",
   "arquitectura-concreto-bogota-sabana-projects.json",
 ];
 const discoveredOfficialSourceNames = (await readdir(scrapeDirectory)).filter(
@@ -281,7 +282,7 @@ const mergedProjects = [...projectGroups.values()].map((group) => {
   );
   const uniqueTypologies = [...new Map(
     typologies.map((typology) => [
-      `${typology.source}:${typology.areaM2}:${typology.bedrooms}:${typology.bathrooms}:${typology.priceCop}`,
+      `${typology.source}:${normalizedProjectName(typology.name)}:${typology.areaM2}:${typology.bedrooms}:${typology.bathrooms}:${typology.priceCop}`,
       typology,
     ]),
   ).values()];

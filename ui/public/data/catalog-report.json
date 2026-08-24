@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-08-24T14:18:05.374Z",
-  "catalogVersion": "d5af555ff0e14f45",
+  "generatedAt": "2026-08-24T17:22:31.941Z",
+  "catalogVersion": "efc9ab485c962637",
   "summary": {
-    "sourceRecords": 12733,
-    "publishedRecords": 12682,
+    "sourceRecords": 12853,
+    "publishedRecords": 12790,
     "excludedRecords": 8,
-    "approximateCoordinates": 5,
-    "knownStratum": 12341,
-    "officialProjects": 28,
+    "approximateCoordinates": 108,
+    "knownStratum": 12340,
+    "officialProjects": 34,
     "sabanaProjects": 1,
-    "apartmentTypes": 138,
-    "sourceDifferences": 0
+    "apartmentTypes": 430,
+    "sourceDifferences": 16
   },
   "inputs": [
     {
@@ -56,10 +56,22 @@
       "scrapedAt": "2026-08-11T18:55:05.591Z"
     },
     {
+      "fileName": "ciencuadras-bogota-projects.json",
+      "source": "ciencuadras",
+      "records": 114,
+      "scrapedAt": "2026-08-24T17:19:02.642Z"
+    },
+    {
       "fileName": "arquitectura-concreto-bogota-sabana-projects.json",
       "source": "arquitectura-y-concreto",
       "records": 5,
       "scrapedAt": "2026-08-23T23:04:46.629Z"
+    },
+    {
+      "fileName": "construcciones-planificadas-bogota-sabana-projects.json",
+      "source": "construcciones-planificadas",
+      "records": 6,
+      "scrapedAt": "2026-08-24T17:08:43.902Z"
     }
   ],
   "exclusions": [
@@ -117,8 +129,8 @@
     "area_outlier": 6
   },
   "images": {
-    "available": 12648,
+    "available": 12756,
     "missing": 34,
-    "archived": 44
+    "archived": 45
   }
 }

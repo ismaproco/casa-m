@@ -89,11 +89,20 @@ jq -s '{paginas:length, nuevos:([.[].records[]]|length), ids_unicos:([.[].record
 - Arquitectura y Concreto tiene un colector estructurado en
   `scripts/scrape-arquitectura-concreto-projects.mjs` que consume únicamente
   datos públicos de Gatsby/Contentful.
+- Construcciones Planificadas tiene un colector estructurado en
+  `scripts/scrape-construcciones-planificadas-projects.mjs`. Audita el sitemap
+  completo y la categoría oficial `En ejecución`; excluye tipologías vendidas,
+  usos no residenciales y proyectos sin precio divulgado.
+- El inventario amplio de proyectos nuevos de Ciencuadras se auditó con Chrome
+  Computer Use: 18 páginas visibles, 114 proyectos, 258 tipologías y 28
+  constructoras/promotores. Se conserva como evidencia de portal y usa
+  centroides aproximados de localidad cuando la tarjeta no publica el punto.
 
 ```sh
 source /Users/savathos/.nvm/nvm.sh
 nvm use 22.23.1
 node scripts/scrape-arquitectura-concreto-projects.mjs
+node scripts/scrape-construcciones-planificadas-projects.mjs
 cd ui
 npm run images:cache
 npm run catalog:build

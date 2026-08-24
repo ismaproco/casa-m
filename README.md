@@ -175,6 +175,29 @@ projects without disclosed prices, missing apartment types, inactive states,
 or invalid coordinates as audited exclusions instead of inventing values or
 bypassing access controls.
 
+Refresh the official Construcciones Planificadas inventory before rebuilding:
+
+```bash
+node scripts/scrape-construcciones-planificadas-projects.mjs
+cd ui
+npm run images:cache
+npm run build
+```
+
+This collector audits the complete official portfolio sitemap together with
+the current `En ejecución` category. It publishes priced residential leaf
+projects in Bogotá, excludes sold typologies, and records umbrella projects,
+offices, stale links, and active projects without a disclosed price as audited
+exclusions.
+
+The broad Bogotá new-development audit is collected interactively from the 18
+visible Ciencuadras result pages in Chrome. Its records remain portal evidence,
+not official developer evidence. The catalog merger keeps an official
+developer record as the preferred project whenever both sources describe the
+same project, while retaining Ciencuadras prices and apartment types for the
+source comparison. Listings without an exact point use an explicitly
+approximate locality centroid.
+
 ## Deploy to the local server
 
 Git does not carry `scrapes/` or the cached property images. From a clean,

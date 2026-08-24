@@ -127,8 +127,8 @@ test("construction projects are filterable and expose delivery details", async (
       listing.resultType === "Proyecto",
   );
 
-  expect(constructionProjects).toHaveLength(19);
-  expect(new Set(constructionProjects.map((listing: { projectName: string }) => listing.projectName)).size).toBe(19);
+  expect(constructionProjects).toHaveLength(18);
+  expect(new Set(constructionProjects.map((listing: { projectName: string }) => listing.projectName)).size).toBe(18);
   expect(constructionProjects.every((listing: { deliveryDate?: string | null }) => listing.deliveryDate)).toBe(true);
 
   await page.goto(
@@ -143,6 +143,8 @@ test("construction projects are filterable and expose delivery details", async (
   await expect(
     page.getByRole("combobox", { name: /project status|estado del proyecto/i }),
   ).toHaveValue("construction");
+  // Alsacia Arboré is now led by its official record but still matches this
+  // portal filter through the retained Metrocuadrado evidence.
   await expect(page.locator(".project-star-marker")).toHaveCount(19);
   await expect(
     page.locator("article").first().getByText(/en construcción|under construction/i),
@@ -197,15 +199,42 @@ test("official developer projects expose Bogotá/Sabana coverage and apartment t
   const catalog = await response.json();
   const viena = catalog.listings.find(
     (listing: { projectName?: string | null }) => listing.projectName === "Viena",
-  ) as { id: string; source: string; typologies: Array<{ priceCop: number }> };
+  ) as {
+    id: string;
+    source: string;
+    typologies: Array<{ priceCop: number; source: string }>;
+    sourceDifferences: Array<{
+      source: string;
+      field: string;
+      officialValue: unknown;
+      portalValue: unknown;
+    }>;
+  };
 
   expect(viena.source).toBe("arquitectura-y-concreto");
-  expect(viena.typologies).toHaveLength(3);
-  expect(viena.typologies.map((typology) => typology.priceCop)).toEqual([
+  expect(viena.typologies.filter((typology) => typology.source === "arquitectura-y-concreto"))
+    .toHaveLength(3);
+  expect(
+    viena.typologies
+      .filter((typology) => typology.source === "arquitectura-y-concreto")
+      .map((typology) => typology.priceCop),
+  ).toEqual([
     445100000,
     467917810,
     543660795,
   ]);
+  expect(viena.typologies.filter((typology) => typology.source === "ciencuadras"))
+    .toHaveLength(2);
+  expect(viena.sourceDifferences).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        source: "ciencuadras",
+        field: "priceCop",
+        officialValue: 445100000,
+        portalValue: 467875801,
+      }),
+    ]),
+  );
 
   await page.goto("/explore?source=arquitectura-y-concreto&market=bogota");
   await expect(page.getByText(/4 resultados|4 results/i)).toBeVisible();
@@ -219,6 +248,73 @@ test("official developer projects expose Bogotá/Sabana coverage and apartment t
   await expect(
     page.getByRole("combobox", { name: /coverage|cobertura/i }),
   ).toHaveValue("sabana");
+});
+
+test("Construcciones Planificadas projects expose current priced typologies", async ({
+  page,
+}) => {
+  const response = await page.request.get("/data/catalog.json");
+  const catalog = await response.json();
+  const projects = catalog.listings.filter(
+    (listing: { source?: string }) => listing.source === "construcciones-planificadas",
+  ) as Array<{
+    id: string;
+    projectName: string;
+    projectStatus: string;
+    typologies: Array<{ priceCop: number | null }>;
+  }>;
+
+  expect(projects.map((listing) => listing.projectName).sort()).toEqual([
+    "Alsacia Arboré",
+    "Palmeri",
+    "Pinar 24",
+    "Rocca",
+    "Serraclara",
+    "Zelva",
+  ]);
+  expect(projects.every((listing) => listing.projectStatus === "En construcción")).toBe(true);
+  expect(projects.every((listing) => listing.typologies.every((type) => type.priceCop))).toBe(true);
+  expect(
+    Object.fromEntries(projects.map((listing) => [listing.projectName, listing.typologies.length])),
+  ).toMatchObject({ Palmeri: 5, "Pinar 24": 3, Rocca: 3, Serraclara: 4, Zelva: 8 });
+
+  await page.goto(
+    "/explore?source=construcciones-planificadas&resultType=Proyecto&projectStatus=construction",
+  );
+  await expect(page.getByText(/6 resultados|6 results/i)).toBeVisible();
+  await expect(page.locator(".project-star-marker")).toHaveCount(6);
+  await page.goto(`/explore/property/${encodeURIComponent(projects[0].id)}`);
+  await expect(
+    page.getByRole("heading", { name: /tipos de apartamento|apartment types/i }),
+  ).toBeVisible();
+});
+
+test("Ciencuadras expands multi-developer project coverage without replacing official evidence", async ({
+  page,
+}) => {
+  const response = await page.request.get("/data/catalog.json");
+  const catalog = await response.json();
+  const projects = catalog.listings.filter(
+    (listing: {
+      source: string;
+      evidence?: Array<{ source: string }>;
+      projectStatus?: string | null;
+    }) =>
+      listing.source === "ciencuadras" ||
+      listing.evidence?.some((entry) => entry.source === "ciencuadras"),
+  );
+
+  expect(projects.length).toBeGreaterThanOrEqual(100);
+  expect(projects.every((listing: { projectStatus?: string | null }) => listing.projectStatus)).toBe(true);
+  expect(
+    new Set(projects.map((listing: { developerName?: string | null }) => listing.developerName).filter(Boolean)).size,
+  ).toBeGreaterThanOrEqual(20);
+
+  await page.goto("/explore?source=ciencuadras&resultType=Proyecto&projectStatus=new");
+  await expect(
+    page.getByRole("combobox", { name: /source|fuente/i }),
+  ).toHaveValue("ciencuadras");
+  await expect(page.locator(".project-star-marker")).toHaveCount(projects.length);
 });
 
 test("filters, property selection, close, and history stay synchronized", async ({

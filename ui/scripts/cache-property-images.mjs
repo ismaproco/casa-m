@@ -30,6 +30,7 @@ const standardSourceNames = [
   "amarilo-bogota-new-projects.json",
   "facebook-home-bogota-listings.json",
   "myhome-bogota-listings.json",
+  "ciencuadras-bogota-projects.json",
   "arquitectura-concreto-bogota-sabana-projects.json",
   "metrocuadrado-bogota-rental-listings.json",
   "myhome-bogota-rental-listings.json",

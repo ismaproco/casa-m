@@ -230,6 +230,8 @@ const CATALOG_SOURCES = new Set([
   "myhome",
   "amarilo",
   "arquitectura-y-concreto",
+  "construcciones-planificadas",
+  "ciencuadras",
 ]);
 
 function validNumericSearch(value: unknown) {
