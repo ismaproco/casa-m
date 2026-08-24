@@ -177,6 +177,25 @@ explicit data-gap flags; inactive, hidden, out-of-region, or unlocatable
 projects are audited exclusions. It never invents values or bypasses access
 controls.
 
+Refresh Cusezar's current Bogotá/La Calera portfolio and reproduce the audited
+Constructora Capital portfolio before rebuilding:
+
+```bash
+node scripts/scrape-cusezar-projects.mjs
+node scripts/build-constructora-capital-browser-audit.mjs
+cd ui
+npm run images:cache
+npm run build
+```
+
+Cusezar is collected directly from its public project cards and detail pages.
+Constructora Capital's site is protected by browser controls, so its artifact
+is a reproducible snapshot of the visible browser audit: 19 active residential
+projects, 18 explicitly sold projects, and two non-residential exclusions.
+When an official portfolio marks a project sold or removes it from its current
+offering, matching portal-only project records are excluded during catalog
+generation.
+
 Refresh the official Construcciones Planificadas inventory before rebuilding:
 
 ```bash

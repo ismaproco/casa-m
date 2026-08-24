@@ -120,10 +120,12 @@ test("construction projects are filterable and expose delivery details", async (
     (listing: {
       projectStatus?: string | null;
       source: string;
+      evidence?: Array<{ source: string }>;
       resultType: string;
     }) =>
       listing.projectStatus === "En construcción" &&
-      listing.source === "metrocuadrado" &&
+      (listing.source === "metrocuadrado" ||
+        listing.evidence?.some((entry) => entry.source === "metrocuadrado")) &&
       listing.resultType === "Proyecto",
   );
 
@@ -145,7 +147,7 @@ test("construction projects are filterable and expose delivery details", async (
   ).toHaveValue("construction");
   // Alsacia Arboré is now led by its official record but still matches this
   // portal filter through the retained Metrocuadrado evidence.
-  await expect(page.locator(".project-star-marker")).toHaveCount(19);
+  await expect(page.locator(".project-star-marker")).toHaveCount(18);
   await expect(
     page.locator("article").first().getByText(/en construcción|under construction/i),
   ).toBeVisible();
@@ -380,6 +382,63 @@ test("Construcciones Planificadas projects expose current priced typologies", as
   await expect(
     page.getByRole("heading", { name: /tipos de apartamento|apartment types/i }),
   ).toBeVisible();
+});
+
+test("Cusezar and Constructora Capital portfolios are consolidated against their official sites", async ({
+  page,
+}) => {
+  const response = await page.request.get("/data/catalog.json");
+  const catalog = await response.json();
+  const cusezar = catalog.listings.filter(
+    (listing: { source?: string }) => listing.source === "cusezar",
+  );
+  const capital = catalog.listings.filter(
+    (listing: { source?: string }) => listing.source === "constructora-capital",
+  );
+
+  expect(cusezar).toHaveLength(17);
+  expect(capital).toHaveLength(19);
+  expect(cusezar.map((listing: { projectName: string }) => listing.projectName.trim()))
+    .toEqual(expect.arrayContaining([
+      "ENTRE BOSQUES VI",
+      "LA GRATITUD II DE LA MARLENE",
+      "LA GRATITUD IV DE LA MARLENE",
+      "MUSEO PARQUE CENTRAL",
+    ]));
+  expect(capital.map((listing: { projectName: string }) => listing.projectName))
+    .toEqual(expect.arrayContaining(["Solare", "Verdi", "Lúmina"]));
+
+  const verdi = capital.find(
+    (listing: { projectName: string }) => listing.projectName === "Verdi",
+  );
+  const lumina = capital.find(
+    (listing: { projectName: string }) => listing.projectName === "Lúmina",
+  );
+  expect(verdi.typologies).toEqual(expect.arrayContaining([
+    expect.objectContaining({ bedrooms: 2, priceCop: 262100000 }),
+    expect.objectContaining({ bedrooms: 3, priceCop: 262100000 }),
+  ]));
+  expect(lumina.typologies.filter(
+    (typology: { source: string }) => typology.source === "constructora-capital",
+  )).toHaveLength(3);
+  expect(lumina.typologies.map((typology: { priceCop: number }) => typology.priceCop))
+    .toEqual([372140000, 425540000, 480250000]);
+
+  const withdrawn = new Set([
+    "picabia", "strata", "tessera", "citrino", "volare", "zefiro", "urbania bio",
+  ]);
+  expect(catalog.listings.some(
+    (listing: { resultType: string; projectName?: string | null }) =>
+      listing.resultType === "Proyecto" &&
+      withdrawn.has(listing.projectName?.trim().toLocaleLowerCase("es") ?? ""),
+  )).toBe(false);
+
+  await page.goto("/explore?source=cusezar&resultType=Proyecto&projectStatus=new");
+  await expect(page.getByText(/17 resultados|17 results/i)).toBeVisible();
+  await expect(page.locator(".project-star-marker")).toHaveCount(17);
+  await page.goto("/explore?source=constructora-capital&resultType=Proyecto&projectStatus=new");
+  await expect(page.getByText(/19 resultados|19 results/i)).toBeVisible();
+  await expect(page.locator(".project-star-marker")).toHaveCount(19);
 });
 
 test("Ciencuadras expands multi-developer project coverage without replacing official evidence", async ({

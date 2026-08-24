@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-08-24T18:34:29.011Z",
-  "catalogVersion": "11b01d50f8b196f8",
+  "generatedAt": "2026-08-24T19:50:39.501Z",
+  "catalogVersion": "2bde83c0812dbdd5",
   "summary": {
-    "sourceRecords": 13227,
-    "publishedRecords": 13046,
-    "excludedRecords": 8,
+    "sourceRecords": 13263,
+    "publishedRecords": 13045,
+    "excludedRecords": 16,
     "approximateCoordinates": 357,
-    "knownStratum": 12340,
-    "officialProjects": 44,
-    "sabanaProjects": 65,
-    "apartmentTypes": 1894,
-    "sourceDifferences": 133,
+    "knownStratum": 12335,
+    "officialProjects": 80,
+    "sabanaProjects": 66,
+    "apartmentTypes": 1936,
+    "sourceDifferences": 203,
     "topDevelopersAudited": 100,
     "topDevelopersWithRegionalProjects": 52
   },
@@ -68,6 +68,18 @@
       "source": "arquitectura-y-concreto",
       "records": 15,
       "scrapedAt": "2026-08-24T18:20:31.251Z"
+    },
+    {
+      "fileName": "cusezar-bogota-sabana-projects.json",
+      "source": "cusezar",
+      "records": 17,
+      "scrapedAt": "2026-08-24T19:46:20.255Z"
+    },
+    {
+      "fileName": "constructora-capital-bogota-sabana-projects.json",
+      "source": "constructora-capital",
+      "records": 19,
+      "scrapedAt": "2026-08-24T00:00:00.000Z"
     },
     {
       "fileName": "construcciones-planificadas-bogota-sabana-projects.json",
@@ -130,14 +142,70 @@
       "reasons": [
         "invalid_coordinate"
       ]
+    },
+    {
+      "id": "MC-17156-C0011-01",
+      "reasons": [
+        "totalmente_vendido"
+      ],
+      "officialSource": "constructora-capital-bogota-sabana-projects.json"
+    },
+    {
+      "id": "CC-P964",
+      "reasons": [
+        "not_in_current_official_portfolio"
+      ],
+      "officialSource": "cusezar-bogota-sabana-projects.json"
+    },
+    {
+      "id": "ZONARIO-urbania-bio",
+      "reasons": [
+        "totalmente_vendido"
+      ],
+      "officialSource": "constructora-capital-bogota-sabana-projects.json"
+    },
+    {
+      "id": "ZONARIO-volare",
+      "reasons": [
+        "totalmente_vendido"
+      ],
+      "officialSource": "constructora-capital-bogota-sabana-projects.json"
+    },
+    {
+      "id": "ZONARIO-citrino",
+      "reasons": [
+        "totalmente_vendido"
+      ],
+      "officialSource": "constructora-capital-bogota-sabana-projects.json"
+    },
+    {
+      "id": "ZONARIO-zefiro",
+      "reasons": [
+        "totalmente_vendido"
+      ],
+      "officialSource": "constructora-capital-bogota-sabana-projects.json"
+    },
+    {
+      "id": "ZONARIO-tessera",
+      "reasons": [
+        "not_in_current_official_portfolio"
+      ],
+      "officialSource": "cusezar-bogota-sabana-projects.json"
+    },
+    {
+      "id": "ZONARIO-strata",
+      "reasons": [
+        "not_in_current_official_portfolio"
+      ],
+      "officialSource": "cusezar-bogota-sabana-projects.json"
     }
   ],
   "deduplication": {
-    "inputProjectRecords": 586,
-    "publishedProjects": 413,
-    "mergedRecords": 173,
-    "crossSourceGroups": 102,
-    "officialPreferredGroups": 32
+    "inputProjectRecords": 614,
+    "publishedProjects": 412,
+    "mergedRecords": 202,
+    "crossSourceGroups": 119,
+    "officialPreferredGroups": 61
   },
   "warningCounts": {
     "missing_apartment_typologies": 1,
@@ -146,9 +214,9 @@
     "area_outlier": 6
   },
   "images": {
-    "available": 12754,
-    "missing": 292,
-    "archived": 46
+    "available": 12776,
+    "missing": 269,
+    "archived": 110
   },
   "developerAudit": {
     "fileName": "colombia-top-100-developers.json",

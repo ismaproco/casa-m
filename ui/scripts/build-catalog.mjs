@@ -19,6 +19,8 @@ const standardSourceNames = [
   "myhome-bogota-listings.json",
   "ciencuadras-bogota-projects.json",
   "arquitectura-concreto-bogota-sabana-projects.json",
+  "cusezar-bogota-sabana-projects.json",
+  "constructora-capital-bogota-sabana-projects.json",
 ];
 const discoveredOfficialSourceNames = (await readdir(scrapeDirectory)).filter(
   (fileName) => /-bogota-sabana-projects\.json$/i.test(fileName),
@@ -255,6 +257,36 @@ function normalizedDeveloperName(value) {
     .join(" ");
 }
 
+const inactiveProjects = sources.flatMap(({ fileName, data }) =>
+  (data.inactive_projects ?? []).map((project) => ({
+    fileName,
+    name: normalizedProjectName(project.name),
+    developerName: normalizedDeveloperName(project.developer_name),
+    reason: project.reason ?? "inactive_on_official_site",
+  })),
+);
+
+listings = listings.filter((listing) => {
+  if (listing.resultType !== "Proyecto" || listing.sourceKind === "official") {
+    return true;
+  }
+  const name = normalizedProjectName(listing.projectName);
+  const developerName = normalizedDeveloperName(listing.developerName);
+  const inactive = inactiveProjects.find(
+    (project) =>
+      project.name === name &&
+      project.developerName &&
+      (!developerName || project.developerName === developerName),
+  );
+  if (!inactive) return true;
+  exclusions.push({
+    id: listing.id,
+    reasons: [inactive.reason],
+    officialSource: inactive.fileName,
+  });
+  return false;
+});
+
 function sameProjectGeography(left, right) {
   if (left.market !== right.market) return false;
   return left.market !== "sabana" || left.municipality === right.municipality;
@@ -322,8 +354,8 @@ function evidenceFor(listing) {
     collectedAt: null,
     priceCop: listing.priceCop > 0 ? listing.priceCop : null,
     areaM2: listing.areaM2,
-    bedrooms: listing.bedrooms,
-    bathrooms: listing.bathrooms,
+    bedrooms: listing.bedrooms > 0 ? listing.bedrooms : null,
+    bathrooms: listing.bathrooms > 0 ? listing.bathrooms : null,
     parkingSpaces: listing.parkingSpaces,
     projectStatus: listing.projectStatus ?? null,
   };
@@ -403,6 +435,14 @@ for (let index = 0; index < projectListings.length; index += 1) {
 const mergedProjects = [...projectGroups.values()].map((group) => {
   const preferred =
     group.find((listing) => listing.sourceKind === "official") ?? group[0];
+  const bestLocation =
+    group.find(
+      (listing) =>
+        listing.sourceKind === "official" &&
+        listing.coordinatePrecision === "listing",
+    ) ??
+    group.find((listing) => listing.coordinatePrecision === "listing") ??
+    preferred;
   const typologies = group.flatMap((listing) =>
     listing.typologies.length
       ? listing.typologies
@@ -430,10 +470,30 @@ const mergedProjects = [...projectGroups.values()].map((group) => {
   );
   const mergedMaterial = {
     ...preferred,
+    latitude: bestLocation.latitude,
+    longitude: bestLocation.longitude,
+    coordinatePrecision: bestLocation.coordinatePrecision,
+    projectStatus:
+      preferred.projectStatus === "En ventas"
+        ? group.find(
+            (listing) =>
+              listing.projectStatus && listing.projectStatus !== "En ventas",
+          )?.projectStatus ?? preferred.projectStatus
+        : preferred.projectStatus,
+    deliveryDate:
+      preferred.deliveryDate ??
+      group.find((listing) => listing.deliveryDate)?.deliveryDate ??
+      null,
     priceCop: representative?.priceCop ?? preferred.priceCop,
     areaM2: representative?.areaM2 ?? preferred.areaM2,
-    bedrooms: representative?.bedrooms ?? preferred.bedrooms,
-    bathrooms: representative?.bathrooms ?? preferred.bathrooms,
+    bedrooms:
+      representative?.bedrooms ??
+      group.find((listing) => listing.bedrooms > 0)?.bedrooms ??
+      preferred.bedrooms,
+    bathrooms:
+      representative?.bathrooms ??
+      group.find((listing) => listing.bathrooms > 0)?.bathrooms ??
+      preferred.bathrooms,
     parkingSpaces:
       representative?.parkingSpaces ?? preferred.parkingSpaces,
     pricePerM2:

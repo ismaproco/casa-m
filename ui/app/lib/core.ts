@@ -268,6 +268,8 @@ const CATALOG_SOURCES = new Set([
   "amarilo",
   "arquitectura-y-concreto",
   "construcciones-planificadas",
+  "cusezar",
+  "constructora-capital",
   "ciencuadras",
   "zonario",
 ]);

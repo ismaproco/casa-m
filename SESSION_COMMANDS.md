@@ -97,6 +97,19 @@ jq -s '{paginas:length, nuevos:([.[].records[]]|length), ids_unicos:([.[].record
   `scripts/scrape-construcciones-planificadas-projects.mjs`. Audita el sitemap
   completo y la categoría oficial `En ejecución`; excluye tipologías vendidas,
   usos no residenciales y proyectos sin precio divulgado.
+- Cusezar tiene un colector estructurado en
+  `scripts/scrape-cusezar-projects.mjs`. El corte vigente publica los 17
+  proyectos residenciales visibles de Bogotá y La Calera, con sus tipologías,
+  precios y estados oficiales; Picabia, Strata y Tessera ya no pertenecen al
+  portafolio oficial vigente y se excluyen de la consolidación.
+- Constructora Capital se auditó en el navegador porque la descarga directa
+  recibe el control de acceso del sitio y no se intenta sortearlo. En sus 39
+  tarjetas visibles se verificaron 19 proyectos residenciales activos, 18
+  marcados `Totalmente vendido` y dos usos no residenciales. El artefacto
+  reproducible se genera con
+  `scripts/build-constructora-capital-browser-audit.mjs`; incluye las fichas
+  oficiales faltantes de Solare, Verdi y Lúmina, y las tipologías detalladas
+  visibles de esos proyectos.
 - El inventario amplio de proyectos nuevos de Ciencuadras se auditó con Chrome
   Computer Use: 18 páginas visibles, 114 proyectos, 258 tipologías y 28
   constructoras/promotores. Se conserva como evidencia de portal y usa
@@ -115,6 +128,8 @@ source /Users/savathos/.nvm/nvm.sh
 nvm use 22.23.1
 node scripts/scrape-arquitectura-concreto-projects.mjs
 node scripts/scrape-construcciones-planificadas-projects.mjs
+node scripts/scrape-cusezar-projects.mjs
+node scripts/build-constructora-capital-browser-audit.mjs
 node scripts/scrape-zonario-top-developers.mjs
 cd ui
 npm run images:cache
