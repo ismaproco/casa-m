@@ -52,6 +52,10 @@ expected_metrics="$({
 	    ciencuadras: ([.listings[] | select(.source == "ciencuadras")] | length),
 	    ciencuadrasEvidence: ([.listings[] | select(any(.evidence[]?; .source == "ciencuadras"))] | length),
 	    construccionesPlanificadas: ([.listings[] | select(.source == "construcciones-planificadas")] | length),
+	    zonario: ([.listings[] | select(.source == "zonario")] | length),
+	    zonarioEvidence: ([.listings[] | select(any(.evidence[]?; .source == "zonario"))] | length),
+	    topDevelopersAudited: .summary.topDevelopersAudited,
+	    topDevelopersWithRegionalProjects: .summary.topDevelopersWithRegionalProjects,
 	    officialProjects: ([.listings[] | select(.resultType == "Proyecto" and .sourceKind == "official")] | length),
     sabanaProjects: ([.listings[] | select(.resultType == "Proyecto" and .market == "sabana")] | length),
     apartmentTypes: ([.listings[] | .typologies[]?] | length),
@@ -78,13 +82,16 @@ remote_root="$(
     cd '$remote_directory'
     unexpected_changes=\"\$(
       git status --porcelain --untracked-files=no |
-        grep -Ev '^ M ui/public/data/(catalog|catalog-report|rentals|rentals-report)\\.json$' || true
+        grep -Ev '^ M ui/public/data/(catalog|catalog-report|developers|rentals|rentals-report)\\.json$' || true
     )\"
     if test -n \"\$unexpected_changes\"; then
       printf 'Unexpected remote changes:\\n%s\\n' \"\$unexpected_changes\" >&2
       exit 1
     fi
     git restore -- ui/public/data/catalog.json ui/public/data/catalog-report.json
+    if git ls-files --error-unmatch ui/public/data/developers.json >/dev/null 2>&1; then
+      git restore -- ui/public/data/developers.json
+    fi
     git pull --ff-only
     pwd
   "
@@ -123,7 +130,7 @@ ssh "${ssh_options[@]}" "$remote_host" "set -eu
   docker compose ps
   running_nginx=\"\$(docker compose ps --status running --services nginx)\"
   test \"\$running_nginx\" = nginx
-  git restore -- ui/public/data/catalog.json ui/public/data/catalog-report.json ui/public/data/rentals.json ui/public/data/rentals-report.json
+  git restore -- ui/public/data/catalog.json ui/public/data/catalog-report.json ui/public/data/developers.json ui/public/data/rentals.json ui/public/data/rentals-report.json
 "
 
 remote_metrics="$(
@@ -141,6 +148,10 @@ remote_metrics="$(
 	        ciencuadras: ([.listings[] | select(.source == \"ciencuadras\")] | length),
 	        ciencuadrasEvidence: ([.listings[] | select(any(.evidence[]?; .source == \"ciencuadras\"))] | length),
 	        construccionesPlanificadas: ([.listings[] | select(.source == \"construcciones-planificadas\")] | length),
+	        zonario: ([.listings[] | select(.source == \"zonario\")] | length),
+	        zonarioEvidence: ([.listings[] | select(any(.evidence[]?; .source == \"zonario\"))] | length),
+	        topDevelopersAudited: .summary.topDevelopersAudited,
+	        topDevelopersWithRegionalProjects: .summary.topDevelopersWithRegionalProjects,
 	        officialProjects: ([.listings[] | select(.resultType == \"Proyecto\" and .sourceKind == \"official\")] | length),
         sabanaProjects: ([.listings[] | select(.resultType == \"Proyecto\" and .market == \"sabana\")] | length),
         apartmentTypes: ([.listings[] | .typologies[]?] | length),
@@ -185,6 +196,10 @@ public_metrics="$(
 	    ciencuadras: ([.listings[] | select(.source == "ciencuadras")] | length),
 	    ciencuadrasEvidence: ([.listings[] | select(any(.evidence[]?; .source == "ciencuadras"))] | length),
 	    construccionesPlanificadas: ([.listings[] | select(.source == "construcciones-planificadas")] | length),
+	    zonario: ([.listings[] | select(.source == "zonario")] | length),
+	    zonarioEvidence: ([.listings[] | select(any(.evidence[]?; .source == "zonario"))] | length),
+	    topDevelopersAudited: .summary.topDevelopersAudited,
+	    topDevelopersWithRegionalProjects: .summary.topDevelopersWithRegionalProjects,
 	    officialProjects: ([.listings[] | select(.resultType == "Proyecto" and .sourceKind == "official")] | length),
     sabanaProjects: ([.listings[] | select(.resultType == "Proyecto" and .market == "sabana")] | length),
     apartmentTypes: ([.listings[] | .typologies[]?] | length),

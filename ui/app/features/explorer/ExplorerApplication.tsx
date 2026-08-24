@@ -138,8 +138,9 @@ function sourceActionLabel(url: string, locale: Locale, fallback: string) {
   }
 }
 
-function projectStatusLabel(status: string, locale: Locale) {
+function projectStatusLabel(status: string | null | undefined, locale: Locale) {
   const c = t(locale);
+  if (!status) return c.newProject;
   if (status === "En construcción") return c.underConstruction;
   if (status === "Sobre planos") return c.onPlan;
   if (status === "Entrega inmediata") return c.immediateDelivery;
@@ -1086,7 +1087,7 @@ export default function ExplorerApplication() {
                     }
                   >
                     <option value="">{c.all}</option>
-                    <option value="new">{c.newProjects}</option>
+                    <option value="new">{c.allNewProjects}</option>
                     <option value="construction">{c.underConstruction}</option>
                     <option value="preconstruction">{c.onPlan}</option>
                     <option value="immediate">{c.immediateDelivery}</option>
@@ -1548,7 +1549,7 @@ function ListingCard({
         />
         <span className="col-start-2 flex min-w-0 items-center gap-2 self-center font-mono text-[9px] font-extrabold tracking-[0.08em] text-primary uppercase">
           {listing.resultType}
-          {listing.projectStatus && (
+          {listing.resultType === "Proyecto" && (
             <span className="truncate rounded-full bg-primary/10 px-1.5 py-0.5 text-[8px] tracking-normal normal-case">
               {projectStatusLabel(listing.projectStatus, locale)}
             </span>
@@ -1666,7 +1667,7 @@ function ListingDrawer({
             {listing.neighborhood}
           </p>
         )}
-        {listing.projectStatus && (
+        {listing.resultType === "Proyecto" && (
           <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-semibold text-[#168f87] dark:text-[#38c7b7]">
             <span>{projectStatusLabel(listing.projectStatus, locale)}</span>
             {listing.deliveryDate && (
@@ -1986,7 +1987,7 @@ function SearchSummary({
   if (query.projectStatus) {
     parts.push(
       query.projectStatus === "new"
-        ? c.newProjects
+        ? c.allNewProjects
         : query.projectStatus === "construction"
           ? c.underConstruction
           : query.projectStatus === "preconstruction"

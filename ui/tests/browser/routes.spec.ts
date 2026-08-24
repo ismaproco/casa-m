@@ -158,6 +158,33 @@ test("construction projects are filterable and expose delivery details", async (
   await expect(page.getByText(listing.deliveryDate, { exact: false })).toBeVisible();
 });
 
+test("all new projects includes projects regardless of construction or delivery status", async ({
+  page,
+}) => {
+  const response = await page.request.get("/data/catalog.json");
+  const catalog = await response.json();
+  const projects = catalog.listings.filter(
+    (listing: { resultType: string }) => listing.resultType === "Proyecto",
+  );
+  const projectsWithoutStatus = projects.filter(
+    (listing: { projectStatus?: string | null }) => !listing.projectStatus,
+  );
+
+  expect(projectsWithoutStatus.length).toBeGreaterThan(0);
+  await page.goto("/explore?projectStatus=new");
+  const statusFilter = page.getByRole("combobox", {
+    name: /project status|estado del proyecto/i,
+  });
+  await expect(statusFilter).toHaveValue("new");
+  await expect(
+    statusFilter.locator('option[value="new"]'),
+  ).toHaveText(/todos los proyectos nuevos|all new projects/i);
+  await expect(
+    page.getByText(new RegExp(`${projects.length} (resultados|results)`, "i")),
+  ).toBeVisible();
+  await expect(page.locator(".project-star-marker")).toHaveCount(projects.length);
+});
+
 test("official Amarilo projects are filterable with current sale status", async ({
   page,
 }) => {
@@ -261,7 +288,7 @@ test("Construcciones Planificadas projects expose current priced typologies", as
     id: string;
     projectName: string;
     projectStatus: string;
-    typologies: Array<{ priceCop: number | null }>;
+    typologies: Array<{ priceCop: number | null; source: string }>;
   }>;
 
   expect(projects.map((listing) => listing.projectName).sort()).toEqual([
@@ -275,8 +302,20 @@ test("Construcciones Planificadas projects expose current priced typologies", as
   expect(projects.every((listing) => listing.projectStatus === "En construcción")).toBe(true);
   expect(projects.every((listing) => listing.typologies.every((type) => type.priceCop))).toBe(true);
   expect(
-    Object.fromEntries(projects.map((listing) => [listing.projectName, listing.typologies.length])),
+    Object.fromEntries(
+      projects.map((listing) => [
+        listing.projectName,
+        listing.typologies.filter(
+          (typology) => typology.source === "construcciones-planificadas",
+        ).length,
+      ]),
+    ),
   ).toMatchObject({ Palmeri: 5, "Pinar 24": 3, Rocca: 3, Serraclara: 4, Zelva: 8 });
+  expect(
+    projects
+      .find((listing) => listing.projectName === "Serraclara")
+      ?.typologies.filter((typology) => typology.source === "zonario"),
+  ).toHaveLength(5);
 
   await page.goto(
     "/explore?source=construcciones-planificadas&resultType=Proyecto&projectStatus=construction",
@@ -314,6 +353,50 @@ test("Ciencuadras expands multi-developer project coverage without replacing off
   await expect(
     page.getByRole("combobox", { name: /source|fuente/i }),
   ).toHaveValue("ciencuadras");
+  await expect(page.locator(".project-star-marker")).toHaveCount(projects.length);
+});
+
+test("top 100 national developers expose their audited Bogotá and Sabana projects", async ({
+  page,
+}) => {
+  const [developerResponse, catalogResponse] = await Promise.all([
+    page.request.get("/data/developers.json"),
+    page.request.get("/data/catalog.json"),
+  ]);
+  const developerAudit = await developerResponse.json();
+  const catalog = await catalogResponse.json();
+  const projects = catalog.listings.filter(
+    (listing: { source: string; evidence?: Array<{ source: string }> }) =>
+      listing.source === "zonario" ||
+      listing.evidence?.some((entry) => entry.source === "zonario"),
+  );
+
+  expect(developerAudit.developers).toHaveLength(100);
+  expect(
+    developerAudit.developers.filter(
+      (developer: { bogota_sabana_project_count: number }) =>
+        developer.bogota_sabana_project_count > 0,
+    ),
+  ).toHaveLength(52);
+  expect(projects.length).toBeGreaterThanOrEqual(350);
+  expect(new Set(projects.map((listing: { developerName: string }) => listing.developerName)).size)
+    .toBeGreaterThanOrEqual(50);
+  expect(projects.some((listing: { market: string }) => listing.market === "sabana")).toBe(true);
+  expect(
+    catalog.listings
+      .filter(
+        (listing: { projectName?: string | null; market?: string }) =>
+          listing.market === "sabana" &&
+          listing.projectName?.toLocaleLowerCase("es") === "hacienda la herradura",
+      )
+      .map((listing: { municipality?: string | null }) => listing.municipality)
+      .sort(),
+  ).toEqual(["Cajicá", "Chía"]);
+
+  await page.goto("/explore?source=zonario&resultType=Proyecto&projectStatus=new");
+  await expect(
+    page.getByRole("combobox", { name: /source|fuente/i }),
+  ).toHaveValue("zonario");
   await expect(page.locator(".project-star-marker")).toHaveCount(projects.length);
 });
 

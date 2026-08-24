@@ -197,6 +197,9 @@ npm start
 - Coverage is 20 regular buckets from zero through just under
   `COP 5_000_000_000`, followed by one distinctive overflow color for
   `COP 5_000_000_000+`.
+- Rentals use their own non-linear monthly-price thresholds from zero through
+  `COP 50_000_000`, followed by the same distinctive overflow color. Do not
+  reuse sale-price buckets for rentals.
 - Keep the spectral progression and strong extreme color.
 - Do not add a price legend unless requested.
 - Tooltips show the full localized COP price and bucket label.

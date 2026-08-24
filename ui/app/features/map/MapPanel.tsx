@@ -47,7 +47,7 @@ export function MapPanel({
       listings
         .map(
           (listing) =>
-            `${listing.id}:${listing.priceCop}:${listing.coordinatePrecision}:${listing.projectStatus ?? ""}`,
+            `${listing.id}:${listing.priceCop}:${listing.operationType ?? "Venta"}:${listing.coordinatePrecision}:${listing.projectStatus ?? ""}`,
         )
         .join("|"),
     [listings],
@@ -186,11 +186,11 @@ export function MapPanel({
 
       const currentListings = listingsRef.current;
       for (const listing of currentListings) {
-        const priceBucket = mapPriceBucket(listing.priceCop);
+        const priceScale = listing.operationType === "Arriendo" ? "rental" : "sale";
+        const priceBucket = mapPriceBucket(listing.priceCop, priceScale);
         const hasApproximateCoordinates =
           listing.coordinatePrecision === "neighborhood_centroid";
-        const isNewProject =
-          listing.resultType === "Proyecto" && Boolean(listing.projectStatus);
+        const isNewProject = listing.resultType === "Proyecto";
         const marker: MapMarker = isNewProject
           ? leaflet.marker([listing.latitude, listing.longitude], {
               icon: leaflet.divIcon({
@@ -216,7 +216,7 @@ export function MapPanel({
             listing.neighborhood ?? listing.city,
             listing.city,
             formatCop(listing.priceCop, locale),
-            mapPriceBucketLabel(listing.priceCop, locale),
+            mapPriceBucketLabel(listing.priceCop, locale, priceScale),
             listing.id,
           ].join(" · "),
           {

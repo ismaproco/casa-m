@@ -1,16 +1,18 @@
 {
-  "generatedAt": "2026-08-24T17:22:31.941Z",
-  "catalogVersion": "efc9ab485c962637",
+  "generatedAt": "2026-08-24T17:50:43.612Z",
+  "catalogVersion": "6ff9223a22e55f3f",
   "summary": {
-    "sourceRecords": 12853,
-    "publishedRecords": 12790,
+    "sourceRecords": 13217,
+    "publishedRecords": 13074,
     "excludedRecords": 8,
-    "approximateCoordinates": 108,
+    "approximateCoordinates": 392,
     "knownStratum": 12340,
     "officialProjects": 34,
-    "sabanaProjects": 1,
-    "apartmentTypes": 430,
-    "sourceDifferences": 16
+    "sabanaProjects": 64,
+    "apartmentTypes": 1887,
+    "sourceDifferences": 41,
+    "topDevelopersAudited": 100,
+    "topDevelopersWithRegionalProjects": 52
   },
   "inputs": [
     {
@@ -72,6 +74,12 @@
       "source": "construcciones-planificadas",
       "records": 6,
       "scrapedAt": "2026-08-24T17:08:43.902Z"
+    },
+    {
+      "fileName": "zonario-bogota-sabana-projects.json",
+      "source": "zonario",
+      "records": 364,
+      "scrapedAt": "2026-08-24T17:36:12.312Z"
     }
   ],
   "exclusions": [
@@ -130,7 +138,15 @@
   },
   "images": {
     "available": 12756,
-    "missing": 34,
+    "missing": 318,
     "archived": 45
+  },
+  "developerAudit": {
+    "fileName": "colombia-top-100-developers.json",
+    "source": "zonario",
+    "collectedAt": "2026-08-24T17:36:12.312Z",
+    "nationalInventory": 1166,
+    "canonicalDevelopers": 312,
+    "topDevelopers": 100
   }
 }

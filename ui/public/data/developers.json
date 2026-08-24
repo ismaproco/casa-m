@@ -1,0 +1,2728 @@
+{
+  "schemaVersion": 1,
+  "publishedAt": "2026-08-24T17:50:43.612Z",
+  "source": "zonario",
+  "collectedAt": "2026-08-24T17:36:12.312Z",
+  "nationalInventoryUrl": "https://www.zonario.co/api/proyectos-listado",
+  "nationalInventoryCount": 1166,
+  "canonicalDeveloperCount": 312,
+  "methodology": {
+    "definition": "Top 100 grupos constructores/promotores por cantidad de proyectos activos en el inventario nacional de Zonario, después de normalizar razones sociales y alias regionales.",
+    "scope": "Bogotá D.C. y municipios de Sabana presentes en el inventario: Cajicá, Chía, Cota, La Calera, Madrid, Mosquera y Zipaquirá.",
+    "official_precedence": "Zonario se conserva como evidencia de portal; las fichas oficiales existentes mantienen prioridad al fusionar proyectos.",
+    "sources": [
+      {
+        "name": "Zonario — inventario nacional",
+        "url": "https://www.zonario.co/proyectos-de-vivienda"
+      },
+      {
+        "name": "La Nota — ranking 2025 de edificación urbana",
+        "url": "https://www.lanota.com/index.php/CONFIDENCIAS/ranking-2025-lideres-edificacion-urbana-de-colombia.html"
+      },
+      {
+        "name": "Camacol — constructoras vinculadas a Mi Casa en Bogotá",
+        "url": "https://camacol.co/sites/default/files/24.10.25_PPT_Congreso%20Colombiano%20de%20la%20Construcci%C3%B3n%202025_BQUILLAv2_compressed.pdf"
+      }
+    ]
+  },
+  "developers": [
+    {
+      "rank": 1,
+      "name": "Marval",
+      "aliases": [
+        {
+          "name": "MARVAL BOGOTÁ",
+          "project_count": 45
+        },
+        {
+          "name": "MARVAL CALI",
+          "project_count": 12
+        },
+        {
+          "name": "MARVAL",
+          "project_count": 10
+        },
+        {
+          "name": "CONSTRUCCIONES MARVAL SA",
+          "project_count": 5
+        },
+        {
+          "name": "MARVAL BARRANQUILLA",
+          "project_count": 4
+        },
+        {
+          "name": "MARVAL BOGOTA",
+          "project_count": 4
+        },
+        {
+          "name": "Marval S.A.S",
+          "project_count": 4
+        },
+        {
+          "name": "Marval SA",
+          "project_count": 4
+        }
+      ],
+      "national_project_count": 88,
+      "bogota_sabana_project_count": 35,
+      "bogota_project_count": 32,
+      "sabana_project_count": 3,
+      "municipalities": [
+        "Bogotá",
+        "Zipaquirá"
+      ],
+      "project_ids": [
+        "baviera",
+        "bosques-de-guaymaral-verdania",
+        "burdeos-ciudad-la-salle",
+        "burgos-castilla-reservado",
+        "cadiz",
+        "chamonix-ciudad-la-salle",
+        "citizen",
+        "ciudad-la-salle-montpellier",
+        "ciudad-la-salle-saint-michel",
+        "el-campo-tres-quebradas",
+        "el-castell-iberia-reservado",
+        "gallet-ciudad-la-salle",
+        "izola-zentral",
+        "la-almeria-alsacia-reservado",
+        "la-cabrera-tres-quebradas",
+        "la-cruz-tres-quebradas",
+        "la-fontana",
+        "la-scala",
+        "la-terra-alsacia-reservado",
+        "loira-ciudad-la-salle",
+        "lorca",
+        "lyon-ii-ciudad-la-salle",
+        "malaga-castilla-reservado",
+        "metropoli-30",
+        "paseo-de-sevilla",
+        "penon-de-alicante",
+        "provenza-imperial",
+        "provenza-prestige",
+        "provenza-regency",
+        "reserva-de-la-sierra",
+        "san-lucas-la-quinta",
+        "san-mateo-la-quinta",
+        "san-simon-la-quinta",
+        "zajari-zentral",
+        "zuri-zentral"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 2,
+      "name": "Amarilo",
+      "aliases": [
+        {
+          "name": "AMARILO",
+          "project_count": 57
+        },
+        {
+          "name": "AMARILO S.A.S",
+          "project_count": 11
+        },
+        {
+          "name": "AMARILO SAS",
+          "project_count": 6
+        }
+      ],
+      "national_project_count": 74,
+      "bogota_sabana_project_count": 48,
+      "bogota_project_count": 34,
+      "sabana_project_count": 14,
+      "municipalities": [
+        "Bogotá",
+        "Cajicá",
+        "Chía",
+        "Cota",
+        "La Calera",
+        "Madrid"
+      ],
+      "project_ids": [
+        "alcala",
+        "alejandria-faro",
+        "alicante-hacienda-el-otono",
+        "almendro-hacienda-el-bosque",
+        "andalucia-hacienda-el-otono",
+        "balcones-del-portal",
+        "boreal",
+        "boreal-iii",
+        "bosques-del-portal",
+        "bulevar-del-portal",
+        "cantabria",
+        "cidron",
+        "ciruelo-hacienda-el-bosque-lagos-de-torca",
+        "coral",
+        "coral-ii",
+        "el-puerto",
+        "guayacan-hacienda-el-bosque",
+        "hacienda-bosque-nogal",
+        "hacienda-el-otono-cerezo",
+        "hacienda-otono-orquidea",
+        "hacienda-samaria",
+        "huertas-oriental",
+        "huertas-oriental-2",
+        "jardines-de-fontanar",
+        "jardines-del-portal",
+        "la-bahia",
+        "la-isla",
+        "laureles",
+        "limonar",
+        "magnolio",
+        "manzano-hacienda-el-bosque",
+        "navarra",
+        "parques-del-portal",
+        "paseo-del-parque",
+        "pimiento-hacienda-el-bosque",
+        "pomelo-hacienda-el-bosque",
+        "portales-de-granada",
+        "refugio-del-valle",
+        "reserva-de-granada-5",
+        "reserva-del-dorado",
+        "rivera-del-valle",
+        "rivera-del-valle-2",
+        "senderos-de-modelia",
+        "senderos-del-portal",
+        "sorrento",
+        "tierra-luna",
+        "verona",
+        "zermatt"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 3,
+      "name": "Arquitectura y Concreto",
+      "aliases": [
+        {
+          "name": "ARQUITECTURA Y CONCRETO S.A.S",
+          "project_count": 18
+        },
+        {
+          "name": "ARQUITECTURA Y CONCRETO",
+          "project_count": 14
+        },
+        {
+          "name": "Arquitectura y Concreto",
+          "project_count": 6
+        },
+        {
+          "name": "ARQUITECTURA Y CONCRETO SAS",
+          "project_count": 3
+        },
+        {
+          "name": "Adquirir, Arquitectura y Concreto",
+          "project_count": 1
+        },
+        {
+          "name": "AIA, Arquitectura y Concreto",
+          "project_count": 1
+        },
+        {
+          "name": "Am Arquitectos, Arquitectura y Concreto, Crear Cimientos",
+          "project_count": 1
+        },
+        {
+          "name": "Arquitectura y Concreto, Brazzo, Pulso",
+          "project_count": 1
+        },
+        {
+          "name": "Arquitectura y Concreto, Prodesa",
+          "project_count": 1
+        },
+        {
+          "name": "Londoño Gómez, Arquitectura y Concreto",
+          "project_count": 1
+        },
+        {
+          "name": "Londoño Gómez, Arquitectura y Concreto, Fondo Inmobiliario Colombia",
+          "project_count": 1
+        },
+        {
+          "name": "Pulso, Arquitectura y Concreto",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 49,
+      "bogota_sabana_project_count": 16,
+      "bogota_project_count": 10,
+      "sabana_project_count": 6,
+      "municipalities": [
+        "Bogotá",
+        "Cajicá",
+        "Chía"
+      ],
+      "project_ids": [
+        "artie-84",
+        "castelo",
+        "cerros-de-los-alpes-torre-3nd",
+        "click-living",
+        "colina-living",
+        "hacienda-la-herradura",
+        "hacienda-la-herradura-2",
+        "los-robles-bosque-residencial",
+        "nuva-park",
+        "reserva-los-robles",
+        "rosse",
+        "rosse-2",
+        "santa-ana",
+        "terralto",
+        "ventto-central",
+        "viena"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 4,
+      "name": "Constructora Bolívar",
+      "aliases": [
+        {
+          "name": "CONSTRUCTORA BOLIVAR",
+          "project_count": 24
+        },
+        {
+          "name": "CONSTRUCTORA BOLIVAR BOGOTÁ SA",
+          "project_count": 9
+        },
+        {
+          "name": "CONSTRUCTORA BOLIVAR CALI SA",
+          "project_count": 6
+        },
+        {
+          "name": "CONSTRUCTORA BOLIVAR CALI ",
+          "project_count": 5
+        },
+        {
+          "name": "Constructora Bolivar",
+          "project_count": 1
+        },
+        {
+          "name": "Constructora Bolívar",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 46,
+      "bogota_sabana_project_count": 20,
+      "bogota_project_count": 19,
+      "sabana_project_count": 1,
+      "municipalities": [
+        "Bogotá",
+        "Cajicá"
+      ],
+      "project_ids": [
+        "80-deck-living",
+        "alamo",
+        "atria-tramonte",
+        "aurora-tramonte",
+        "austro",
+        "baviera-park",
+        "celeste-tramonte",
+        "el-molino",
+        "floresta-living",
+        "la-cristalina-tres-quebradas",
+        "las-violetas-tres-quebradas",
+        "mistral-cuatro-vientos",
+        "novum-ricaurte",
+        "rosa-amatista",
+        "rosa-turquesa-ciudad-rosaleda",
+        "rosa-violeta",
+        "rosa-violeta-ciudad-rosales",
+        "senderos-de-fontibon",
+        "tramonte-living",
+        "urbana-30"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 5,
+      "name": "Constructora Capital",
+      "aliases": [
+        {
+          "name": "CONSTRUCTORA CAPITAL",
+          "project_count": 18
+        },
+        {
+          "name": "Constructora Capital Bogotá SAS",
+          "project_count": 14
+        },
+        {
+          "name": "Capital",
+          "project_count": 11
+        },
+        {
+          "name": "CONSTRUCTORA CAPITAL BOGOTA SA",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 44,
+      "bogota_sabana_project_count": 21,
+      "bogota_project_count": 14,
+      "sabana_project_count": 7,
+      "municipalities": [
+        "Bogotá",
+        "Madrid",
+        "Mosquera"
+      ],
+      "project_ids": [
+        "acanto",
+        "alborada",
+        "centriko",
+        "citrino",
+        "element-142",
+        "eskala",
+        "florecer",
+        "laggo",
+        "mistral",
+        "nuvo",
+        "nuvo-club-residencial",
+        "pacifika",
+        "primavera",
+        "select-68",
+        "urbania-bio",
+        "urbania-eco",
+        "urbania-terra",
+        "vento",
+        "vivopark",
+        "volare",
+        "zefiro"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 6,
+      "name": "Constructora Colpatria",
+      "aliases": [
+        {
+          "name": "CONSTRUCTORA COLPATRIA SA",
+          "project_count": 20
+        },
+        {
+          "name": "CONSTRUCTORA COLPATRIA",
+          "project_count": 10
+        },
+        {
+          "name": "Colpatria",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 32,
+      "bogota_sabana_project_count": 11,
+      "bogota_project_count": 11,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "element",
+        "los-almendros",
+        "los-sauces",
+        "mare-44",
+        "prisma",
+        "scaleno-17",
+        "sole",
+        "turin",
+        "vertice",
+        "vilamonte",
+        "vilanova"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 7,
+      "name": "Coninsa Ramón H",
+      "aliases": [
+        {
+          "name": "CONINSA RAMON H SA",
+          "project_count": 8
+        },
+        {
+          "name": "Coninsa Ramon H",
+          "project_count": 7
+        },
+        {
+          "name": "CONINSA S.A.S",
+          "project_count": 6
+        },
+        {
+          "name": "Coninsa y Ramon H",
+          "project_count": 2
+        },
+        {
+          "name": "Conaltura, Coninsa Ramon H",
+          "project_count": 1
+        },
+        {
+          "name": "Coninsa",
+          "project_count": 1
+        },
+        {
+          "name": "Coninsa Ramon H, Comfama",
+          "project_count": 1
+        },
+        {
+          "name": "Coninsa Ramon H, Inuberco, Eme Propiedad Raiz",
+          "project_count": 1
+        },
+        {
+          "name": "Coninsa Ramon H, Inuberco, Viviendas y Proyectos",
+          "project_count": 1
+        },
+        {
+          "name": "Coninsa S.A.S",
+          "project_count": 1
+        },
+        {
+          "name": "Crear Cimientos, Coninsa Ramon H, Am Arquitectos, Santa Juana",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 30,
+      "bogota_sabana_project_count": 11,
+      "bogota_project_count": 9,
+      "sabana_project_count": 2,
+      "municipalities": [
+        "Bogotá",
+        "Chía"
+      ],
+      "project_ids": [
+        "almorada",
+        "campoalegre",
+        "campoalegre-reservado",
+        "centrik-town",
+        "centrik-town-salitre",
+        "corner-view-147",
+        "nau-house",
+        "point-apartamentos",
+        "sue-natura",
+        "torrevide",
+        "tribium"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 8,
+      "name": "Constructora Las Galias",
+      "aliases": [
+        {
+          "name": "CONSTRUCTORA LAS GALIAS S.A",
+          "project_count": 22
+        },
+        {
+          "name": "CONSTRUCTORA LAS GALIAS S A",
+          "project_count": 6
+        },
+        {
+          "name": "Constructora Las Galias",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 29,
+      "bogota_sabana_project_count": 16,
+      "bogota_project_count": 14,
+      "sabana_project_count": 2,
+      "municipalities": [
+        "Bogotá",
+        "Mosquera"
+      ],
+      "project_ids": [
+        "boreas-175",
+        "brezza-belari-ciudadela",
+        "casablanca-gardens",
+        "central-13-65",
+        "centrum-tercer-milenio",
+        "estacion-fontibon",
+        "molinos-caracas",
+        "moratti-ciudad-hayuelos",
+        "nexo-119",
+        "paseo-de-la-rivera",
+        "ronda-de-verano",
+        "sabantti",
+        "soffio-ciudadela-belari",
+        "terra-castilla",
+        "vertice-115",
+        "vitalia"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 9,
+      "name": "Conaltura",
+      "aliases": [
+        {
+          "name": "Conaltura",
+          "project_count": 19
+        },
+        {
+          "name": "CONALTURA CONSTRUCCION Y VIVIENDA SA",
+          "project_count": 6
+        },
+        {
+          "name": "Conaltura, Nivel",
+          "project_count": 1
+        },
+        {
+          "name": "Nivel, Conaltura",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 27,
+      "bogota_sabana_project_count": 1,
+      "bogota_project_count": 1,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "go-life-y-work"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 10,
+      "name": "Londoño Gómez",
+      "aliases": [
+        {
+          "name": "LONDOÑO GOMEZ",
+          "project_count": 16
+        },
+        {
+          "name": "Londoño Gómez",
+          "project_count": 3
+        },
+        {
+          "name": "LONDOÑO GOMEZ SAS",
+          "project_count": 1
+        },
+        {
+          "name": "Londoño Gómez SAS.",
+          "project_count": 1
+        },
+        {
+          "name": "Londoño Gómez, Bemsa, CASA",
+          "project_count": 1
+        },
+        {
+          "name": "Londoño Gómez, Optima",
+          "project_count": 1
+        },
+        {
+          "name": "Londoño Gómez, Umbral, Muros y Techos",
+          "project_count": 1
+        },
+        {
+          "name": "Mensula, Indika, Londoño Gómez",
+          "project_count": 1
+        },
+        {
+          "name": "Pulso, Muros y Techos, Londoño Gómez",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 26,
+      "bogota_sabana_project_count": 1,
+      "bogota_project_count": 1,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "viena-torre-2"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 11,
+      "name": "Construcciones Buen Vivir",
+      "aliases": [
+        {
+          "name": "CONSTRUCCIONES BUEN VIVIR SA",
+          "project_count": 18
+        },
+        {
+          "name": "BUENVIVIR",
+          "project_count": 7
+        }
+      ],
+      "national_project_count": 25,
+      "bogota_sabana_project_count": 25,
+      "bogota_project_count": 25,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "alameda-de-la-calleja",
+        "andes-30-06-club-residencial",
+        "aptivo-72-living",
+        "astoria-club-house",
+        "barlovento-reservado",
+        "bonavento-club-residencial",
+        "colina-park-165",
+        "colina-reservado",
+        "colina-reservado-club-house",
+        "dorado-living-port",
+        "estancia-70",
+        "guayacan-club-house",
+        "heroes-79-st",
+        "nogal-club-house-pradera-de-bosconia",
+        "republic-116-house-park",
+        "salamanca-reservado-club-house",
+        "saman-club-house",
+        "san-gabriel",
+        "santo-domingo-club-residencial",
+        "signature-virrey",
+        "solera-13",
+        "tarragona-145",
+        "tarragona-145-mirador-club-house",
+        "verde-imperial-club-residencial",
+        "zentriko-19-28"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 12,
+      "name": "Bienes y Bienes",
+      "aliases": [
+        {
+          "name": "constructora Bienes & Bienes",
+          "project_count": 11
+        },
+        {
+          "name": "Bienes y Bienes",
+          "project_count": 5
+        },
+        {
+          "name": "BIENES Y BIENES SA",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 18,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 13,
+      "name": "Cusezar",
+      "aliases": [
+        {
+          "name": "Cusezar S.A.",
+          "project_count": 8
+        },
+        {
+          "name": "CUSEZAR S A",
+          "project_count": 7
+        },
+        {
+          "name": "Cusezar",
+          "project_count": 2
+        },
+        {
+          "name": "CUSEZAR",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 18,
+      "bogota_sabana_project_count": 15,
+      "bogota_project_count": 12,
+      "sabana_project_count": 3,
+      "municipalities": [
+        "Bogotá",
+        "La Calera"
+      ],
+      "project_ids": [
+        "borneo",
+        "entre-bosques-v",
+        "gran-reserva-de-syrah",
+        "gregal",
+        "la-gratitud-i-de-la-marlene",
+        "la-union-i-de-la-marlene",
+        "luar",
+        "murales",
+        "reverdecer",
+        "strata",
+        "tessera",
+        "tuset",
+        "verdemonte",
+        "view-63",
+        "vizcaya"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 14,
+      "name": "Conconcreto",
+      "aliases": [
+        {
+          "name": "CONCONCRETO",
+          "project_count": 9
+        },
+        {
+          "name": "Conconcreto",
+          "project_count": 4
+        },
+        {
+          "name": "CONSTRUCTORA CONCONCRETO SA",
+          "project_count": 3
+        }
+      ],
+      "national_project_count": 16,
+      "bogota_sabana_project_count": 3,
+      "bogota_project_count": 3,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "bosscatta-147",
+        "calia",
+        "centrix-145"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 15,
+      "name": "Constructora Melendez",
+      "aliases": [
+        {
+          "name": "CONSTRUCTORA MELENDEZ",
+          "project_count": 15
+        },
+        {
+          "name": "CONSTRUCTORA MELÉNDEZ",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 16,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 16,
+      "name": "Urbansa",
+      "aliases": [
+        {
+          "name": "URBANSA SA",
+          "project_count": 9
+        },
+        {
+          "name": "Urbanizadora Santa Fe De Bogota Urbansa SA",
+          "project_count": 4
+        },
+        {
+          "name": "URBANSA",
+          "project_count": 3
+        }
+      ],
+      "national_project_count": 16,
+      "bogota_sabana_project_count": 15,
+      "bogota_project_count": 12,
+      "sabana_project_count": 3,
+      "municipalities": [
+        "Bogotá",
+        "Cajicá",
+        "Chía",
+        "Mosquera"
+      ],
+      "project_ids": [
+        "aragon-170",
+        "camino-verde",
+        "celeste",
+        "cordoba-127",
+        "hacienda-la-estancia-aragon-170",
+        "hacienda-la-estancia-rioja",
+        "hacienda-la-estancia-valencia",
+        "hacienda-los-lagos",
+        "inter-13-33",
+        "inter-7-33",
+        "nogales",
+        "reserva-del-guali",
+        "rioja",
+        "riviera-2",
+        "valencia"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 17,
+      "name": "Constructora Contex",
+      "aliases": [
+        {
+          "name": "CONSTRUCTORA CONTEX",
+          "project_count": 8
+        },
+        {
+          "name": "CONSTRUCTORA CONTEX SAS BIC",
+          "project_count": 6
+        }
+      ],
+      "national_project_count": 14,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 18,
+      "name": "EME Propiedad Raíz",
+      "aliases": [
+        {
+          "name": "Eme Propiedad Raiz",
+          "project_count": 10
+        },
+        {
+          "name": "EME PROPIEDAD RAIZ SAS",
+          "project_count": 2
+        },
+        {
+          "name": "Eme Propiedad Raiz, Acrecer",
+          "project_count": 1
+        },
+        {
+          "name": "Eme Propiedad Raiz, Inuberco",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 14,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 19,
+      "name": "Prodesa",
+      "aliases": [
+        {
+          "name": "Prodesa y Cia SA",
+          "project_count": 9
+        },
+        {
+          "name": "PRODESA",
+          "project_count": 3
+        },
+        {
+          "name": "Prodesa",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 13,
+      "bogota_sabana_project_count": 5,
+      "bogota_project_count": 2,
+      "sabana_project_count": 3,
+      "municipalities": [
+        "Bogotá",
+        "Cota",
+        "Mosquera"
+      ],
+      "project_ids": [
+        "avenida-colon",
+        "cerezo",
+        "hacienda-alcala-cerezo",
+        "macarena",
+        "vesta"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 20,
+      "name": "Umbral Propiedad Raíz",
+      "aliases": [
+        {
+          "name": "Umbral Propiedad Raiz SAS",
+          "project_count": 7
+        },
+        {
+          "name": "Umbral",
+          "project_count": 4
+        },
+        {
+          "name": "Umbral Propiedad Raíz",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 13,
+      "bogota_sabana_project_count": 1,
+      "bogota_project_count": 1,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "menta"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 21,
+      "name": "Compensar",
+      "aliases": [
+        {
+          "name": "COMPENSAR",
+          "project_count": 7
+        },
+        {
+          "name": "CAJA DE COMPENSACION FAMILIAR COMPENSAR",
+          "project_count": 3
+        },
+        {
+          "name": "Compensar",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 11,
+      "bogota_sabana_project_count": 11,
+      "bogota_project_count": 10,
+      "sabana_project_count": 1,
+      "municipalities": [
+        "Bogotá",
+        "Chía"
+      ],
+      "project_ids": [
+        "maui-68",
+        "maui68",
+        "montecielo-2",
+        "montecielo-ii",
+        "montecielo-l",
+        "parque-americas-nativa",
+        "porto-13",
+        "praderos-de-cantoval",
+        "torres-de-galicia",
+        "turpiales-de-cantoval",
+        "tyba-reservado"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 22,
+      "name": "Ar Construcciones",
+      "aliases": [
+        {
+          "name": "AR CONSTRUCCIONES",
+          "project_count": 10
+        }
+      ],
+      "national_project_count": 10,
+      "bogota_sabana_project_count": 10,
+      "bogota_project_count": 6,
+      "sabana_project_count": 4,
+      "municipalities": [
+        "Bogotá",
+        "Cajicá",
+        "Chía",
+        "Madrid",
+        "Mosquera"
+      ],
+      "project_ids": [
+        "acanto-2",
+        "fontana-7",
+        "miradores-de-san-facon",
+        "reserva-de-bellavista",
+        "reserva-de-cajica",
+        "reserva-de-chia",
+        "reserva-de-la-26",
+        "torre-de-los-andes",
+        "torres-de-fontibon",
+        "torres-del-20-de-julio"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 23,
+      "name": "Ingeurbe",
+      "aliases": [
+        {
+          "name": "INGEURBE SAS",
+          "project_count": 5
+        },
+        {
+          "name": "INGEURBE",
+          "project_count": 3
+        },
+        {
+          "name": "Ingeurbe",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 10,
+      "bogota_sabana_project_count": 10,
+      "bogota_project_count": 9,
+      "sabana_project_count": 1,
+      "municipalities": [
+        "Bogotá",
+        "Cajicá"
+      ],
+      "project_ids": [
+        "albura-los-robles",
+        "alcazar",
+        "centrik-park",
+        "flora-parque-central-los-robles",
+        "parque-central-los-robles",
+        "piazza-2",
+        "reserva-del-lago-iii",
+        "trento-apartamentos",
+        "treze-apartamentos",
+        "zento"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 24,
+      "name": "Inacar",
+      "aliases": [
+        {
+          "name": "INACAR SA",
+          "project_count": 5
+        },
+        {
+          "name": "INACAR S.A.",
+          "project_count": 3
+        },
+        {
+          "name": "INACAR S.A",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 9,
+      "bogota_sabana_project_count": 1,
+      "bogota_project_count": 1,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "montieri"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 25,
+      "name": "Constructora El Castillo",
+      "aliases": [
+        {
+          "name": "CONSTRUCTORA EL CASTILLO",
+          "project_count": 6
+        },
+        {
+          "name": "El Castillo",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 8,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 26,
+      "name": "Grupo Empresarial Oikos",
+      "aliases": [
+        {
+          "name": "Grupo Empresarial Oikos",
+          "project_count": 3
+        },
+        {
+          "name": "GRUPO EMPRESARIAL OIKOS SAS",
+          "project_count": 3
+        },
+        {
+          "name": "GRUPO EMPRESARIAL OIKOS",
+          "project_count": 1
+        },
+        {
+          "name": "Oikos",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 8,
+      "bogota_sabana_project_count": 6,
+      "bogota_project_count": 4,
+      "sabana_project_count": 2,
+      "municipalities": [
+        "Bogotá",
+        "Cajicá",
+        "La Calera"
+      ],
+      "project_ids": [
+        "oikos-balmora",
+        "oikos-calera-gardens",
+        "oikos-heroes-80",
+        "oikos-infinitum-zentral",
+        "oikos-lumina-77",
+        "oikos-savanna"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 27,
+      "name": "Jaramillo Mora Constructora",
+      "aliases": [
+        {
+          "name": "JARAMILLO MORA CONSTRUCTORA",
+          "project_count": 8
+        }
+      ],
+      "national_project_count": 8,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 28,
+      "name": "Centro Sur",
+      "aliases": [
+        {
+          "name": "CENTRO SUR",
+          "project_count": 4
+        },
+        {
+          "name": "Centro Sur",
+          "project_count": 2
+        },
+        {
+          "name": "CENTRO SUR S.A.S.",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 7,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 29,
+      "name": "Estructurar",
+      "aliases": [
+        {
+          "name": "Estructurar",
+          "project_count": 7
+        }
+      ],
+      "national_project_count": 7,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 30,
+      "name": "Akila",
+      "aliases": [
+        {
+          "name": "AKILA S.A.S.",
+          "project_count": 6
+        }
+      ],
+      "national_project_count": 6,
+      "bogota_sabana_project_count": 6,
+      "bogota_project_count": 6,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "arte-k-5-18",
+        "books-9-16",
+        "epi-k-19",
+        "luna-k",
+        "torre-kalu",
+        "uni-k-4-19"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 31,
+      "name": "Área Cuadrada",
+      "aliases": [
+        {
+          "name": "ÁREA CUADRADA CONSTRUCTORES",
+          "project_count": 5
+        },
+        {
+          "name": "ÁREA CUADRADA",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 6,
+      "bogota_sabana_project_count": 6,
+      "bogota_project_count": 2,
+      "sabana_project_count": 4,
+      "municipalities": [
+        "Bogotá",
+        "Chía"
+      ],
+      "project_ids": [
+        "guaymaral-casas-campestres",
+        "reserva-del-bosque",
+        "rivera-de-guaymaral",
+        "urban-72",
+        "vallarta-2-casas-campestres-en-chia",
+        "vallarta-i"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 32,
+      "name": "Ascenso",
+      "aliases": [
+        {
+          "name": "Ascenso",
+          "project_count": 4
+        },
+        {
+          "name": "CONSTRUCTORA ASCENSO SAS",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 6,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 33,
+      "name": "Ospinas Y Cia",
+      "aliases": [
+        {
+          "name": "OSPINAS Y CIA. S.A.",
+          "project_count": 4
+        },
+        {
+          "name": "OSPINAS Y CIA SA",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 6,
+      "bogota_sabana_project_count": 2,
+      "bogota_project_count": 2,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "altto-salitre",
+        "pazari"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 34,
+      "name": "Pactar",
+      "aliases": [
+        {
+          "name": "Pactar",
+          "project_count": 3
+        },
+        {
+          "name": "PACTAR DESARROLLADOR INMOBILIARIO S.A.S.",
+          "project_count": 2
+        },
+        {
+          "name": "PACTAR DESARROLLADOR INMOBILIARIO",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 6,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 35,
+      "name": "Tierra Grata",
+      "aliases": [
+        {
+          "name": "Tierra Grata",
+          "project_count": 6
+        }
+      ],
+      "national_project_count": 6,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 36,
+      "name": "Acierto Inmobiliario",
+      "aliases": [
+        {
+          "name": "ACIERTO INMOBILIARIO S A",
+          "project_count": 5
+        }
+      ],
+      "national_project_count": 5,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 37,
+      "name": "Acrecer",
+      "aliases": [
+        {
+          "name": "ACRECER SAS",
+          "project_count": 3
+        },
+        {
+          "name": "Acrecer",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 5,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 38,
+      "name": "Conintel",
+      "aliases": [
+        {
+          "name": "Conintel",
+          "project_count": 4
+        },
+        {
+          "name": "CONINTEL SA",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 5,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 39,
+      "name": "Corasa",
+      "aliases": [
+        {
+          "name": "Corasa",
+          "project_count": 2
+        },
+        {
+          "name": "RUIZ AREVALO CONSTRUCTORA - CORASA",
+          "project_count": 2
+        },
+        {
+          "name": "RUIZ AREVALO CONSTRUCTORA S.A. - CORASA",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 5,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 40,
+      "name": "Trazos Urbanos",
+      "aliases": [
+        {
+          "name": "Trazos Urbanos",
+          "project_count": 4
+        },
+        {
+          "name": "TRAZOS URBANOS",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 5,
+      "bogota_sabana_project_count": 1,
+      "bogota_project_count": 1,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "wonder-coliving"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 41,
+      "name": "Uraki Constructora",
+      "aliases": [
+        {
+          "name": "URAKI CONSTRUCTORA SAS",
+          "project_count": 4
+        },
+        {
+          "name": "URAKI CONSTRUCTORA",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 5,
+      "bogota_sabana_project_count": 3,
+      "bogota_project_count": 2,
+      "sabana_project_count": 1,
+      "municipalities": [
+        "Bogotá",
+        "Mosquera"
+      ],
+      "project_ids": [
+        "aika-mosquera",
+        "bosques-de-ticuy",
+        "tekka"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 42,
+      "name": "Apiros",
+      "aliases": [
+        {
+          "name": "Apiros SAS",
+          "project_count": 2
+        },
+        {
+          "name": "APIROS ",
+          "project_count": 1
+        },
+        {
+          "name": "APIROS SAS",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 4,
+      "bogota_sabana_project_count": 2,
+      "bogota_project_count": 2,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "alma-72",
+        "elemental"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 43,
+      "name": "Bemsa",
+      "aliases": [
+        {
+          "name": "Bemsa, Proin",
+          "project_count": 2
+        },
+        {
+          "name": "CONSTRUCTORA BEMSA",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 4,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 44,
+      "name": "Construcciones Planificadas",
+      "aliases": [
+        {
+          "name": "CONSTRUCCIONES PLANIFICADAS",
+          "project_count": 3
+        },
+        {
+          "name": "Construcciones Planificadas",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 4,
+      "bogota_sabana_project_count": 4,
+      "bogota_project_count": 4,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "alsacia-arbore",
+        "boaterra-zelva",
+        "pinar-24-apartaestudios",
+        "serraclara"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 45,
+      "name": "Constructora Solanillas",
+      "aliases": [
+        {
+          "name": "CONSTRUCTORA SOLANILLAS SA",
+          "project_count": 2
+        },
+        {
+          "name": "Constructora SOLANILLAS SAS",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 4,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 46,
+      "name": "Habitus Construcciones",
+      "aliases": [
+        {
+          "name": "HABITUS CONSTRUCCIONES",
+          "project_count": 4
+        }
+      ],
+      "national_project_count": 4,
+      "bogota_sabana_project_count": 4,
+      "bogota_project_count": 4,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "alcala-134",
+        "alejandria-vintage",
+        "faenza-522",
+        "uba-studios"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 47,
+      "name": "Ic Constructora",
+      "aliases": [
+        {
+          "name": "IC CONSTRUCTORA",
+          "project_count": 4
+        }
+      ],
+      "national_project_count": 4,
+      "bogota_sabana_project_count": 3,
+      "bogota_project_count": 3,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "castilla-imperial",
+        "castilla-living",
+        "primera-este"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 48,
+      "name": "Icono Urbano",
+      "aliases": [
+        {
+          "name": "ICONO URBANO SA",
+          "project_count": 3
+        },
+        {
+          "name": "Icono Urbano",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 4,
+      "bogota_sabana_project_count": 4,
+      "bogota_project_count": 4,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "iko-95",
+        "iko95",
+        "teik-urban-style",
+        "zendero97"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 49,
+      "name": "Maz Proyectos Inmobiliarios",
+      "aliases": [
+        {
+          "name": "MAZ PROYECTOS INMOBILIARIOS SAS",
+          "project_count": 4
+        }
+      ],
+      "national_project_count": 4,
+      "bogota_sabana_project_count": 3,
+      "bogota_project_count": 3,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "cauttiva",
+        "connect-living",
+        "inizzia"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 50,
+      "name": "Once Constructora",
+      "aliases": [
+        {
+          "name": "Once Constructora",
+          "project_count": 4
+        }
+      ],
+      "national_project_count": 4,
+      "bogota_sabana_project_count": 4,
+      "bogota_project_count": 0,
+      "sabana_project_count": 4,
+      "municipalities": [
+        "Madrid"
+      ],
+      "project_ids": [
+        "azul-club-residencial",
+        "azul-club-residencial-turquesa",
+        "verdepino",
+        "verdevivo"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 51,
+      "name": "Proyectos Urbanos 3l",
+      "aliases": [
+        {
+          "name": "PROYECTOS URBANOS 3L",
+          "project_count": 3
+        },
+        {
+          "name": "PROYECTOS URBANOS 3L SAS",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 4,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 52,
+      "name": "Ambientti Constructora Inmobiliaria",
+      "aliases": [
+        {
+          "name": "AMBIENTTI CONSTRUCTORA INMOBILIARIA S A S",
+          "project_count": 2
+        },
+        {
+          "name": "AMBIENTTI CONSTRUCTORA INMOBILIARIA",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 3,
+      "bogota_sabana_project_count": 3,
+      "bogota_project_count": 3,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "caney-reservado-fontibon",
+        "sorentto",
+        "triventto"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 53,
+      "name": "Arquitectura Y Construcciones Arconsa",
+      "aliases": [
+        {
+          "name": "ARQUITECTURA Y CONSTRUCCIONES SA ARCONSA",
+          "project_count": 3
+        }
+      ],
+      "national_project_count": 3,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 54,
+      "name": "Briccon",
+      "aliases": [
+        {
+          "name": "Briccon",
+          "project_count": 3
+        }
+      ],
+      "national_project_count": 3,
+      "bogota_sabana_project_count": 3,
+      "bogota_project_count": 3,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "ivin-567",
+        "ivin-lago",
+        "ivin-refugio"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 55,
+      "name": "CFC & A Construcciones",
+      "aliases": [
+        {
+          "name": "CFC&A CONSTRUCCIONES",
+          "project_count": 3
+        }
+      ],
+      "national_project_count": 3,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 56,
+      "name": "Conarte",
+      "aliases": [
+        {
+          "name": "Conarte",
+          "project_count": 3
+        }
+      ],
+      "national_project_count": 3,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 57,
+      "name": "Confuturo Propiedad Raiz",
+      "aliases": [
+        {
+          "name": "CONFUTURO PROPIEDAD RAIZ S.A.S.",
+          "project_count": 3
+        }
+      ],
+      "national_project_count": 3,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 58,
+      "name": "Construcciones Arrecife",
+      "aliases": [
+        {
+          "name": "CONSTRUCCIONES ARRECIFE",
+          "project_count": 2
+        },
+        {
+          "name": "CONSTRUCCIONES ARRECIFE SAS",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 3,
+      "bogota_sabana_project_count": 3,
+      "bogota_project_count": 3,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "miramont-park",
+        "nahiku",
+        "takai"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 59,
+      "name": "Constructora Guasandi",
+      "aliases": [
+        {
+          "name": "CONSTRUCTORA GUASANDI SAS",
+          "project_count": 3
+        }
+      ],
+      "national_project_count": 3,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 60,
+      "name": "Crearcimientos Propiedad Raiz",
+      "aliases": [
+        {
+          "name": "CREARCIMIENTOS PROPIEDAD RAIZ SAS",
+          "project_count": 3
+        }
+      ],
+      "national_project_count": 3,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 61,
+      "name": "Entremontanas",
+      "aliases": [
+        {
+          "name": "ENTREMONTAÑAS SAS",
+          "project_count": 2
+        },
+        {
+          "name": "Entremontañas",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 3,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 62,
+      "name": "Forjar Inversiones",
+      "aliases": [
+        {
+          "name": "Forjar inversiones SAS",
+          "project_count": 3
+        }
+      ],
+      "national_project_count": 3,
+      "bogota_sabana_project_count": 3,
+      "bogota_project_count": 2,
+      "sabana_project_count": 1,
+      "municipalities": [
+        "Bogotá",
+        "Madrid"
+      ],
+      "project_ids": [
+        "alhambra-condomino-campestre",
+        "ciento5i",
+        "metro-73"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 63,
+      "name": "Grupo Normandia",
+      "aliases": [
+        {
+          "name": "GRUPO NORMANDIA SA",
+          "project_count": 2
+        },
+        {
+          "name": "GRUPO NORMANDIA",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 3,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 64,
+      "name": "Indico",
+      "aliases": [
+        {
+          "name": "INDICO",
+          "project_count": 3
+        }
+      ],
+      "national_project_count": 3,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 65,
+      "name": "Ingenia Construcciones",
+      "aliases": [
+        {
+          "name": "INGENIA CONSTRUCCIONES SAS",
+          "project_count": 2
+        },
+        {
+          "name": "INGENIA CONSTRUCCIONES S.A.S.",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 3,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 66,
+      "name": "Inversiones Alcabama",
+      "aliases": [
+        {
+          "name": "Inversiones Alcabama SA",
+          "project_count": 3
+        }
+      ],
+      "national_project_count": 3,
+      "bogota_sabana_project_count": 3,
+      "bogota_project_count": 3,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "akanti",
+        "ankara",
+        "bellaluna"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 67,
+      "name": "Optima",
+      "aliases": [
+        {
+          "name": "Optima",
+          "project_count": 2
+        },
+        {
+          "name": "Óptima S.A.S",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 3,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 68,
+      "name": "Premium Group Inversiones & Construccion",
+      "aliases": [
+        {
+          "name": "Premium Group Inversiones & Construcción",
+          "project_count": 3
+        }
+      ],
+      "national_project_count": 3,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 69,
+      "name": "Promotora De Proyectos Andalucia",
+      "aliases": [
+        {
+          "name": "PROMOTORA DE PROYECTOS ANDALUCIA S A",
+          "project_count": 2
+        },
+        {
+          "name": "Promotora de Proyectos Andalucia SA",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 3,
+      "bogota_sabana_project_count": 3,
+      "bogota_project_count": 1,
+      "sabana_project_count": 2,
+      "municipalities": [
+        "Bogotá",
+        "Cajicá",
+        "La Calera"
+      ],
+      "project_ids": [
+        "antigua",
+        "fuerteventura-reservado",
+        "modigliani"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 70,
+      "name": "Vertice",
+      "aliases": [
+        {
+          "name": "Vertice",
+          "project_count": 3
+        }
+      ],
+      "national_project_count": 3,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 71,
+      "name": "A Korn Arquitectos",
+      "aliases": [
+        {
+          "name": "A KORN ARQUITECTOS SAS",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 72,
+      "name": "Adquirir",
+      "aliases": [
+        {
+          "name": "Adquirir",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 73,
+      "name": "Alianza Ydn",
+      "aliases": [
+        {
+          "name": "Alianza YDN",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 74,
+      "name": "Arco Construcciones E Ingenieria",
+      "aliases": [
+        {
+          "name": "ARCO CONSTRUCCIONES E INGENIERIA SAS",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 75,
+      "name": "Artis Urbano",
+      "aliases": [
+        {
+          "name": "ARTIS URBANO",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 2,
+      "bogota_project_count": 2,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "madrigal",
+        "trevoly"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 76,
+      "name": "Ava Builder",
+      "aliases": [
+        {
+          "name": "AVA Builder SAS",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 2,
+      "bogota_project_count": 2,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "taj-97",
+        "taj-luxury"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 77,
+      "name": "Calicanto Camu",
+      "aliases": [
+        {
+          "name": "CALICANTO CAMU SAS",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 78,
+      "name": "Canales Desarrolladores",
+      "aliases": [
+        {
+          "name": "CANALES DESARROLLADORES SAS",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 2,
+      "bogota_project_count": 2,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "lift-98",
+        "vou"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 79,
+      "name": "Casa Concreto",
+      "aliases": [
+        {
+          "name": "Casa Concreto S.A.S",
+          "project_count": 1
+        },
+        {
+          "name": "CASA CONCRETO S.A.S",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 1,
+      "bogota_project_count": 1,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "macondo-santa-lucia"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 80,
+      "name": "Cg Constructora",
+      "aliases": [
+        {
+          "name": "CG CONSTRUCTORA SAS",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 81,
+      "name": "Cinco Urbana",
+      "aliases": [
+        {
+          "name": "CINCO URBANA S.A.S",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 2,
+      "bogota_project_count": 2,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "estoril-100",
+        "graun-san-felipe"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 82,
+      "name": "Coandes",
+      "aliases": [
+        {
+          "name": "COANDES SAS",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 2,
+      "bogota_project_count": 2,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "libbe-126",
+        "tei-146"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 83,
+      "name": "Cohala Construcciones",
+      "aliases": [
+        {
+          "name": "COHALA CONSTRUCCIONES SAS",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 84,
+      "name": "Coinobras",
+      "aliases": [
+        {
+          "name": "COINOBRAS SAS",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 85,
+      "name": "Condival",
+      "aliases": [
+        {
+          "name": "CONDIVAL SAS",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 2,
+      "bogota_project_count": 2,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "parque-estacion",
+        "renova-22"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 86,
+      "name": "Conhogar Intercasa",
+      "aliases": [
+        {
+          "name": "Conhogar, Intercasa",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 87,
+      "name": "Construbienes Jg",
+      "aliases": [
+        {
+          "name": "Construbienes JG",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 88,
+      "name": "Construcciones Buendia Y Lopez",
+      "aliases": [
+        {
+          "name": "CONSTRUCCIONES BUENDIA Y LOPEZ SAS",
+          "project_count": 1
+        },
+        {
+          "name": "Construcciones Buendía y López SAS",
+          "project_count": 1
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 89,
+      "name": "Construcciones Zabdi",
+      "aliases": [
+        {
+          "name": "CONSTRUCCIONES ZABDI SAS",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 1,
+      "bogota_project_count": 1,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "terrazas-de-molinos"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 90,
+      "name": "Constructora Coala",
+      "aliases": [
+        {
+          "name": "Constructora Coala",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 2,
+      "bogota_project_count": 2,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "art72",
+        "v85"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 91,
+      "name": "Constructora Mi Hogar",
+      "aliases": [
+        {
+          "name": "CONSTRUCTORA MI HOGAR SA",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 92,
+      "name": "Constructora Ospina Asociados",
+      "aliases": [
+        {
+          "name": "CONSTRUCTORA OSPINA ASOCIADOS",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 2,
+      "bogota_project_count": 1,
+      "sabana_project_count": 1,
+      "municipalities": [
+        "Bogotá",
+        "Cajicá"
+      ],
+      "project_ids": [
+        "guarigua-casa-25",
+        "mava-145"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 93,
+      "name": "Constructora Y Comercializadora Camu",
+      "aliases": [
+        {
+          "name": "CONSTRUCTORA Y COMERCIALIZADORA CAMU SAS",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 94,
+      "name": "Cubyco Constructores",
+      "aliases": [
+        {
+          "name": "CUBYCO CONSTRUCTORES SA",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 95,
+      "name": "Deltoroprime",
+      "aliases": [
+        {
+          "name": "DELTOROPRIME SAS",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 96,
+      "name": "Diversificar",
+      "aliases": [
+        {
+          "name": "DIVERSIFICAR SAS",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 97,
+      "name": "Gonzalez Pizano Y Cia",
+      "aliases": [
+        {
+          "name": "GONZALEZ PIZANO Y CIA SAS",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 0,
+      "bogota_project_count": 0,
+      "sabana_project_count": 0,
+      "municipalities": [],
+      "project_ids": [],
+      "audit_result": "no_regional_projects_found"
+    },
+    {
+      "rank": 98,
+      "name": "Gradeco",
+      "aliases": [
+        {
+          "name": "GRADECO",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 2,
+      "bogota_project_count": 2,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "high-park-chico-94",
+        "viu-park-home"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 99,
+      "name": "Grupo Empresarial Ingecol",
+      "aliases": [
+        {
+          "name": "GRUPO EMPRESARIAL INGECOL",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 1,
+      "bogota_project_count": 1,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "mava-92"
+      ],
+      "audit_result": "projects_found"
+    },
+    {
+      "rank": 100,
+      "name": "Grupo Empresarial Kinku",
+      "aliases": [
+        {
+          "name": "GRUPO EMPRESARIAL KINKU SAS",
+          "project_count": 2
+        }
+      ],
+      "national_project_count": 2,
+      "bogota_sabana_project_count": 2,
+      "bogota_project_count": 2,
+      "sabana_project_count": 0,
+      "municipalities": [
+        "Bogotá"
+      ],
+      "project_ids": [
+        "kioto",
+        "pekin"
+      ],
+      "audit_result": "projects_found"
+    }
+  ]
+}

@@ -105,6 +105,8 @@ export type CatalogSnapshot = {
     sabanaProjects: number;
     apartmentTypes: number;
     sourceDifferences: number;
+    topDevelopersAudited?: number;
+    topDevelopersWithRegionalProjects?: number;
   };
   listings: Listing[];
 };

@@ -30,6 +30,11 @@ const sourcePaths = [...new Set([
 const outputDirectory = path.join(uiRoot, "public", "data");
 const catalogPath = path.join(outputDirectory, "catalog.json");
 const reportPath = path.join(outputDirectory, "catalog-report.json");
+const developerCatalogPath = path.join(outputDirectory, "developers.json");
+const developerAuditPath = path.join(
+  scrapeDirectory,
+  "colombia-top-100-developers.json",
+);
 const imageManifestPath = path.join(
   uiRoot,
   "public",
@@ -79,6 +84,12 @@ const sources = await Promise.all(
     data: JSON.parse(await readFile(sourcePath, "utf8")),
   })),
 );
+let developerAudit = null;
+try {
+  developerAudit = JSON.parse(await readFile(developerAuditPath, "utf8"));
+} catch (error) {
+  if (error?.code !== "ENOENT") throw error;
+}
 let imageManifest = { entries: {} };
 try {
   imageManifest = JSON.parse(await readFile(imageManifestPath, "utf8"));
@@ -268,7 +279,11 @@ for (const listing of listings) {
     regularListings.push(listing);
     continue;
   }
-  const key = `${listing.market}:${normalizedProjectName(listing.projectName)}`;
+  const key = [
+    listing.market,
+    listing.market === "sabana" ? listing.municipality : "",
+    normalizedProjectName(listing.projectName),
+  ].join(":");
   const group = projectGroups.get(key) ?? [];
   group.push(listing);
   projectGroups.set(key, group);
@@ -371,6 +386,11 @@ const summary = {
     (count, listing) => count + (listing.sourceDifferences?.length ?? 0),
     0,
   ),
+  topDevelopersAudited: developerAudit?.developers?.length ?? 0,
+  topDevelopersWithRegionalProjects:
+    developerAudit?.developers?.filter(
+      (developer) => developer.bogota_sabana_project_count > 0,
+    ).length ?? 0,
 };
 
 const catalog = {
@@ -410,12 +430,46 @@ const report = {
       (entry) => entry.active === false,
     ).length,
   },
+  developerAudit: developerAudit
+    ? {
+        fileName: path.basename(developerAuditPath),
+        source: developerAudit.source,
+        collectedAt: developerAudit.collected_at,
+        nationalInventory: developerAudit.national_inventory_count,
+        canonicalDevelopers: developerAudit.canonical_developer_count,
+        topDevelopers: developerAudit.developers.length,
+      }
+    : null,
 };
+
+const publicDeveloperAudit = developerAudit
+  ? {
+      schemaVersion: 1,
+      publishedAt,
+      source: developerAudit.source,
+      collectedAt: developerAudit.collected_at,
+      nationalInventoryUrl: developerAudit.national_inventory_url,
+      nationalInventoryCount: developerAudit.national_inventory_count,
+      canonicalDeveloperCount: developerAudit.canonical_developer_count,
+      methodology: developerAudit.methodology,
+      developers: developerAudit.developers,
+    }
+  : {
+      schemaVersion: 1,
+      publishedAt,
+      source: null,
+      developers: [],
+    };
 
 await mkdir(outputDirectory, { recursive: true });
 await Promise.all([
   writeFile(catalogPath, `${JSON.stringify(catalog)}\n`, "utf8"),
   writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8"),
+  writeFile(
+    developerCatalogPath,
+    `${JSON.stringify(publicDeveloperAudit, null, 2)}\n`,
+    "utf8",
+  ),
 ]);
 
 process.stdout.write(

@@ -3,6 +3,31 @@ import type { Locale } from "./types";
 
 export const MAP_PRICE_BUCKET_SIZE = 250_000_000;
 export const MAP_PRICE_OVERFLOW_MIN = 5_000_000_000;
+export const MAP_RENTAL_PRICE_OVERFLOW_MIN = 50_000_000;
+
+export const MAP_RENTAL_PRICE_THRESHOLDS = [
+  0,
+  1_200_000,
+  1_500_000,
+  1_800_000,
+  2_100_000,
+  2_500_000,
+  3_000_000,
+  3_500_000,
+  4_000_000,
+  4_500_000,
+  5_000_000,
+  6_000_000,
+  7_000_000,
+  8_000_000,
+  10_000_000,
+  12_000_000,
+  15_000_000,
+  18_000_000,
+  22_000_000,
+  30_000_000,
+  MAP_RENTAL_PRICE_OVERFLOW_MIN,
+] as const;
 
 const MAP_PRICE_COLORS = [
   "#3b4cc0",
@@ -35,7 +60,39 @@ export type MapPriceBucket = {
   color: string;
 };
 
-export function mapPriceBucket(priceCop: number): MapPriceBucket {
+export type MapPriceScale = "sale" | "rental";
+
+function rentalPriceBucket(priceCop: number): MapPriceBucket {
+  if (priceCop >= MAP_RENTAL_PRICE_OVERFLOW_MIN) {
+    return {
+      index: MAP_PRICE_COLORS.length - 1,
+      min: MAP_RENTAL_PRICE_OVERFLOW_MIN,
+      maxExclusive: null,
+      color: MAP_PRICE_COLORS.at(-1) as string,
+    };
+  }
+  const index = Math.max(
+    0,
+    MAP_RENTAL_PRICE_THRESHOLDS.findIndex(
+      (threshold, thresholdIndex) =>
+        thresholdIndex < MAP_RENTAL_PRICE_THRESHOLDS.length - 1 &&
+        priceCop >= threshold &&
+        priceCop < MAP_RENTAL_PRICE_THRESHOLDS[thresholdIndex + 1],
+    ),
+  );
+  return {
+    index,
+    min: MAP_RENTAL_PRICE_THRESHOLDS[index],
+    maxExclusive: MAP_RENTAL_PRICE_THRESHOLDS[index + 1],
+    color: MAP_PRICE_COLORS[index],
+  };
+}
+
+export function mapPriceBucket(
+  priceCop: number,
+  scale: MapPriceScale = "sale",
+): MapPriceBucket {
+  if (scale === "rental") return rentalPriceBucket(priceCop);
   if (priceCop >= MAP_PRICE_OVERFLOW_MIN) {
     return {
       index: MAP_PRICE_COLORS.length - 1,
@@ -57,8 +114,12 @@ export function mapPriceBucket(priceCop: number): MapPriceBucket {
   };
 }
 
-export function mapPriceBucketLabel(priceCop: number, locale: Locale) {
-  const bucket = mapPriceBucket(priceCop);
+export function mapPriceBucketLabel(
+  priceCop: number,
+  locale: Locale,
+  scale: MapPriceScale = "sale",
+) {
+  const bucket = mapPriceBucket(priceCop, scale);
   const minimum = formatCompactCop(bucket.min, locale);
   if (bucket.maxExclusive === null) return `${minimum}+`;
   return `${minimum}–<${formatCompactCop(bucket.maxExclusive, locale)}`;

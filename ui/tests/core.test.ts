@@ -50,6 +50,19 @@ describe("catalog filtering", () => {
     ).toBe(true);
   });
 
+  it("matches a project by developer name", () => {
+    expect(
+      listingMatches(
+        listing({
+          resultType: "Proyecto",
+          projectName: "Proyecto regional",
+          developerName: "Constructora Bolívar",
+        }),
+        query({ text: "constructora bolivar" }),
+      ),
+    ).toBe(true);
+  });
+
   it("combines numeric, type, and stratum filters", () => {
     expect(
       listingMatches(
@@ -158,8 +171,23 @@ describe("catalog filtering", () => {
       resultType: "Proyecto",
       projectStatus: "Entrega inmediata",
     });
+    const statusPending = listing({
+      id: "M-4",
+      resultType: "Proyecto",
+      projectStatus: null,
+    });
+    const regularListing = listing({
+      id: "M-5",
+      resultType: "Inmueble",
+      projectStatus: "En construcción",
+    });
 
-    expect(filterListings([construction, onPlan, immediate], query({ projectStatus: "new" }))).toHaveLength(3);
+    expect(
+      filterListings(
+        [construction, onPlan, immediate, statusPending, regularListing],
+        query({ projectStatus: "new" }),
+      ).map((value) => value.id),
+    ).toEqual(["M-1", "M-2", "M-3", "M-4"]);
     expect(
       filterListings(
         [construction, onPlan, immediate],
@@ -301,6 +329,12 @@ describe("explore route search", () => {
   it("validates the Ciencuadras project source filter", () => {
     expect(validateExploreSearch({ source: "ciencuadras" })).toEqual({
       source: "ciencuadras",
+    });
+  });
+
+  it("validates the Zonario project source filter", () => {
+    expect(validateExploreSearch({ source: "zonario" })).toEqual({
+      source: "zonario",
     });
   });
 });

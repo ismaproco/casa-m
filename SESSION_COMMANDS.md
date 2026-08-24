@@ -97,12 +97,21 @@ jq -s '{paginas:length, nuevos:([.[].records[]]|length), ids_unicos:([.[].record
   Computer Use: 18 páginas visibles, 114 proyectos, 258 tipologías y 28
   constructoras/promotores. Se conserva como evidencia de portal y usa
   centroides aproximados de localidad cuando la tarjeta no publica el punto.
+- El censo nacional de constructoras usa el inventario público de 1.166
+  proyectos activos de Zonario, normaliza razones sociales y alias regionales,
+  y conserva exactamente los 100 grupos con mayor inventario nacional. El
+  corte actual encontró 52 con oferta en Bogotá/Sabana y 48 sin oferta
+  regional; publicó 364 proyectos fuente con 1.457 tipologías. La Nota 2025 y
+  el inventario Camacol de `Mi Casa en Bogotá` se guardan como fuentes de
+  contraste metodológico. La lista pública se genera en
+  `ui/public/data/developers.json`.
 
 ```sh
 source /Users/savathos/.nvm/nvm.sh
 nvm use 22.23.1
 node scripts/scrape-arquitectura-concreto-projects.mjs
 node scripts/scrape-construcciones-planificadas-projects.mjs
+node scripts/scrape-zonario-top-developers.mjs
 cd ui
 npm run images:cache
 npm run catalog:build

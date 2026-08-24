@@ -104,7 +104,8 @@ collection/enrichment scripts
 The test suite covers:
 
 - filtering, sorting, saved-search snapshots, and search-parameter validation;
-- map price buckets and localized labels;
+- independently calibrated sale and monthly-rental map price buckets with
+  localized labels;
 - statistics calculations and distributions;
 - IndexedDB import/export contracts;
 - direct route loading and typed navigation;
@@ -197,6 +198,25 @@ developer record as the preferred project whenever both sources describe the
 same project, while retaining Ciencuadras prices and apartment types for the
 source comparison. Listings without an exact point use an explicitly
 approximate locality centroid.
+
+The national developer census ranks exactly 100 normalized developer/promoter
+groups by the number of active projects in Zonario's public nationwide
+inventory. It cross-references the 2025 urban-building ranking from La Nota and
+the Camacol `Mi Casa en Bogotá` participant inventory as methodological
+sources. The audit records both positive and negative regional results: 52 of
+the top 100 currently have projects in Bogotá or the supported Sabana
+municipalities, while the remaining 48 are retained as audited companies with
+no regional project found. Refresh and publish the census with:
+
+```bash
+node scripts/scrape-zonario-top-developers.mjs
+cd ui
+npm run catalog:build
+```
+
+The generated public list is available at `/data/developers.json`. Zonario
+projects remain portal evidence, official developer records retain precedence,
+and municipality/locality centroids are explicitly marked as approximate.
 
 ## Deploy to the local server
 

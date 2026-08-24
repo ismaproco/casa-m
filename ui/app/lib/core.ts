@@ -45,7 +45,7 @@ export function listingMatches(listing: Listing, query: SearchQuery) {
   if (
     needle &&
     !normalizeText(
-      `${listing.city} ${listing.locality ?? ""} ${listing.zone ?? ""} ${listing.neighborhood ?? ""} ${listing.projectName ?? ""} ${listing.id}`,
+      `${listing.city} ${listing.locality ?? ""} ${listing.zone ?? ""} ${listing.neighborhood ?? ""} ${listing.projectName ?? ""} ${listing.developerName ?? ""} ${listing.id}`,
     ).includes(needle)
   ) {
     return false;
@@ -99,7 +99,8 @@ export function listingMatches(listing: Listing, query: SearchQuery) {
   });
   if (!hasMatchingVariant) return false;
   if (query.resultType && listing.resultType !== query.resultType) return false;
-  if (query.projectStatus === "new" && !listing.projectStatus) return false;
+  if (query.projectStatus === "new" && listing.resultType !== "Proyecto")
+    return false;
   if (
     query.projectStatus === "construction" &&
     listing.projectStatus !== "En construcción"
@@ -232,6 +233,7 @@ const CATALOG_SOURCES = new Set([
   "arquitectura-y-concreto",
   "construcciones-planificadas",
   "ciencuadras",
+  "zonario",
 ]);
 
 function validNumericSearch(value: unknown) {
