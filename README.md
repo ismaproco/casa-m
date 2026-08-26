@@ -161,6 +161,19 @@ npm run images:cache
 npm run rentals:build
 ```
 
+Refresh Solusi's Bogotá apartment-sale inventory before rebuilding:
+
+```bash
+node scripts/scrape-solusi.mjs
+cd ui
+npm run images:cache
+npm run catalog:build
+```
+
+The collector audits every visible result page and detail page. Solusi's
+embedded map positions are invalid defaults, so the catalog uses locally
+recorded OpenStreetMap neighborhood centroids and marks them as approximate.
+
 Refresh the structured Arquitectura y Concreto inventory for Bogotá and the
 Sabana before rebuilding the catalog:
 

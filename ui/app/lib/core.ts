@@ -265,6 +265,7 @@ const CATALOG_SOURCES = new Set([
   "metrocuadrado",
   "facebook-home-bogota",
   "myhome",
+  "solusi",
   "amarilo",
   "arquitectura-y-concreto",
   "construcciones-planificadas",

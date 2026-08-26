@@ -17,6 +17,7 @@ const standardSourceNames = [
   "amarilo-bogota-new-projects.json",
   "facebook-home-bogota-listings.json",
   "myhome-bogota-listings.json",
+  "solusi-bogota-listings.json",
   "ciencuadras-bogota-projects.json",
   "arquitectura-concreto-bogota-sabana-projects.json",
   "cusezar-bogota-sabana-projects.json",
@@ -135,6 +136,7 @@ for (const record of eligibleRecords) {
         metrocuadrado: "Metrocuadrado",
         "facebook-home-bogota": "HOME Bogotá (Facebook)",
         myhome: "MyHome",
+        solusi: "Solusi",
         amarilo: "Amarilo",
       }[record.source] ?? record.source),
     sourceKind:

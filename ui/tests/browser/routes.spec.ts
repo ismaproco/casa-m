@@ -111,6 +111,37 @@ test("MyHome source filter exposes only imported MyHome listings", async ({
   ).toHaveValue("1");
 });
 
+test("Solusi source imports every visible Bogotá apartment sale", async ({
+  page,
+}) => {
+  const response = await page.request.get("/data/catalog.json");
+  const catalog = await response.json();
+  const listings = catalog.listings.filter(
+    (listing: { source: string }) => listing.source === "solusi",
+  );
+
+  expect(listings).toHaveLength(68);
+  expect(listings.every((listing: {
+    resultType: string;
+    priceCop: number;
+    areaM2: number | null;
+    bedrooms: number;
+    coordinatePrecision: string;
+  }) =>
+    listing.resultType === "Inmueble" &&
+    listing.priceCop > 0 &&
+    (listing.areaM2 ?? 0) > 0 &&
+    listing.bedrooms >= 1 &&
+    listing.coordinatePrecision === "neighborhood_centroid",
+  )).toBe(true);
+  expect(new Set(listings.map((listing: { id: string }) => listing.id)).size).toBe(68);
+
+  await page.goto("/explore?source=solusi");
+  await expect(page.getByRole("combobox", { name: /source|fuente/i })).toHaveValue("solusi");
+  await expect(page.getByText(/68 resultados|68 results/i)).toBeVisible();
+  await expect(page.locator("article").first()).toBeVisible();
+});
+
 test("construction projects are filterable and expose delivery details", async ({
   page,
 }) => {

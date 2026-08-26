@@ -155,3 +155,23 @@ cd ui
 npm run images:cache
 npm run rentals:build
 ```
+
+## Solusi — apartamentos en venta en Bogotá
+
+- La búsqueda oficial contiene 68 apartamentos en cinco páginas.
+- `scripts/scrape-solusi.mjs` valida el total visible, visita cada ficha y
+  conserva precio, área, habitaciones, baños, garajes, estrato, dirección e
+  imagen cuando están publicados.
+- Las coordenadas embebidas por Solusi son valores predeterminados inválidos.
+  El colector usa Nominatim solamente para centroides de barrio, los etiqueta
+  como `neighborhood_centroid` y no intenta presentar esos puntos como la
+  ubicación exacta del inmueble.
+
+```sh
+source /Users/savathos/.nvm/nvm.sh
+nvm use 22.23.1
+node scripts/scrape-solusi.mjs
+cd ui
+npm run images:cache
+npm run catalog:build
+```
