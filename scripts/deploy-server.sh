@@ -72,7 +72,11 @@ expected_rental_metrics="$(jq -c '{
   published: .summary.publishedRecords,
   metrocuadrado: ([.listings[] | select(.source == "metrocuadrado")] | length),
   myhome: ([.listings[] | select(.source == "myhome")] | length),
-  localImages: ([.listings[] | select(.imageUrl != null)] | length)
+  fincaraiz: ([.listings[] | select(.source == "fincaraiz")] | length),
+  localImages: ([.listings[] | select(.imageUrl != null)] | length),
+  available: .summary.availableRecords,
+  unavailable: .summary.unavailableRecords,
+  duplicates: .summary.duplicateRecords
 }' ui/public/data/rentals.json)"
 expected_head="$(git rev-parse HEAD)"
 
@@ -179,7 +183,11 @@ remote_rental_metrics="$(
         published: .summary.publishedRecords,
         metrocuadrado: ([.listings[] | select(.source == \"metrocuadrado\")] | length),
         myhome: ([.listings[] | select(.source == \"myhome\")] | length),
-        localImages: ([.listings[] | select(.imageUrl != null)] | length)
+        fincaraiz: ([.listings[] | select(.source == \"fincaraiz\")] | length),
+        localImages: ([.listings[] | select(.imageUrl != null)] | length),
+        available: .summary.availableRecords,
+        unavailable: .summary.unavailableRecords,
+        duplicates: .summary.duplicateRecords
       }'
   "
 )"
@@ -228,7 +236,11 @@ public_rental_metrics="$(jq -c '{
   published: .summary.publishedRecords,
   metrocuadrado: ([.listings[] | select(.source == "metrocuadrado")] | length),
   myhome: ([.listings[] | select(.source == "myhome")] | length),
-  localImages: ([.listings[] | select(.imageUrl != null)] | length)
+  fincaraiz: ([.listings[] | select(.source == "fincaraiz")] | length),
+  localImages: ([.listings[] | select(.imageUrl != null)] | length),
+  available: .summary.availableRecords,
+  unavailable: .summary.unavailableRecords,
+  duplicates: .summary.duplicateRecords
 }' "$public_rentals")"
 [[ "$public_rental_metrics" == "$expected_rental_metrics" ]] || fail \
   "public rental catalog mismatch: $public_rental_metrics"

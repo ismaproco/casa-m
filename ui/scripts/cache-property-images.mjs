@@ -35,6 +35,7 @@ const standardSourceNames = [
   "arquitectura-concreto-bogota-sabana-projects.json",
   "metrocuadrado-bogota-rental-listings.json",
   "myhome-bogota-rental-listings.json",
+  "fincaraiz-bogota-rental-listings.json",
 ];
 const discoveredOfficialSourceNames = (await readdir(scrapeDirectory)).filter(
   (fileName) => /-bogota-sabana-projects\.json$/i.test(fileName),

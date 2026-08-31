@@ -1563,6 +1563,8 @@ function ListingCard({
       className={cn(
         "relative mb-2 grid grid-cols-1 rounded-xl border bg-card shadow-xs transition hover:-translate-y-px hover:border-primary/40 hover:shadow-md",
         selected && "border-primary ring-2 ring-primary/20",
+        listing.availabilityStatus === "unavailable" &&
+          "border-destructive ring-2 ring-destructive/30",
       )}
       onMouseEnter={() => onHover(listing.id)}
       onMouseLeave={() => onHover(null)}
@@ -1577,8 +1579,13 @@ function ListingCard({
           alt=""
           variant="card"
         />
-        <span className="col-start-2 flex min-w-0 items-center gap-2 self-center font-mono text-[9px] font-extrabold tracking-[0.08em] text-primary uppercase">
+        <span className="col-start-2 flex min-w-0 flex-wrap items-center gap-2 self-center font-mono text-[9px] font-extrabold tracking-[0.08em] text-primary uppercase">
           {listing.resultType}
+          {listing.availabilityStatus === "unavailable" && (
+            <span className="rounded-md bg-destructive px-2 py-1 text-[9px] font-black tracking-[0.08em] text-white shadow-sm">
+              {c.listingUnavailable}
+            </span>
+          )}
           {listing.resultType === "Proyecto" && (
             <span className="truncate rounded-full bg-primary/10 px-1.5 py-0.5 text-[8px] tracking-normal normal-case">
               {projectStatusLabel(listing.projectStatus, locale)}
@@ -1679,6 +1686,26 @@ function ListingDrawer({
         </Button>
       </div>
       <div className="min-h-0 overflow-y-auto p-6">
+        {listing.availabilityStatus === "unavailable" && (
+          <div
+            className="mb-4 rounded-xl border-2 border-destructive bg-destructive px-4 py-3 text-white shadow-lg"
+            role="status"
+          >
+            <strong className="flex items-center gap-2 text-sm tracking-[0.06em]">
+              <CircleAlert size={20} /> {c.listingUnavailable}
+            </strong>
+            <p className="mt-1 text-xs font-semibold text-white/90">
+              {c.listingUnavailableHelp}
+            </p>
+            {listing.availabilityCheckedAt && (
+              <p className="mt-2 text-[10px] text-white/80">
+                {c.availabilityChecked}: {new Intl.DateTimeFormat(locale, {
+                  dateStyle: "medium",
+                }).format(new Date(listing.availabilityCheckedAt))}
+              </p>
+            )}
+          </div>
+        )}
         <PropertyImage
           src={listing.imageUrl}
           alt={

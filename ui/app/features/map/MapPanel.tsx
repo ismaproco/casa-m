@@ -190,7 +190,12 @@ export function MapPanel({
         const priceBucket = mapPriceBucket(listing.priceCop, priceScale);
         const priceLabel =
           listing.priceCop > 0 ? formatCop(listing.priceCop, locale) : t(locale).consultPrice;
-        const markerColor = listing.priceCop > 0 ? priceBucket.color : "#64748b";
+        const markerColor =
+          listing.availabilityStatus === "unavailable"
+            ? "#991b1b"
+            : listing.priceCop > 0
+              ? priceBucket.color
+              : "#64748b";
         const hasApproximateCoordinates =
           listing.coordinatePrecision === "neighborhood_centroid";
         const isNewProject = listing.resultType === "Proyecto";
@@ -212,13 +217,17 @@ export function MapPanel({
               opacity: 1,
               dashArray: hasApproximateCoordinates ? "2 2" : undefined,
               fillColor: markerColor,
-              fillOpacity: 0.94,
+              fillOpacity:
+                listing.availabilityStatus === "unavailable" ? 0.58 : 0.94,
             });
         marker.bindTooltip(
           [
             listing.neighborhood ?? listing.city,
             listing.city,
             priceLabel,
+            ...(listing.availabilityStatus === "unavailable"
+              ? [t(locale).listingUnavailable]
+              : []),
             ...(listing.priceCop > 0
               ? [mapPriceBucketLabel(listing.priceCop, locale, priceScale)]
               : []),

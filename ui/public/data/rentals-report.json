@@ -1,29 +1,38 @@
 {
-  "generatedAt": "2026-08-26T13:20:32.459Z",
-  "catalogVersion": "dd248f2ab7377b39",
+  "generatedAt": "2026-08-31T18:23:15.135Z",
+  "catalogVersion": "45d9006e7551d27c",
   "summary": {
-    "sourceRecords": 9392,
-    "publishedRecords": 9243,
-    "excludedRecords": 149,
+    "sourceRecords": 17120,
+    "publishedRecords": 15640,
+    "excludedRecords": 164,
     "approximateCoordinates": 0,
-    "knownStratum": 9243,
+    "knownStratum": 15640,
     "officialProjects": 0,
     "sabanaProjects": 0,
     "apartmentTypes": 0,
-    "sourceDifferences": 0
+    "sourceDifferences": 0,
+    "availableRecords": 15637,
+    "unavailableRecords": 3,
+    "duplicateRecords": 1316
   },
   "inputs": [
     {
       "fileName": "metrocuadrado-bogota-rental-listings.json",
       "source": "metrocuadrado",
-      "records": 9309,
-      "scrapedAt": "2026-08-24T14:05:56.327Z"
+      "records": 10265,
+      "scrapedAt": "2026-08-31T18:04:01.309Z"
     },
     {
       "fileName": "myhome-bogota-rental-listings.json",
       "source": "myhome",
-      "records": 83,
-      "scrapedAt": "2026-08-24T14:04:55.090Z"
+      "records": 89,
+      "scrapedAt": "2026-08-31T18:02:35.158Z"
+    },
+    {
+      "fileName": "fincaraiz-bogota-rental-listings.json",
+      "source": "fincaraiz",
+      "records": 6766,
+      "scrapedAt": "2026-08-31T18:21:22.801Z"
     }
   ],
   "exclusions": [
@@ -89,6 +98,12 @@
     },
     {
       "id": "MC-RENT-13436-M5785358",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-164-M4190739",
       "reasons": [
         "invalid_coordinate"
       ]
@@ -532,7 +547,19 @@
       ]
     },
     {
+      "id": "MC-RENT-4186-M6997426",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
       "id": "MC-RENT-4673-M6486514",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-5044-M6984645",
       "reasons": [
         "invalid_coordinate"
       ]
@@ -670,6 +697,18 @@
       ]
     },
     {
+      "id": "MC-RENT-MC5791390",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC5806405",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
       "id": "MC-RENT-MC5974143",
       "reasons": [
         "invalid_coordinate"
@@ -683,6 +722,12 @@
     },
     {
       "id": "MC-RENT-MC6073109",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6103331",
       "reasons": [
         "invalid_coordinate"
       ]
@@ -874,6 +919,12 @@
       ]
     },
     {
+      "id": "MC-RENT-MC6924946",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
       "id": "MC-RENT-MC6924989",
       "reasons": [
         "invalid_coordinate"
@@ -920,9 +971,57 @@
       "reasons": [
         "invalid_coordinate"
       ]
+    },
+    {
+      "id": "MC-RENT-MC6985096",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6986259",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "MC-RENT-MC6993412",
+      "reasons": [
+        "invalid_coordinate"
+      ]
+    },
+    {
+      "id": "FR-RENT-192359254",
+      "reasons": [
+        "invalid_price"
+      ]
+    },
+    {
+      "id": "FR-RENT-194104339",
+      "reasons": [
+        "invalid_price"
+      ]
+    },
+    {
+      "id": "FR-RENT-194168203",
+      "reasons": [
+        "invalid_price"
+      ]
+    },
+    {
+      "id": "FR-RENT-194168743",
+      "reasons": [
+        "invalid_price"
+      ]
+    },
+    {
+      "id": "FR-RENT-194182997",
+      "reasons": [
+        "outside_bogota"
+      ]
     }
   ],
   "warningCounts": {
-    "rent_outlier": 64
+    "rent_outlier": 76
   }
 }

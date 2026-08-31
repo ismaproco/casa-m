@@ -138,19 +138,35 @@ npm run catalog:build
 
 ## Arriendos separados de ventas
 
-- Metrocuadrado reportó 9.312 apartamentos en arriendo; el colector guardó
-  9.309 y el catálogo publicó 9.160 con coordenadas válidas.
-- MyHome usa el estado técnico `for-rent` (etiquetado “Renta”): guardó y publicó
-  83 resultados.
-- El catálogo independiente `ui/public/data/rentals.json` contiene 9.243
-  arriendos de Bogotá, de cualquier cantidad de habitaciones. No se fusiona
-  con `catalog.json`, que continúa siendo exclusivamente de ventas.
+- El corte del 31 de agosto de 2026 de Metrocuadrado reportó 9.375 apartamentos
+  en arriendo y recuperó 9.372. Además conserva 893 fichas válidas que ya no
+  aparecen en el índice, pero cuya página individual sigue activa.
+- MyHome usa el estado técnico `for-rent` (etiquetado “Renta”): recuperó 86
+  fichas vigentes y confirmó tres bajas históricas mediante páginas HTTP 404.
+- Finca Raíz reportó 6.863 resultados y produjo 6.766 IDs únicos. Se
+  normalizaron como Bogotá 6.765 registros cuyo departamento oficial era
+  Bogotá D.C.; una ficha de La Calera permaneció fuera de la cobertura. Tras
+  validación y deduplicación, aporta 5.869 arriendos netos al catálogo.
+- El catálogo independiente `ui/public/data/rentals.json` contiene 15.640
+  arriendos de Bogotá: 15.637 vigentes y tres históricos no disponibles. No se
+  fusiona con `catalog.json`, que continúa siendo exclusivamente de ventas.
+- Cada actualización conserva los IDs del corte anterior. La ausencia del
+  índice inicia una revisión de la ficha individual: solo 404/410, un mensaje
+  explícito de baja o la pérdida de identidad del anuncio produce
+  `unavailable`. Los fallos temporales no cambian el estado. Las bajas se
+  conservan con fecha de revisión y una etiqueta evidente en lista, mapa y
+  detalle.
+- La consolidación elimina duplicados vigentes únicamente cuando coinciden
+  ubicación, precio, área, habitaciones, baños, parqueaderos y barrio. Los
+  registros históricos no se eliminan por esta regla. El corte actual colapsó
+  1.316 duplicados vigentes.
 
 ```sh
 source /Users/savathos/.nvm/nvm.sh
 nvm use 22.23.1
 node scripts/scrape-metrocuadrado.mjs --operation=rent --min-bedrooms=0 --strata=all
 node scripts/scrape-myhome.mjs --operation=rent
+node scripts/scrape-fincaraiz.mjs --operation=rent --refresh
 cd ui
 npm run images:cache
 npm run rentals:build

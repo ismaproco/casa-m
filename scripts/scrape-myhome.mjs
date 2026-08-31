@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { mkdir, rename, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -267,10 +267,99 @@ async function enrichCards(cards) {
   return { records: records.filter(Boolean), exclusions };
 }
 
+async function auditListingAvailability(record) {
+  try {
+    const response = await fetch(record.listing_url, {
+      headers: {
+        accept: "text/html,application/xhtml+xml",
+        "user-agent": "CasaMapaLocalCatalog/1.0",
+      },
+      redirect: "follow",
+      signal: AbortSignal.timeout(30_000),
+    });
+    if (response.status === 429 || response.status >= 500) return "unknown";
+    if (response.status === 404 || response.status === 410) return "unavailable";
+    const html = await response.text();
+    if (/propiedad no disponible|inmueble no disponible|ya no (?:se encuentra|est[aá]) disponible|publicaci[oó]n finalizada/i.test(html)) {
+      return "unavailable";
+    }
+    return response.ok && html.includes(String(record.source_id))
+      ? "available"
+      : "unavailable";
+  } catch {
+    return "unknown";
+  }
+}
+
 const cards = await collectCards();
 process.stdout.write(`Tarjetas válidas: ${cards.length}\n`);
-const { records, exclusions } = await enrichCards(cards);
+const { records: currentRecords, exclusions } = await enrichCards(cards);
 const scrapedAt = new Date().toISOString();
+let previousOutput = null;
+try {
+  previousOutput = JSON.parse(await readFile(outputPath, "utf8"));
+} catch (error) {
+  if (error?.code !== "ENOENT") throw error;
+}
+const previousRecords = previousOutput?.records ?? [];
+const previousById = new Map(previousRecords.map((record) => [record.id, record]));
+const discoveredUrls = new Set(cards.map((card) => card.url));
+const refreshedRecords = currentRecords.map((record) => {
+  const previous = previousById.get(record.id);
+  return {
+    ...record,
+    availability_status: "available",
+    availability_check_method: "search_index",
+    first_seen_at: previous
+      ? previous.first_seen_at ?? previousOutput?.scraped_at ?? scrapedAt
+      : scrapedAt,
+    last_seen_at: scrapedAt,
+    availability_checked_at: scrapedAt,
+  };
+});
+const currentIds = new Set(refreshedRecords.map((record) => record.id));
+const missingRecords = previousRecords.filter(
+  (record) => !currentIds.has(record.id) && !discoveredUrls.has(record.listing_url),
+);
+const missingStatuses = new Map();
+for (const record of missingRecords) {
+  missingStatuses.set(record.id, await auditListingAvailability(record));
+}
+const retainedRecords = previousRecords
+  .filter((record) => !currentIds.has(record.id))
+  .map((record) => {
+    const stillDiscovered = discoveredUrls.has(record.listing_url);
+    const auditedStatus = stillDiscovered
+      ? "available"
+      : missingStatuses.get(record.id);
+    const status =
+      auditedStatus === "unknown"
+        ? record.availability_check_method === "detail_page"
+          ? record.availability_status
+          : "available"
+        : auditedStatus;
+    return {
+      ...record,
+      availability_status: status,
+      availability_check_method:
+        auditedStatus === "unknown"
+          ? record.availability_check_method ?? null
+          : stillDiscovered
+            ? "search_index"
+            : "detail_page",
+      first_seen_at: record.first_seen_at ?? previousOutput?.scraped_at ?? null,
+      last_seen_at: status === "available"
+        ? scrapedAt
+        : record.last_seen_at ?? previousOutput?.scraped_at ?? null,
+      availability_checked_at:
+        auditedStatus === "unknown"
+          ? record.availability_checked_at ?? null
+          : scrapedAt,
+    };
+  });
+const records = [...refreshedRecords, ...retainedRecords].sort((a, b) =>
+  a.id.localeCompare(b.id),
+);
 const output = {
   schema_version: 1,
   source: "myhome",
@@ -284,6 +373,12 @@ const output = {
   scraped_at: scrapedAt,
   discovered_count: cards.length,
   record_count: records.length,
+  available_count: records.filter(
+    (record) => record.availability_status === "available",
+  ).length,
+  unavailable_count: records.filter(
+    (record) => record.availability_status === "unavailable",
+  ).length,
   excluded_count: exclusions.length,
   exclusions,
   records,

@@ -87,6 +87,9 @@ export type Listing = {
   url: string;
   fingerprint: string;
   dataWarnings: string[];
+  availabilityStatus?: "available" | "unavailable";
+  availabilityCheckedAt?: string | null;
+  lastSeenAt?: string | null;
 };
 
 export type CatalogSnapshot = {
@@ -107,6 +110,9 @@ export type CatalogSnapshot = {
     sourceDifferences: number;
     topDevelopersAudited?: number;
     topDevelopersWithRegionalProjects?: number;
+    availableRecords?: number;
+    unavailableRecords?: number;
+    duplicateRecords?: number;
   };
   listings: Listing[];
 };

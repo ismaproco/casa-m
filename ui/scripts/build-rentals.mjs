@@ -10,6 +10,7 @@ const scrapeDirectory = path.join(repositoryRoot, "scrapes");
 const sourcePaths = [
   "metrocuadrado-bogota-rental-listings.json",
   "myhome-bogota-rental-listings.json",
+  "fincaraiz-bogota-rental-listings.json",
 ].map((fileName) => path.join(scrapeDirectory, fileName));
 const outputDirectory = path.join(uiRoot, "public", "data");
 const catalogPath = path.join(outputDirectory, "rentals.json");
@@ -34,6 +35,38 @@ function validBogotaCoordinate(latitude, longitude) {
     longitude >= -74.85 &&
     longitude <= -73.65
   );
+}
+
+function normalizeIdentityText(value) {
+  return String(value ?? "")
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function duplicateIdentity(listing) {
+  if (listing.availabilityStatus !== "available") return `history:${listing.id}`;
+  const area = Number.isFinite(listing.areaM2)
+    ? Math.round(listing.areaM2 * 10) / 10
+    : "unknown";
+  return [
+    listing.latitude.toFixed(4),
+    listing.longitude.toFixed(4),
+    listing.priceCop,
+    area,
+    listing.bedrooms,
+    listing.bathrooms,
+    listing.parkingSpaces ?? "unknown",
+    normalizeIdentityText(listing.neighborhood ?? listing.projectName),
+  ].join(":");
+}
+
+function preferredDuplicate(left, right) {
+  const leftScore = (left.imageUrl ? 2 : 0) + (left.source === "metrocuadrado" ? 1 : 0);
+  const rightScore = (right.imageUrl ? 2 : 0) + (right.source === "metrocuadrado" ? 1 : 0);
+  return rightScore > leftScore ? right : left;
 }
 
 const sources = await Promise.all(
@@ -75,6 +108,8 @@ for (const record of recordsById.values()) {
       ? "Metrocuadrado"
       : record.source === "myhome"
         ? "MyHome"
+        : record.source === "fincaraiz"
+          ? "Finca Raíz"
         : record.source;
   const areaM2 = nullableNumber(record.area_m2);
   const material = {
@@ -99,6 +134,10 @@ for (const record of recordsById.values()) {
     parkingSpaces: nullableNumber(record.parking_spaces),
     stratum: nullableNumber(record.stratum),
     url: record.listing_url,
+    availabilityStatus:
+      record.availability_status === "unavailable" ? "unavailable" : "available",
+    availabilityCheckedAt: record.availability_checked_at ?? null,
+    lastSeenAt: record.last_seen_at ?? null,
   };
   const imageEntry = imageManifest.entries?.[record.id];
   const hasLocalImage = imageEntry?.active !== false && imageEntry?.status === "available";
@@ -121,6 +160,18 @@ for (const record of recordsById.values()) {
   });
 }
 
+const deduplicatedByIdentity = new Map();
+for (const listing of listings) {
+  const identity = duplicateIdentity(listing);
+  const previous = deduplicatedByIdentity.get(identity);
+  deduplicatedByIdentity.set(
+    identity,
+    previous ? preferredDuplicate(previous, listing) : listing,
+  );
+}
+const duplicateRecords = listings.length - deduplicatedByIdentity.size;
+listings.length = 0;
+listings.push(...deduplicatedByIdentity.values());
 listings.sort((a, b) => a.id.localeCompare(b.id));
 const catalogVersion = sha(
   listings.map(({ id, fingerprint, latitude, longitude, imageUrl }) => ({
@@ -144,6 +195,13 @@ const summary = {
   sabanaProjects: 0,
   apartmentTypes: 0,
   sourceDifferences: 0,
+  availableRecords: listings.filter(
+    (listing) => listing.availabilityStatus === "available",
+  ).length,
+  unavailableRecords: listings.filter(
+    (listing) => listing.availabilityStatus === "unavailable",
+  ).length,
+  duplicateRecords,
 };
 const sourceUpdatedAt =
   sources

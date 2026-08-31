@@ -156,10 +156,20 @@ Refresh the Bogotá rental sources (all bedroom counts) before rebuilding:
 ```bash
 node scripts/scrape-metrocuadrado.mjs --operation=rent --min-bedrooms=0 --strata=all
 node scripts/scrape-myhome.mjs --operation=rent
+node scripts/scrape-fincaraiz.mjs --operation=rent --refresh
 cd ui
 npm run images:cache
 npm run rentals:build
 ```
+
+Each refresh keeps listings from the preceding rental cut. Listings that are
+still present are marked `available`; listings absent from search are checked
+against their detail page and remain in the local catalog. Only confirmed
+404/410 responses, explicit unavailable messages, or missing listing identity
+become `unavailable`, with the date of the check. Temporary HTTP or network
+failures do not change availability. The rental builder conservatively
+collapses currently available cross-portal duplicates only when location,
+price, area, bedrooms, bathrooms, parking, and neighborhood all match.
 
 Refresh Solusi's Bogotá apartment-sale inventory before rebuilding:
 

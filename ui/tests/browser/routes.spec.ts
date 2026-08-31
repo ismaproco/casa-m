@@ -54,7 +54,10 @@ test("rentals have an independent catalog, filters, and property history", async
   expect(response.ok()).toBe(true);
   const rentals = await response.json();
   expect(rentals.catalogKind).toBe("rentals");
-  expect(rentals.summary.publishedRecords).toBe(9243);
+  expect(rentals.summary.publishedRecords).toBe(15640);
+  expect(rentals.summary.availableRecords).toBe(15637);
+  expect(rentals.summary.unavailableRecords).toBe(3);
+  expect(rentals.summary.duplicateRecords).toBe(1316);
   expect(
     rentals.listings.every(
       (listing: { operationType?: string }) => listing.operationType === "Arriendo",
@@ -64,12 +67,17 @@ test("rentals have an independent catalog, filters, and property history", async
   const listing = rentals.listings.find(
     (candidate: { source: string }) => candidate.source === "myhome",
   ) as { id: string };
+  const myHomeCount = rentals.listings.filter(
+    (candidate: { source: string }) => candidate.source === "myhome",
+  ).length;
   await page.goto("/rentals?source=myhome");
   await expect(page.getByRole("tab", { name: /rentals|arriendos/i })).toHaveAttribute(
     "data-state",
     "active",
   );
-  await expect(page.getByText(/83 resultados|83 results/i)).toBeVisible();
+  await expect(
+    page.getByText(new RegExp(`${myHomeCount} (resultados|results)`, "i")),
+  ).toBeVisible();
   await expect(page.getByRole("combobox", { name: /source|fuente/i })).toHaveValue(
     "myhome",
   );
@@ -80,6 +88,41 @@ test("rentals have an independent catalog, filters, and property history", async
   await expect(page.getByText(listing.id, { exact: true }).first()).toBeVisible();
   await page.getByRole("button", { name: /close|cerrar/i }).click();
   await expect(page).toHaveURL(/\/rentals\?source=myhome$/);
+
+  const unavailable = rentals.listings.find(
+    (candidate: { availabilityStatus?: string }) =>
+      candidate.availabilityStatus === "unavailable",
+  ) as { id: string };
+  await page.goto(`/rentals/property/${encodeURIComponent(unavailable.id)}`);
+  await expect(page.getByText(/no disponible|not available/i).first()).toBeVisible();
+  await expect(page.getByRole("status")).toContainText(
+    /referencia histórica|historical reference/i,
+  );
+});
+
+test("Finca Raíz rentals are consolidated without duplicate result cards", async ({
+  page,
+}) => {
+  const response = await page.request.get("/data/rentals.json");
+  const rentals = await response.json();
+  const fincaRaiz = rentals.listings.filter(
+    (candidate: { source: string }) => candidate.source === "fincaraiz",
+  ) as Array<{ id: string; availabilityStatus?: string }>;
+  expect(fincaRaiz).toHaveLength(5869);
+  expect(
+    fincaRaiz.every((listing) => listing.availabilityStatus === "available"),
+  ).toBe(true);
+
+  await page.goto("/rentals?source=fincaraiz");
+  await expect(
+    page.getByRole("combobox", { name: /source|fuente/i }),
+  ).toHaveValue("fincaraiz");
+  await expect(page.getByText(/5[.,]869 (resultados|results)/i)).toBeVisible();
+
+  await page.goto(
+    `/rentals/property/${encodeURIComponent(fincaRaiz[0].id)}?source=fincaraiz`,
+  );
+  await expect(page.getByText(fincaRaiz[0].id, { exact: true }).first()).toBeVisible();
 });
 
 test("source filter is URL-backed and includes HOME Bogotá listings", async ({

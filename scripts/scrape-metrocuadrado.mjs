@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { mkdir, rename, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 
@@ -254,6 +254,54 @@ function normalizeProperty(property, requestedStratum) {
   };
 }
 
+async function auditListingAvailability(record) {
+  try {
+    const response = await fetch(record.listing_url, {
+      redirect: "follow",
+      signal: AbortSignal.timeout(30_000),
+      headers: {
+        accept: "text/html,application/xhtml+xml",
+        "accept-language": "es-CO,es;q=0.9",
+        "user-agent": userAgent,
+      },
+    });
+    if (response.status === 429 || response.status >= 500) return "unknown";
+    if (response.status === 404 || response.status === 410) return "unavailable";
+    const html = await response.text();
+    if (
+      /inmueble no disponible|publicaci[oó]n no disponible|ya no (?:se encuentra|est[aá]) disponible|publicaci[oó]n finalizada|no encontramos (?:el|este) inmueble/i.test(
+        html,
+      )
+    ) {
+      return "unavailable";
+    }
+    return response.ok && html.includes(String(record.source_id))
+      ? "available"
+      : "unavailable";
+  } catch {
+    return "unknown";
+  }
+}
+
+async function auditMissingRecords(records) {
+  const statuses = new Map();
+  let cursor = 0;
+  let completed = 0;
+  async function worker() {
+    while (cursor < records.length) {
+      const index = cursor;
+      cursor += 1;
+      statuses.set(records[index].id, await auditListingAvailability(records[index]));
+      completed += 1;
+      if (records.length >= 1000 && (completed % 500 === 0 || completed === records.length)) {
+        process.stdout.write(`Disponibilidad ${completed}/${records.length}\n`);
+      }
+    }
+  }
+  await Promise.all(Array.from({ length: 12 }, () => worker()));
+  return statuses;
+}
+
 async function atomicWrite(filePath, content) {
   const temporaryPath = `${filePath}.tmp`;
   await writeFile(temporaryPath, content, "utf8");
@@ -267,6 +315,13 @@ function csvCell(value) {
 }
 
 await mkdir(scrapeDirectory, { recursive: true });
+
+let previousOutput = null;
+try {
+  previousOutput = JSON.parse(await readFile(outputPath, "utf8"));
+} catch (error) {
+  if (error?.code !== "ENOENT") throw error;
+}
 
 const recordsById = new Map();
 const strataSummary = [];
@@ -336,10 +391,67 @@ for (const stratum of scopes) {
   console.log(JSON.stringify(strataSummary.at(-1)));
 }
 
-const records = [...recordsById.values()].sort((a, b) =>
+const scrapedAt = new Date().toISOString();
+const previousRecords = previousOutput?.records ?? [];
+const previousById = new Map(previousRecords.map((record) => [record.id, record]));
+const currentRecords = [...recordsById.values()].map((record) => {
+  const previous = previousById.get(record.id);
+  return {
+    ...record,
+    availability_status: "available",
+    availability_check_method: "search_index",
+    first_seen_at: previous
+      ? previous.first_seen_at ?? previousOutput?.scraped_at ?? scrapedAt
+      : scrapedAt,
+    last_seen_at: scrapedAt,
+    availability_checked_at: scrapedAt,
+  };
+});
+const currentStatuses = await auditMissingRecords(currentRecords);
+for (const record of currentRecords) {
+  const auditedStatus = currentStatuses.get(record.id);
+  if (auditedStatus === "unknown") continue;
+  record.availability_status = auditedStatus;
+  record.availability_check_method = "detail_page";
+  record.availability_checked_at = scrapedAt;
+  if (auditedStatus === "unavailable") {
+    record.last_seen_at = previousById.get(record.id)?.last_seen_at ?? null;
+  }
+}
+const currentIds = new Set(currentRecords.map((record) => record.id));
+const missingRecords = previousRecords.filter((record) => !currentIds.has(record.id));
+const missingStatuses = await auditMissingRecords(missingRecords);
+const unavailableRecords = previousRecords
+  .filter((record) => !currentIds.has(record.id))
+  .map((record) => {
+    const auditedStatus = missingStatuses.get(record.id);
+    const status =
+      auditedStatus === "unknown"
+        ? record.availability_check_method === "detail_page"
+          ? record.availability_status
+          : "available"
+        : auditedStatus;
+    return {
+      ...record,
+      availability_status: status,
+      availability_check_method:
+        auditedStatus === "unknown"
+          ? record.availability_check_method ?? null
+          : "detail_page",
+      first_seen_at: record.first_seen_at ?? previousOutput?.scraped_at ?? null,
+      last_seen_at:
+        status === "available"
+          ? scrapedAt
+          : record.last_seen_at ?? previousOutput?.scraped_at ?? null,
+      availability_checked_at:
+        auditedStatus === "unknown"
+          ? record.availability_checked_at ?? null
+          : scrapedAt,
+    };
+  });
+const records = [...currentRecords, ...unavailableRecords].sort((a, b) =>
   a.id.localeCompare(b.id),
 );
-const scrapedAt = new Date().toISOString();
 const output = {
   schema_version: 1,
   source: "metrocuadrado",
@@ -354,6 +466,15 @@ const output = {
   },
   strata_summary: strataSummary,
   records_count: records.length,
+  available_count: records.filter(
+    (record) => record.availability_status === "available",
+  ).length,
+  unavailable_count: unavailableRecords.filter(
+    (record) => record.availability_status === "unavailable",
+  ).length,
+  available_detail_only_count: unavailableRecords.filter(
+    (record) => record.availability_status === "available",
+  ).length,
   records_with_listing_urls: records.filter((record) => record.listing_url)
     .length,
   records_with_coordinates: records.filter(
@@ -385,6 +506,8 @@ const csvFields = [
   "neighborhood",
   "owner_name",
   "image_url",
+  "availability_status",
+  "availability_checked_at",
 ];
 await atomicWrite(
   csvOutputPath,

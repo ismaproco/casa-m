@@ -4,11 +4,20 @@ import process from "node:process";
 
 const repositoryRoot = path.resolve(import.meta.dirname, "..");
 const scrapeDirectory = path.join(repositoryRoot, "scrapes");
+const operationArgument =
+  process.argv
+    .find((argument) => argument.startsWith("--operation="))
+    ?.split("=")[1] ?? "sale";
+if (!["sale", "rent"].includes(operationArgument)) {
+  throw new Error(`Unsupported operation: ${operationArgument}`);
+}
+const isRental = operationArgument === "rent";
 const outputPrefixArgument = process.argv.find((argument) =>
   argument.startsWith("--output-prefix="),
 );
 const outputPrefix =
-  outputPrefixArgument?.split("=")[1] ?? "fincaraiz";
+  outputPrefixArgument?.split("=")[1] ??
+  (isRental ? "fincaraiz-bogota-rental" : "fincaraiz");
 if (!/^[a-z0-9][a-z0-9-]*$/i.test(outputPrefix)) {
   throw new Error(`Invalid output prefix: ${outputPrefix}`);
 }
@@ -26,14 +35,17 @@ const progressPath = path.join(
 );
 const sourceUrl =
   process.argv.find((argument) => argument.startsWith("http")) ??
-  "https://www.fincaraiz.com.co/venta/apartamentos/3-o-mas-habitaciones";
+  (isRental
+    ? "https://www.fincaraiz.com.co/arriendo/apartamentos/bogota/bogota-dc"
+    : "https://www.fincaraiz.com.co/venta/apartamentos/3-o-mas-habitaciones");
 const maxPagesArgument = process.argv.find((argument) =>
   argument.startsWith("--max-pages="),
 );
 const requestedMaxPages = maxPagesArgument
   ? Number(maxPagesArgument.split("=")[1])
   : Number.POSITIVE_INFINITY;
-const normalizationVersion = 4;
+const normalizationVersion = isRental ? 5 : 4;
+const refresh = process.argv.includes("--refresh");
 const concurrency = 10;
 const maximumEmptyBatches = 6;
 const userAgent =
@@ -166,9 +178,12 @@ function normalizeProperty(property) {
   } catch {
     // Preserve the source value below without presenting it as a usable URL.
   }
+  const state = firstLocation(property, "state");
+  const sourceCity = firstLocation(property, "city");
+  const city = isRental && /bogot/i.test(state ?? "") ? "Bogotá" : sourceCity;
 
   return {
-    id: `FR-${property.id}`,
+    id: `${isRental ? "FR-RENT" : "FR"}-${property.id}`,
     source: "fincaraiz",
     source_id: String(property.id),
     listing_url: listingUrl,
@@ -192,8 +207,9 @@ function normalizeProperty(property) {
     coordinate_precision:
       latitude !== null && longitude !== null ? "listing" : null,
     country: firstLocation(property, "country"),
-    state: firstLocation(property, "state"),
-    city: firstLocation(property, "city"),
+    state,
+    city,
+    source_city: sourceCity,
     locality: firstLocation(property, "locality"),
     zone: firstLocation(property, "zone"),
     neighborhood:
@@ -211,6 +227,7 @@ function normalizeProperty(property) {
 }
 
 async function readProgress() {
+  if (refresh) return null;
   try {
     const progress = JSON.parse(await readFile(progressPath, "utf8"));
     if (progress.source_url !== sourceUrl) return null;
@@ -232,6 +249,54 @@ async function readProgress() {
   } catch {
     return null;
   }
+}
+
+async function readPreviousOutput() {
+  try {
+    return JSON.parse(await readFile(outputPath, "utf8"));
+  } catch (error) {
+    if (error?.code === "ENOENT") return null;
+    throw error;
+  }
+}
+
+async function auditListingAvailability(record) {
+  try {
+    const response = await fetch(record.listing_url, {
+      headers: {
+        accept: "text/html,application/xhtml+xml",
+        "accept-language": "es-CO,es;q=0.9",
+        "user-agent": userAgent,
+      },
+      redirect: "follow",
+      signal: AbortSignal.timeout(30_000),
+    });
+    if (response.status === 429 || response.status >= 500) return "unknown";
+    if (response.status === 404 || response.status === 410) return "unavailable";
+    const html = await response.text();
+    if (/inmueble no disponible|publicaci[oó]n no disponible|ya no (?:se encuentra|est[aá]) disponible|publicaci[oó]n finalizada|no encontramos/i.test(html)) {
+      return "unavailable";
+    }
+    return response.ok && html.includes(String(record.source_id))
+      ? "available"
+      : "unavailable";
+  } catch {
+    return "unknown";
+  }
+}
+
+async function auditMissingRecords(records) {
+  const statuses = new Map();
+  let cursor = 0;
+  async function worker() {
+    while (cursor < records.length) {
+      const index = cursor;
+      cursor += 1;
+      statuses.set(records[index].id, await auditListingAvailability(records[index]));
+    }
+  }
+  await Promise.all(Array.from({ length: 8 }, () => worker()));
+  return statuses;
 }
 
 async function atomicWrite(filePath, value) {
@@ -271,6 +336,7 @@ const lastPage = Math.min(
   firstPage.paginatorInfo.lastPage,
   requestedMaxPages,
 );
+const previousOutput = await readPreviousOutput();
 const previous = await readProgress();
 const completedPages = new Set(
   (previous?.completed_pages ?? []).filter((page) => page <= lastPage),
@@ -357,7 +423,57 @@ for (let offset = 0; offset < pendingPages.length; offset += concurrency) {
   await new Promise((resolve) => setTimeout(resolve, 120));
 }
 
-const records = [...recordsById.values()].sort((a, b) =>
+const scrapedAt = new Date().toISOString();
+const previousRecords = isRental
+  ? (previousOutput?.records ?? []).filter((record) =>
+      record.id.startsWith("FR-RENT-"),
+    )
+  : [];
+const previousById = new Map(previousRecords.map((record) => [record.id, record]));
+const currentRecords = [...recordsById.values()].map((record) => {
+  const previousRecord = previousById.get(record.id);
+  return isRental
+    ? {
+        ...record,
+        availability_status: "available",
+        availability_check_method: "search_index",
+        first_seen_at: previousRecord
+          ? previousRecord.first_seen_at ?? previousOutput?.scraped_at ?? scrapedAt
+          : scrapedAt,
+        last_seen_at: scrapedAt,
+        availability_checked_at: scrapedAt,
+      }
+    : record;
+});
+const currentIds = new Set(currentRecords.map((record) => record.id));
+const missingRecords = previousRecords.filter((record) => !currentIds.has(record.id));
+const missingStatuses = await auditMissingRecords(missingRecords);
+const retainedRecords = missingRecords.map((record) => {
+  const auditedStatus = missingStatuses.get(record.id);
+  const status =
+    auditedStatus === "unknown"
+      ? record.availability_check_method === "detail_page"
+        ? record.availability_status
+        : "available"
+      : auditedStatus;
+  return {
+    ...record,
+    availability_status: status,
+    availability_check_method:
+      auditedStatus === "unknown"
+        ? record.availability_check_method ?? null
+        : "detail_page",
+    last_seen_at:
+      status === "available"
+        ? scrapedAt
+        : record.last_seen_at ?? previousOutput?.scraped_at ?? null,
+    availability_checked_at:
+      auditedStatus === "unknown"
+        ? record.availability_checked_at ?? null
+        : scrapedAt,
+  };
+});
+const records = [...currentRecords, ...retainedRecords].sort((a, b) =>
   a.id.localeCompare(b.id),
 );
 const withCoordinates = records.filter(
@@ -376,13 +492,19 @@ const output = {
   normalization_version: normalizationVersion,
   source: "fincaraiz",
   source_url: sourceUrl,
-  scraped_at: new Date().toISOString(),
+  scraped_at: scrapedAt,
   reported_total: firstPage.paginatorInfo.total,
   pages_scraped: completedPages.size,
   last_page_scraped: Math.max(...completedPages),
   stopped_at_repeat_boundary: stopReason !== null,
   stop_reason: stopReason,
   records_count: records.length,
+  available_count: isRental
+    ? records.filter((record) => record.availability_status === "available").length
+    : undefined,
+  unavailable_count: isRental
+    ? records.filter((record) => record.availability_status === "unavailable").length
+    : undefined,
   records_with_coordinates: withCoordinates,
   city_counts: Object.fromEntries(cityCounts),
   records,
@@ -412,6 +534,8 @@ const csvFields = [
   "image_url",
   "created_at",
   "updated_at",
+  "availability_status",
+  "availability_checked_at",
 ];
 await atomicWriteText(
   csvOutputPath,

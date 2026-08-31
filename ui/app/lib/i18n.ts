@@ -78,6 +78,10 @@ export const copy = {
     note: "Nota privada",
     notePlaceholder: "Agrega contexto, pendientes o impresiones…",
     unavailable: "Ya no aparece en el catálogo actual",
+    listingUnavailable: "NO DISPONIBLE",
+    listingUnavailableHelp:
+      "Este anuncio ya no aparece en la fuente. Se conserva como referencia histórica.",
+    availabilityChecked: "Disponibilidad revisada",
     changed: "Cambió desde que lo guardaste",
     noFavorites: "Aún no tienes favoritos.",
     noSaved: "Aún no tienes búsquedas guardadas.",
@@ -182,6 +186,10 @@ export const copy = {
     note: "Private note",
     notePlaceholder: "Add context, next steps, or impressions…",
     unavailable: "No longer appears in the current catalog",
+    listingUnavailable: "NOT AVAILABLE",
+    listingUnavailableHelp:
+      "This listing no longer appears at the source. It is kept for historical reference.",
+    availabilityChecked: "Availability checked",
     changed: "Changed since you saved it",
     noFavorites: "You do not have any favorites yet.",
     noSaved: "You do not have any saved searches yet.",
